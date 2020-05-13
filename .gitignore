@@ -1,0 +1,9 @@
+obj
+obj/*
+a.exe
+a.out
+szachy.exe
+szachy
+.vscode
+.vscode/*
+src/*.exe
