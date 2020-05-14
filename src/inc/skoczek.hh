@@ -6,7 +6,7 @@
 class skoczek: public figura{
     public:
     skoczek(kolor _kol, wspolrzedne _wsp);
-    std::list<mozliwosc> *zasady_ruchu();
+    std::vector<mozliwosc> *zasady_ruchu();
 };
 
 #endif

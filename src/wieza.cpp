@@ -8,8 +8,8 @@ wieza::wieza(kolor _kol, wspolrzedne _wsp){
     this->nazwa = 'w'; // jak w notacji szachowej
 }
 
-std::list<mozliwosc> *wieza::zasady_ruchu(){
-    std::list<mozliwosc> *moja_lista = new std::list<mozliwosc>;
+std::vector<mozliwosc> *wieza::zasady_ruchu(){
+    std::vector<mozliwosc> *moja_lista = new std::vector<mozliwosc>;
     // wszystkie mozliwosci ruchu po kolumnach
     // dowolna ilosc powtorzen (max 7 przez wymiar planszy)
     moja_lista->push_back(mozliwosc(0,1,7));

@@ -7,7 +7,7 @@ class wieza: public figura{
     bool pierwszy_ruch; // true jesli wieza sie nie ruszyla, false jesli sie ruszyla
     public:
     wieza(kolor _kol, wspolrzedne _wsp);
-    std::list<mozliwosc> *zasady_ruchu();
+    std::vector<mozliwosc> *zasady_ruchu();
     void ruszono(); // wieza zostal ruszona
 };
 

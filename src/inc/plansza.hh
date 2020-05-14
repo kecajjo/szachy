@@ -30,18 +30,18 @@ class plansza{
     figura* operator ()(wspolrzedne wsp) const;
     figura*& operator ()(wspolrzedne wsp); // zwraca adres wskaznika na figure
     void rusz(wspolrzedne start, wspolrzedne koniec); // jesli jest to zgodne z zasadami rusza figure z pola start na pole koniec
-    std::list<wspolrzedne> *mozliwe_ruchy(wspolrzedne start); // zwraca liste dostepnych ruchow z danego pola
+    std::vector<wspolrzedne> *mozliwe_ruchy(wspolrzedne start); // zwraca liste dostepnych ruchow z danego pola
     void wyswietl(); // wyswietla plansze
     static bool czy_poza_plansza(wspolrzedne wsp); // sprawdza czy istnieje pole o takich wspolrzednych
 
     private:
     // dodaje ruch do listy jesli nie jest to wbrew zasadom
     void mozliwy_po_wektorze(figura &fig,
-        const mozliwosc &_mozliwosc, std::list<wspolrzedne> *lista_ruchow);
+        const mozliwosc &_mozliwosc, std::vector<wspolrzedne> *lista_ruchow);
     void zbij(figura *fig); // bije figure i aktualizuje wynik
     void aktualizuj_pola(const wspolrzedne &docelowe, figura &fig); // aktualizuje stan szachownicy po ruchu
     // zwraca mozliwe bicia pionkiem
-    void mozliwe_bicia_pionkiem(pionek &pion, std::list<wspolrzedne> *lista_ruchow);
+    void mozliwe_bicia_pionkiem(pionek &pion, std::vector<wspolrzedne> *lista_ruchow);
 };
 
 #endif

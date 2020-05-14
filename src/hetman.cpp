@@ -7,8 +7,8 @@ hetman::hetman(kolor _kol, wspolrzedne _wsp){
     this->nazwa = 'h'; // jak w notacji szachowej
 }
 
-std::list<mozliwosc> *hetman::zasady_ruchu(){
-    std::list<mozliwosc> *moja_lista = new std::list<mozliwosc>;
+std::vector<mozliwosc> *hetman::zasady_ruchu(){
+    std::vector<mozliwosc> *moja_lista = new std::vector<mozliwosc>;
     // wszystkie mozliwosci ruchu po skosie i kolumnach
     // dowolna ilosc powtorzen (max 7 przez wymiar planszy)
     moja_lista->push_back(mozliwosc(1,1,7));

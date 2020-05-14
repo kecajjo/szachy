@@ -8,8 +8,8 @@ pionek::pionek(kolor _kol, wspolrzedne _wsp){
     this->nazwa = 'p'; //jak w notacji szachowej
 }
 
-std::list<mozliwosc> *pionek::zasady_ruchu(){
-    std::list<mozliwosc> *moja_lista = new std::list<mozliwosc>;
+std::vector<mozliwosc> *pionek::zasady_ruchu(){
+    std::vector<mozliwosc> *moja_lista = new std::vector<mozliwosc>;
     if(this->kol == biali){
         if(pierwszy_ruch == true){
             moja_lista->push_back(mozliwosc(0,1,2));

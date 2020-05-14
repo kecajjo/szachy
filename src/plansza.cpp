@@ -102,19 +102,16 @@ void plansza::rusz(wspolrzedne start, wspolrzedne koniec){
         return;
     }
 
-    std::list<wspolrzedne> *mozliwe_pola_koncowe = mozliwe_ruchy(start);
+    std::vector<wspolrzedne> *mozliwe_pola_koncowe = mozliwe_ruchy(start);
     // jesli nie mozna sie ruszyc na zadne pole konczy dzialanie funkcji
     if(mozliwe_pola_koncowe == nullptr){
         return;
     }
 
     int rozmiar = mozliwe_pola_koncowe->size();
-    std::list<wspolrzedne>::iterator it = mozliwe_pola_koncowe->begin();
     for(int i=0;i<rozmiar;i++){
-        wspolrzedne wypisz = *it;
-
         // czy chcemy sie ruszyc na dostepne dla figury pole
-        if(koniec == *it){
+        if(koniec == (*mozliwe_pola_koncowe)[i]){
             // jesli ruszamy sie na pole, ktore nie jest puste
             if((*this)(koniec) != nullptr){
                 // bijemy figure na polu docelowym
@@ -126,8 +123,6 @@ void plansza::rusz(wspolrzedne start, wspolrzedne koniec){
             this->aktualizuj_pola(koniec, *(*this)(start));
             return;
         }
-        // przechodzimy do nastepnego elementu
-        it++;
     }
 
     // zwolnienie pamieci z listy mozliwych pol koncowych
@@ -137,7 +132,7 @@ void plansza::rusz(wspolrzedne start, wspolrzedne koniec){
     std::cout << "RUCH NIEDOZWOLONY" << std::endl;
 }
 
-std::list<wspolrzedne> *plansza::mozliwe_ruchy(wspolrzedne start){
+std::vector<wspolrzedne> *plansza::mozliwe_ruchy(wspolrzedne start){
     
     // jesli podano pozycje startowa spoza szachownicy zwraca nullptr
     if(plansza::czy_poza_plansza(start)){
@@ -151,18 +146,16 @@ std::list<wspolrzedne> *plansza::mozliwe_ruchy(wspolrzedne start){
         return nullptr;
     }
 
-    std::list<wspolrzedne> *lista_ruchow = new std::list<wspolrzedne>;
+    std::vector<wspolrzedne> *lista_ruchow = new std::vector<wspolrzedne>;
 
     figura *fig = (*this)(start);
     // przechowuje wektory w jakich moze sie poruszac figura
-    std::list<mozliwosc> *wektory_ruchu = fig->zasady_ruchu();
+    std::vector<mozliwosc> *wektory_ruchu = fig->zasady_ruchu();
 
     int rozmiar_listy = wektory_ruchu->size();
-    std::list<mozliwosc>::iterator it = wektory_ruchu->begin();
     for(int i=0;i<rozmiar_listy;i++){
         // dodaje do listy ruchy ktore mozna wykonac po danym wektorze
-        this->mozliwy_po_wektorze(*fig, *it, lista_ruchow);
-        it++;
+        this->mozliwy_po_wektorze(*fig, (*wektory_ruchu)[i], lista_ruchow);
     }
     // trzeba zwolnic miejsce po liscie wektorow, lista w destruktorze sie czysci
     delete wektory_ruchu;
@@ -217,7 +210,7 @@ bool plansza::czy_poza_plansza(wspolrzedne wsp){
 }
 
 void plansza::mozliwy_po_wektorze(figura &fig,
-        const mozliwosc &_mozliwosc, std::list<wspolrzedne> *lista_ruchow){
+        const mozliwosc &_mozliwosc, std::vector<wspolrzedne> *lista_ruchow){
 
     // ile razy mozna powtorzyc rucho o wektor
     int powtorzen = _mozliwosc.zasieg;
@@ -283,7 +276,7 @@ void plansza::aktualizuj_pola(const wspolrzedne &docelowe, figura &fig){
     (*this)(docelowe) = &fig;
 }
 
-void plansza::mozliwe_bicia_pionkiem(pionek &pion, std::list<wspolrzedne> *lista_ruchow){
+void plansza::mozliwe_bicia_pionkiem(pionek &pion, std::vector<wspolrzedne> *lista_ruchow){
     wspolrzedne wektory_bicia[2];
     pion.zasady_bicia(wektory_bicia);
     wspolrzedne pozycja_piona = pion.aktualna_pozycja();

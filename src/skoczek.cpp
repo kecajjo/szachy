@@ -7,8 +7,8 @@ skoczek::skoczek(kolor _kol, wspolrzedne _wsp){
     this->nazwa = 's'; // jak w notacji szachowej
 }
 
-std::list<mozliwosc> *skoczek::zasady_ruchu(){
-    std::list<mozliwosc> *moja_lista = new std::list<mozliwosc>;
+std::vector<mozliwosc> *skoczek::zasady_ruchu(){
+    std::vector<mozliwosc> *moja_lista = new std::vector<mozliwosc>;
     // wszystkie mozliwosci ruchu po kolumnach
     // dowolna ilosc powtorzen (max 7 przez wymiar planszy)
     moja_lista->push_back(mozliwosc(2,1,1));

@@ -7,7 +7,7 @@ class krol: public figura{
     bool pierwszy_ruch; // true jesli krol sie nie ruszyl, false jesli sie ruszyl
     public:
     krol(kolor _kol, wspolrzedne _wsp);
-    std::list<mozliwosc> *zasady_ruchu();
+    std::vector<mozliwosc> *zasady_ruchu();
     void ruszono(); // krol zostal ruszony
 };
 
