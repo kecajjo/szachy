@@ -89,16 +89,69 @@ void plansza::rusz(wspolrzedne start, wspolrzedne koniec){
         std::cout << "Proba ruchu z pola poza plansza" << std::endl;
         return;
     }
-    // jesli podano pole koncowe spoza szachownicy konczy dzialanie funkcji
+
+    // jesli podano pole docelowe spoza szachownicy konczy dzialanie funkcji
     if(plansza::czy_poza_plansza(koniec)){
         std::cout << "Proba ruchu na pole poza plansza" << std::endl;
         return;
     }
+
     // jesli proba ruchu nastepuje z pustego pola konczy dzialanie funkcji
     if((*this)(start) == nullptr){
         std::cout << " Pole puste, nie mozna sie stad ruszyc" << std::endl;
         return;
     }
+
+    std::list<wspolrzedne> *mozliwe_pola_koncowe = mozliwe_ruchy(start);
+    // jesli nie mozna sie ruszyc na zadne pole konczy dzialanie funkcji
+    if(mozliwe_pola_koncowe == nullptr){
+        return;
+    }
+
+    int rozmiar = mozliwe_pola_koncowe->size();
+    std::list<wspolrzedne>::iterator it = mozliwe_pola_koncowe->begin();
+    for(int i=0;i<rozmiar;i++){
+        wspolrzedne wypisz = *it;
+
+        // czy chcemy sie ruszyc na dostepne dla figury pole
+        if(koniec == *it){
+            // jesli ruszamy sie na pole, ktore nie jest puste
+            if((*this)(koniec) != nullptr){
+                // bijemy figure na polu docelowym
+                this->zbij((*this)(koniec));
+            }
+            // zwolnienie pamieci z listy mozliwych pol koncowych
+            delete mozliwe_pola_koncowe;
+            // aktualizuje pole i konczy dzialanie funkcji
+            this->aktualizuj_pola(koniec, *(*this)(start));
+            return;
+        }
+        // przechodzimy do nastepnego elementu
+        it++;
+    }
+
+    // zwolnienie pamieci z listy mozliwych pol koncowych
+    delete mozliwe_pola_koncowe;
+
+    // nie mozna sie tak ruszyc
+    std::cout << "RUCH NIEDOZWOLONY" << std::endl;
+}
+
+std::list<wspolrzedne> *plansza::mozliwe_ruchy(wspolrzedne start){
+    
+    // jesli podano pozycje startowa spoza szachownicy zwraca nullptr
+    if(plansza::czy_poza_plansza(start)){
+        std::cout << "Proba ruchu z pola poza plansza" << std::endl;
+        return nullptr;
+    }
+
+    // jesli proba ruchu nastepuje z pustego pola zwraca nullptr
+    if((*this)(start) == nullptr){
+        std::cout << " Pole puste, nie mozna sie stad ruszyc" << std::endl;
+        return nullptr;
+    }
+
+    std::list<wspolrzedne> *lista_ruchow = new std::list<wspolrzedne>;
 
     figura *fig = (*this)(start);
     // przechowuje wektory w jakich moze sie poruszac figura
@@ -107,22 +160,20 @@ void plansza::rusz(wspolrzedne start, wspolrzedne koniec){
     int rozmiar_listy = wektory_ruchu->size();
     std::list<mozliwosc>::iterator it = wektory_ruchu->begin();
     for(int i=0;i<rozmiar_listy;i++){
-        // ile razy figura moze sie ruszyc o wektor
-        int powtorzen = it->zasieg;
-        // probuje ruszyc po danym wektorze
-        bool czy_ruszono = this->rusz_po_wektorze(*fig, it->wektor, powtorzen, koniec);
-        // jesli udalo sie ruszyc konczy dzialanie funkcji
-        if(czy_ruszono == true){
-            // trzeba usunac liste wektorow
-            delete wektory_ruchu;
-            return;
-        }
+        // dodaje do listy ruchy ktore mozna wykonac po danym wektorze
+        this->mozliwy_po_wektorze(*fig, *it, lista_ruchow);
         it++;
     }
-    // jesli ruch bedzie sprzeczny z zasadami ruchu wypisze komunikat
-    std::cout << std::endl << "RUCH NIEDOZWOLONY" << std::endl;
-    // trzeba zwolnic miejsce po liscie wektorow
+    // trzeba zwolnic miejsce po liscie wektorow, lista w destruktorze sie czysci
     delete wektory_ruchu;
+
+    // uwzglednienie bicia przez pionki
+    if(fig->zwroc_nazwe() == 'p'){
+        pionek *pion = dynamic_cast<pionek*>(fig);
+        mozliwe_bicia_pionkiem(*pion, lista_ruchow);
+    }
+    // zwraca wszystkie dostepne z danego pola ruchy
+    return lista_ruchow;
 }
 
 void plansza::wyswietl(){
@@ -165,13 +216,22 @@ bool plansza::czy_poza_plansza(wspolrzedne wsp){
     return false;
 }
 
-bool plansza::rusz_po_wektorze(figura &fig,
-        const wspolrzedne &wektor, int powtorzen, const wspolrzedne &koniec){
+void plansza::mozliwy_po_wektorze(figura &fig,
+        const mozliwosc &_mozliwosc, std::list<wspolrzedne> *lista_ruchow){
+
+    // ile razy mozna powtorzyc rucho o wektor
+    int powtorzen = _mozliwosc.zasieg;
+    // wektor jakim sie poruszamy
+    wspolrzedne wektor = _mozliwosc.wektor;
 
     // zmienna okreslajaca koncowe pole na ktore mozna sie ruszyc
     wspolrzedne mozliwy_ruch = fig.aktualna_pozycja();
     for(int i=0;i<powtorzen;i++){
         mozliwy_ruch += wektor;
+        // jesli wyjdzie poza plansze konczy dzialanie funkcji
+        if(plansza::czy_poza_plansza(mozliwy_ruch)){
+            return;
+        }
         // jesli na drodze stoi jakas figura
         if((*this)(mozliwy_ruch) != nullptr){
             // wskaznik na blokujaca figure
@@ -179,42 +239,20 @@ bool plansza::rusz_po_wektorze(figura &fig,
             // jesli na drodze stoi figura w tym samym kolorze
             if(na_drodze->ktora_druzyna() == fig.ktora_druzyna()){
                 // nie mozna sie ruszyc ani tu ani nigdzie dalej
-                return false;
+                return;
             } else{ // jesli na drodze stoi figura w innym kolorze
-                // jesli to pionek to nie moze bic
-                if(na_drodze->zwroc_nazwe() == 'p'){
-                    return false;
-                } else{ // jesli to inna figura przeciwnika to nalezy bic
-                    zbij(na_drodze);
-                    // rusza figure na dolecowe miejsce
-                    this->aktualizuj_pola(koniec, fig);
-
-                    // (*this)(fig.aktualna_pozycja()) = nullptr;
-                    // fig.przesun(koniec);
-                    // (*this)(koniec) = &fig;
-
-                    // jesli udalo sie ruszyc zwraca true
-                    return true;
+                // jesli ruszamy pionkiem to nie moze bic tak jak sie rusza
+                if(fig.zwroc_nazwe() == 'p'){
+                    return;
+                } else{// mozna bic, ale dalej sie nie ruszymy
+                    lista_ruchow->push_back(mozliwy_ruch);
+                    return;
                 }
             }
         }
-
-        // jesli pole koncowe mozna osiagnac zgodnie z zasadami ruchu 
-        // to figura zmieni polozenie i funkcja zakonczy dzialanie
-        if(koniec == mozliwy_ruch){
-            // rusza figure na dolecowe miejsce
-            this->aktualizuj_pola(koniec, fig);
-            
-            // (*this)(fig.aktualna_pozycja()) = nullptr;
-            // fig.przesun(koniec);
-            // (*this)(koniec) = &fig;
-
-            // jesli udalo sie ruszyc zwraca true
-            return true;
-        }
+        // nie ma na drodze zadnych przeszkod
+        lista_ruchow->push_back(mozliwy_ruch);
     }
-    // jesli nie udalo sie ruszyc zwraca false
-    return false;
 }
 
 void plansza::zbij(figura *fig){
@@ -222,8 +260,14 @@ void plansza::zbij(figura *fig){
     int zmiana_pkt = 0;
     switch(fig->zwroc_nazwe()){
         case 'p': zmiana_pkt = 1; break;
-        case 'n': zmiana_pkt = 3;
-
+        case 's': zmiana_pkt = 3; break;
+        case 'g': zmiana_pkt = 3; break;
+        case 'w': zmiana_pkt = 5; break;
+        case 'h': zmiana_pkt = 9; break;
+        case 'k':zmiana_pkt = 100; break;
+        default: 
+            std::cout << "Proba zbicia, nie ma takiego rodzaju figury" << std::endl;
+            break;
     }
 
     if(fig->ktora_druzyna() == biali){
@@ -237,4 +281,21 @@ void plansza::aktualizuj_pola(const wspolrzedne &docelowe, figura &fig){
     (*this)(fig.aktualna_pozycja()) = nullptr;
     fig.przesun(docelowe);
     (*this)(docelowe) = &fig;
+}
+
+void plansza::mozliwe_bicia_pionkiem(pionek &pion, std::list<wspolrzedne> *lista_ruchow){
+    wspolrzedne wektory_bicia[2];
+    pion.zasady_bicia(wektory_bicia);
+    wspolrzedne pozycja_piona = pion.aktualna_pozycja();
+    for(int i=0;i<2;i++){ // mozna bic na 2 sposoby
+        wspolrzedne proba_bicia = pozycja_piona + wektory_bicia[i];
+        if(plansza::czy_poza_plansza(proba_bicia) == false){ // czy pole znajduje sie na planszy
+            // if chroni przed proba sprawdzenia koloru jesli pole wskazuje na nullptr
+            if((*this)(proba_bicia) != nullptr){
+                if((*this)(proba_bicia)->ktora_druzyna() != pion.ktora_druzyna()){ // jesli pole jest zajete przez przeciwnika
+                    lista_ruchow->push_back(proba_bicia);
+                }
+            }
+        }
+    }
 }

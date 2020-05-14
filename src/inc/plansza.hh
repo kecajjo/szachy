@@ -1,6 +1,8 @@
 #ifndef PLANSZA_HH
 #define PLANSZA_HH
 
+#include <list>
+#include <vector>
 #include "wspolrzedne.hh"
 #include "figura.hh"
 #include "mozliwosc.hh"
@@ -27,17 +29,19 @@ class plansza{
     figura*& operator ()(int _x, int _y); // zwraca adres wskaznika na figure
     figura* operator ()(wspolrzedne wsp) const;
     figura*& operator ()(wspolrzedne wsp); // zwraca adres wskaznika na figure
-    void rusz(wspolrzedne start, wspolrzedne koniec); // rusza figure na dane pole
+    void rusz(wspolrzedne start, wspolrzedne koniec); // jesli jest to zgodne z zasadami rusza figure z pola start na pole koniec
+    std::list<wspolrzedne> *mozliwe_ruchy(wspolrzedne start); // zwraca liste dostepnych ruchow z danego pola
     void wyswietl(); // wyswietla plansze
     static bool czy_poza_plansza(wspolrzedne wsp); // sprawdza czy istnieje pole o takich wspolrzednych
 
     private:
-    // zwraca true jesli mozna sie ruszyc lub false jesli nie mozna
-    // rusza figure jesli nie jest to wbrew zasadom
-    bool rusz_po_wektorze(figura &fig,
-        const wspolrzedne &wektor, int powtorzen, const wspolrzedne &koniec);
+    // dodaje ruch do listy jesli nie jest to wbrew zasadom
+    void mozliwy_po_wektorze(figura &fig,
+        const mozliwosc &_mozliwosc, std::list<wspolrzedne> *lista_ruchow);
     void zbij(figura *fig); // bije figure i aktualizuje wynik
     void aktualizuj_pola(const wspolrzedne &docelowe, figura &fig); // aktualizuje stan szachownicy po ruchu
+    // zwraca mozliwe bicia pionkiem
+    void mozliwe_bicia_pionkiem(pionek &pion, std::list<wspolrzedne> *lista_ruchow);
 };
 
 #endif

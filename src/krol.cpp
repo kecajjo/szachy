@@ -1,6 +1,7 @@
 #include "inc/krol.hh"
 
 krol::krol(kolor _kol, wspolrzedne _wsp){
+    this->pierwszy_ruch = true;
     this->kol = _kol;
     this->pozycja = _wsp;
     this->czy_aktywny=true;
@@ -21,4 +22,8 @@ std::list<mozliwosc> *krol::zasady_ruchu(){
     moja_lista->push_back(mozliwosc(-1,0,1));
 
     return moja_lista;
+}
+
+void krol::ruszono(){
+    this->pierwszy_ruch = false;
 }
