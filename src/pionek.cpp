@@ -9,6 +9,7 @@ pionek::pionek(kolor _kol, wspolrzedne _wsp){
 }
 
 std::vector<mozliwosc> *pionek::zasady_ruchu(){
+    // inicjalizujemy tylko 1 mozliwoscia wiec moze byc push back
     std::vector<mozliwosc> *moj_vector = new std::vector<mozliwosc>;
     if(this->kol == biali){
         if(pierwszy_ruch == true){

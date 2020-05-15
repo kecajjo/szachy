@@ -2,6 +2,9 @@
 #include <iostream>
 
 plansza::plansza(){
+
+this->czas1 = 0;
+this->czas2 = 0;
     // ustawia stan poczatkowy szachownicy
     this->wynik = 0;
     this->biel = new druzyna(biali);
@@ -83,7 +86,7 @@ figura*& plansza::operator ()(wspolrzedne wsp){
 }
 
 void plansza::rusz(wspolrzedne start, wspolrzedne koniec){
-    
+
     // jesli podano pozycje startowa spoza szachownicy konczy dzialanie funkcji
     if(plansza::czy_poza_plansza(start)){
         std::cout << "Proba ruchu z pola poza plansza" << std::endl;
@@ -101,13 +104,15 @@ void plansza::rusz(wspolrzedne start, wspolrzedne koniec){
         std::cout << " Pole puste, nie mozna sie stad ruszyc" << std::endl;
         return;
     }
-
+std::clock_t czas2_start = std::clock();
     std::vector<wspolrzedne> *mozliwe_pola_koncowe = mozliwe_ruchy(start);
     // jesli nie mozna sie ruszyc na zadne pole konczy dzialanie funkcji
     if(mozliwe_pola_koncowe == nullptr){
         return;
     }
 
+std::clock_t czas2_koniec = std::clock();
+this->czas2 += (double)(czas2_koniec-czas2_start)/CLOCKS_PER_SEC;
     int rozmiar = mozliwe_pola_koncowe->size();
     for(int i=0;i<rozmiar;i++){
         // czy chcemy sie ruszyc na dostepne dla figury pole
@@ -117,14 +122,13 @@ void plansza::rusz(wspolrzedne start, wspolrzedne koniec){
                 // bijemy figure na polu docelowym
                 this->zbij((*this)(koniec));
             }
-            // zwolnienie pamieci z listy mozliwych pol koncowych
+            // zwolnienie pamieci z vectora mozliwych pol koncowych
             delete mozliwe_pola_koncowe;
             // aktualizuje pole i konczy dzialanie funkcji
             this->aktualizuj_pola(koniec, *(*this)(start));
             return;
         }
     }
-
     // zwolnienie pamieci z listy mozliwych pol koncowych
     delete mozliwe_pola_koncowe;
 
@@ -133,7 +137,7 @@ void plansza::rusz(wspolrzedne start, wspolrzedne koniec){
 }
 
 std::vector<wspolrzedne> *plansza::mozliwe_ruchy(wspolrzedne start){
-    
+
     // jesli podano pozycje startowa spoza szachownicy zwraca nullptr
     if(plansza::czy_poza_plansza(start)){
         std::cout << "Proba ruchu z pola poza plansza" << std::endl;
@@ -147,11 +151,12 @@ std::vector<wspolrzedne> *plansza::mozliwe_ruchy(wspolrzedne start){
     }
 
     std::vector<wspolrzedne> *tablica_ruchow = new std::vector<wspolrzedne>;
-
+std::clock_t czas1_start = std::clock();
     figura *fig = (*this)(start);
     // przechowuje wektory w jakich moze sie poruszac figura
     std::vector<mozliwosc> *wektory_ruchu = fig->zasady_ruchu();
-
+std::clock_t czas1_koniec = std::clock();
+this->czas1 += (double)(czas1_koniec-czas1_start)/CLOCKS_PER_SEC;
     int rozmiar_listy = wektory_ruchu->size();
     for(int i=0;i<rozmiar_listy;i++){
         // dodaje do listy ruchy ktore mozna wykonac po danym wektorze

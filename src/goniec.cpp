@@ -9,13 +9,14 @@ goniec::goniec(kolor _kol, wspolrzedne _wsp){
 }
 
 std::vector<mozliwosc> *goniec::zasady_ruchu(){
-    std::vector<mozliwosc> *moj_vector = new std::vector<mozliwosc>;
+    std::vector<mozliwosc> *moj_vector = new std::vector<mozliwosc>{
     // wszystkie mozliwosci ruchu po skosie
     // dowolna ilosc powtorzen (max 7 przez wymiar planszy)
-    moj_vector->push_back(mozliwosc(1,1,7));
-    moj_vector->push_back(mozliwosc(-1,1,7));
-    moj_vector->push_back(mozliwosc(1,-1,7));
-    moj_vector->push_back(mozliwosc(-1,-1,7));
+    (mozliwosc(1,1,7)),
+    (mozliwosc(-1,1,7)),
+    (mozliwosc(1,-1,7)),
+    (mozliwosc(-1,-1,7))
+    };
     
     return moj_vector;
 }

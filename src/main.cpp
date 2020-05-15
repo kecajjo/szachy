@@ -54,12 +54,12 @@ int main(){
     szachownica.wyswietl();
     std::cout<<std::endl<<std::endl<<std::endl<<std::endl<<std::endl;
 
-    //std::clock_t start_czasu = std::clock();
-    //for(int i=0;i<2000000;i++){
-    //    szachownica.rusz(wspolrzedne(3,4), wspolrzedne(0,1));
-    //    szachownica.rusz(wspolrzedne(0,1), wspolrzedne(3,4));
-    //}
-    //std::clock_t koniec_czasu = std::clock();
+    std::clock_t start_czasu = std::clock();
+    for(int i=0;i<1000000;i++){
+        szachownica.rusz(wspolrzedne(3,4), wspolrzedne(0,1));
+        szachownica.rusz(wspolrzedne(0,1), wspolrzedne(3,4));
+    }
+    std::clock_t koniec_czasu = std::clock();
 
     // pionek probuje bic powodujac ze wlasny krol jest szachowany
     //szachownica.rusz(wspolrzedne(4,4), wspolrzedne(4,5));
@@ -106,7 +106,10 @@ int main(){
     szachownica.rusz(wspolrzedne(3,4), wspolrzedne(4,3));
     szachownica.wyswietl();
 
-    //std::cout << (float)(koniec_czasu - start_czasu)/CLOCKS_PER_SEC << std::endl;
+    std::cout << "4mln ruchow zajmuje: ";
+    std::cout << (float)(koniec_czasu - start_czasu)/CLOCKS_PER_SEC << std::endl;
+    std::cout << "czas1: " << szachownica.czas1 << std::endl;
+    std::cout << "czas2: " << szachownica.czas2 << std::endl;
     
     return 0;
 }

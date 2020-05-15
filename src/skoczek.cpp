@@ -8,17 +8,18 @@ skoczek::skoczek(kolor _kol, wspolrzedne _wsp){
 }
 
 std::vector<mozliwosc> *skoczek::zasady_ruchu(){
-    std::vector<mozliwosc> *moj_vector = new std::vector<mozliwosc>;
+    std::vector<mozliwosc> *moj_vector = new std::vector<mozliwosc>{
     // wszystkie mozliwosci ruchu po kolumnach
     // dowolna ilosc powtorzen (max 7 przez wymiar planszy)
-    moj_vector->push_back(mozliwosc(2,1,1));
-    moj_vector->push_back(mozliwosc(2,-1,1));
-    moj_vector->push_back(mozliwosc(-2,1,1));
-    moj_vector->push_back(mozliwosc(-2,-1,1));
-    moj_vector->push_back(mozliwosc(1,2,1));
-    moj_vector->push_back(mozliwosc(-1,2,1));
-    moj_vector->push_back(mozliwosc(1,-2,1));
-    moj_vector->push_back(mozliwosc(-1,-2,1));
+    (mozliwosc(2,1,1)),
+    (mozliwosc(2,-1,1)),
+    (mozliwosc(-2,1,1)),
+    (mozliwosc(-2,-1,1)),
+    (mozliwosc(1,2,1)),
+    (mozliwosc(-1,2,1)),
+    (mozliwosc(1,-2,1)),
+    (mozliwosc(-1,-2,1))
+    };
 
     return moj_vector;
 }

@@ -8,9 +8,21 @@
 #include "mozliwosc.hh"
 #include "druzyna.hh"
 
+// do testow efektywnosci
+#include <ctime>
+
 #define ROZMIAR 8
 
 class plansza{
+
+// do testow wydajnosciowych
+public:
+double czas1 = 0;
+double czas2 = 0;
+private:
+
+
+
     figura *pola[ROZMIAR][ROZMIAR]; // szachownica zawierajaca informacje o tym, kto zajmuje dane pole
     kolor tura; // -1 kolej bialych 1 kolej czarnych 0 jakis blad, nikt nie moze sie ruszyc
     druzyna *biel;
@@ -18,6 +30,7 @@ class plansza{
     // nie int zeby poza materialem moc pozycje na stole nagradzac 
     // biale chca jak najmniejszy czarne jak najwiekszy, poczatkowy to 0
     float wynik;
+    //mozliwosc zasady_ruchu_fig[8]; // zwiekszy zajmowana pamiec ale przyspieszy dzialanie programu
 
     public:
     plansza(); // ustawia obydwie druzyny, tura bialych

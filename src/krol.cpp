@@ -9,17 +9,18 @@ krol::krol(kolor _kol, wspolrzedne _wsp){
 }
 
 std::vector<mozliwosc> *krol::zasady_ruchu(){
-    std::vector<mozliwosc> *moj_vector = new std::vector<mozliwosc>;
+    std::vector<mozliwosc> *moj_vector = new std::vector<mozliwosc>{
     // wszystkie mozliwosci ruchu po skosie i kolumnach
     // dowolna ilosc powtorzen (max 7 przez wymiar planszy)
-    moj_vector->push_back(mozliwosc(1,1,1));
-    moj_vector->push_back(mozliwosc(-1,1,1));
-    moj_vector->push_back(mozliwosc(1,-1,1));
-    moj_vector->push_back(mozliwosc(-1,-1,1));
-    moj_vector->push_back(mozliwosc(0,1,1));
-    moj_vector->push_back(mozliwosc(0,-1,1));
-    moj_vector->push_back(mozliwosc(1,0,1));
-    moj_vector->push_back(mozliwosc(-1,0,1));
+    (mozliwosc(1,1,1)),
+    (mozliwosc(-1,1,1)),
+    (mozliwosc(1,-1,1)),
+    (mozliwosc(-1,-1,1)),
+    (mozliwosc(0,1,1)),
+    (mozliwosc(0,-1,1)),
+    (mozliwosc(1,0,1)),
+    (mozliwosc(-1,0,1))
+    };
 
     return moj_vector;
 }
