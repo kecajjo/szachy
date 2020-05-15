@@ -9,14 +9,14 @@ wieza::wieza(kolor _kol, wspolrzedne _wsp){
 }
 
 std::vector<mozliwosc> *wieza::zasady_ruchu(){
-    std::vector<mozliwosc> *moja_lista = new std::vector<mozliwosc>;
+    std::vector<mozliwosc> *moj_vector = new std::vector<mozliwosc>;
     // wszystkie mozliwosci ruchu po kolumnach
     // dowolna ilosc powtorzen (max 7 przez wymiar planszy)
-    moja_lista->push_back(mozliwosc(0,1,7));
-    moja_lista->push_back(mozliwosc(0,-1,7));
-    moja_lista->push_back(mozliwosc(1,0,7));
-    moja_lista->push_back(mozliwosc(-1,0,7));
-    return moja_lista;
+    moj_vector->push_back(mozliwosc(0,1,7));
+    moj_vector->push_back(mozliwosc(0,-1,7));
+    moj_vector->push_back(mozliwosc(1,0,7));
+    moj_vector->push_back(mozliwosc(-1,0,7));
+    return moj_vector;
 }
 
 void wieza::ruszono(){

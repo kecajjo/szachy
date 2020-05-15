@@ -23,6 +23,13 @@ bool wspolrzedne::operator ==(const wspolrzedne _wsp) const{
     return false; // jesli ktoras wspolrzedna sie rozni zwraca false
 }
 
+bool wspolrzedne::operator !=(const wspolrzedne _wsp) const{
+    if(this->x != _wsp.x || this->y != _wsp.y){
+        return true; // jesli ktoras wspolrzedna sie rozni zwraca true
+    }
+    return false; // jesli obydwie wspolrzedne sa takie same zwraca false
+}
+
 wspolrzedne wspolrzedne::operator +(const wspolrzedne dodaj) const{
     wspolrzedne wynik;
     wynik.x = this->x + dodaj.x;
@@ -30,8 +37,7 @@ wspolrzedne wspolrzedne::operator +(const wspolrzedne dodaj) const{
     return wynik;
 }
 
-wspolrzedne wspolrzedne::operator +=(const wspolrzedne dodaj){
+void wspolrzedne::operator +=(const wspolrzedne dodaj){
     this->x += dodaj.x;
     this->y += dodaj.y;
-    return *this;
 }

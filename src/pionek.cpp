@@ -9,22 +9,22 @@ pionek::pionek(kolor _kol, wspolrzedne _wsp){
 }
 
 std::vector<mozliwosc> *pionek::zasady_ruchu(){
-    std::vector<mozliwosc> *moja_lista = new std::vector<mozliwosc>;
+    std::vector<mozliwosc> *moj_vector = new std::vector<mozliwosc>;
     if(this->kol == biali){
         if(pierwszy_ruch == true){
-            moja_lista->push_back(mozliwosc(0,1,2));
+            moj_vector->push_back(mozliwosc(0,1,2));
         } else{
-            moja_lista->push_back(mozliwosc(0,1,1));
+            moj_vector->push_back(mozliwosc(0,1,1));
         }
     }
     if(this->kol == czarni){
         if(pierwszy_ruch == true){
-            moja_lista->push_back(mozliwosc(0,-1,2));
+            moj_vector->push_back(mozliwosc(0,-1,2));
         } else{
-            moja_lista->push_back(mozliwosc(0,-1,1));
+            moj_vector->push_back(mozliwosc(0,-1,1));
         }
     }
-    return moja_lista;
+    return moj_vector;
 }
 
 void pionek::ruszono(){
@@ -38,7 +38,7 @@ void pionek::zasady_bicia(wspolrzedne *tablica_zasad){
         tablica_zasad[0] = wspolrzedne(1,1);
         tablica_zasad[1] = wspolrzedne(-1,1);
     } else{
-        tablica_zasad[1] = wspolrzedne(-1,-1);
+        tablica_zasad[0] = wspolrzedne(1,-1);
         tablica_zasad[1] = wspolrzedne(-1,-1);
     }
 }

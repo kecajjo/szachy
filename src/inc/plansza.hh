@@ -42,6 +42,15 @@ class plansza{
     void aktualizuj_pola(const wspolrzedne &docelowe, figura &fig); // aktualizuje stan szachownicy po ruchu
     // zwraca mozliwe bicia pionkiem
     void mozliwe_bicia_pionkiem(pionek &pion, std::vector<wspolrzedne> *lista_ruchow);
+    druzyna* zwroc_druzyne(kolor kol); // zwraca wskaznik na druzyne w danym kolorze 
+    // sprawdza czy ruszajac sie nie spowodujemy szacha na wlasnym krolu
+    // start to pole z ktorego sie ruszamy, wektor to wektor w jakim chcemy sie ruszyc
+    // wektor poniewaz w jedna strone mozemy nie odslanic krola a w inna bedziemy odslaniac
+    bool czy_bede_szachowany(wspolrzedne start, wspolrzedne wektor);
+    bool czy_odsloni_krola(wspolrzedne start, wspolrzedne wektor); // wykorzystane w czy_bede_szachowany
+    // sprawdza po jakim wektorze nalezy sie poruszac od krola do figury
+    // jesli nie po skosie, wierszach lub kolumnach zwraca wspolrzedne(10,10)
+    wspolrzedne wektor_od_krola(wspolrzedne poz_fig, wspolrzedne poz_krola);
 };
 
 #endif

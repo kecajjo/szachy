@@ -8,8 +8,9 @@ struct wspolrzedne{
     wspolrzedne();
     wspolrzedne operator =(const wspolrzedne _wsp);
     bool operator ==(const wspolrzedne _wsp) const;
+    bool operator !=(const wspolrzedne _wsp) const;
     wspolrzedne operator +(const wspolrzedne dodaj) const;
-    wspolrzedne operator +=(const wspolrzedne dodaj);
+    void operator +=(const wspolrzedne dodaj);
     bool czy_poza_plansza();
 };
 

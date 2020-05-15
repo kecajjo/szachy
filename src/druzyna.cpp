@@ -3,6 +3,7 @@
 
 druzyna::druzyna(kolor _kol){
     this->kol = _kol;
+    this->szach = false;
     switch(_kol){
      case biali:
         this->wszystkie_fig[0] = new krol(biali, wspolrzedne(4,0));
@@ -52,4 +53,12 @@ figura*& druzyna::operator[](int indeks){
     // w razie proby odwolania do nieistniejacego elementu zwraca pierwszy element
     std::cout << "nie ma takiego elementu, zwrocono pierwszy element" << std::endl;
     return this->wszystkie_fig[0];
+}
+
+bool druzyna::czy_szach(){
+    return this->szach;
+}
+
+void druzyna::ustaw_szach(bool _szach){
+    this->szach = _szach;
 }
