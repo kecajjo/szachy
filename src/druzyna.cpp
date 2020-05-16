@@ -3,7 +3,8 @@
 
 druzyna::druzyna(kolor _kol){
     this->kol = _kol;
-    this->szach = false;
+    this->szach = nullptr;
+    this->szach_podwojny = false;
     switch(_kol){
      case biali:
         this->wszystkie_fig[0] = new krol(biali, wspolrzedne(4,0));
@@ -55,10 +56,18 @@ figura*& druzyna::operator[](int indeks){
     return this->wszystkie_fig[0];
 }
 
-bool druzyna::czy_szach(){
+figura* druzyna::czy_szach(){
     return this->szach;
 }
 
-void druzyna::ustaw_szach(bool _szach){
+void druzyna::ustaw_szach(figura* _szach){
     this->szach = _szach;
+}
+
+bool druzyna::czy_podwojny_szach(){
+    return this->szach_podwojny;
+}
+
+void druzyna::ustaw_podwojny_szach(bool _szach){
+    this->szach_podwojny = _szach;
 }

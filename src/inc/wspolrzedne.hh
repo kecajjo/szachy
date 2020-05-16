@@ -13,6 +13,7 @@ struct wspolrzedne{
     void operator +=(const wspolrzedne dodaj);
     bool czy_poza_plansza();
     wspolrzedne operator  () (int _x, int _y); // zamienia wspolrzedne na podane wartosci
+    wspolrzedne operator *(int mnoznik);
 };
 
 #endif

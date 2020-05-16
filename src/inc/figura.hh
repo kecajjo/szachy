@@ -19,11 +19,11 @@ class figura{
 
     public:
     void zbito();
-    wspolrzedne aktualna_pozycja();
+    wspolrzedne aktualna_pozycja() const;
     void przesun(wspolrzedne nowa_pozycja);
-    char zwroc_nazwe();
+    char zwroc_nazwe() const;
     virtual mozliwosc *zasady_ruchu() = 0;
-    kolor ktora_druzyna();
+    kolor ktora_druzyna() const;
 };
 
 #endif

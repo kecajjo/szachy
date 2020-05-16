@@ -1,16 +1,15 @@
-#ifndef TABLICA_RUCHOW_HH
-#define TABLICA_RUCHOW_HH
+#ifndef BLOKADA_SZACHA_HH
+#define BLOKADA_SZACHA_HH
 
 #include <iostream>
 #include "wspolrzedne.hh"
-// struktura powstala by przyspieszyc dzialanie kosztem pamieci
-// dodawanie elementow do vectora przy koniecznosci realokacji wydluzalo zbytnio czas dzialania programu
-struct tablica_ruchow{
+// struktura zawiera pola na ktore mozna sie ruszyc podczas pojedynczego szacha, zeby zablokowac dostep do krola
+struct blokada_szacha{
     private:
-    wspolrzedne tablica[27]; // tyle ruchow maksymalnie moze miec dostepna figura
+    wspolrzedne tablica[7]; // tyle ruchow maksymalnie moze miec dostepna figura
     public:
     int rozmiar;
-    tablica_ruchow(){
+    blokada_szacha(){
         this->rozmiar=0;
     }
     wspolrzedne operator[](int indeks) const{
@@ -34,7 +33,7 @@ struct tablica_ruchow{
     }
 
     void dodaj_elem(wspolrzedne wsp){
-        if(rozmiar>26){
+        if(rozmiar>6){
             std::cout << "proba przepelnienia tablicy ruchow" << std::endl;
             return;
         }

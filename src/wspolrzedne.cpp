@@ -47,3 +47,10 @@ wspolrzedne wspolrzedne::operator () (int _x, int _y){
     this->y = _y;
     return *this;
 }
+
+wspolrzedne wspolrzedne::operator *(int mnoznik){
+    wspolrzedne wynik;
+    wynik.x = this->x * mnoznik;
+    wynik.y = this->y * mnoznik;
+    return wynik;
+}
