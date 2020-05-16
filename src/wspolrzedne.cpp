@@ -41,3 +41,9 @@ void wspolrzedne::operator +=(const wspolrzedne dodaj){
     this->x += dodaj.x;
     this->y += dodaj.y;
 }
+
+wspolrzedne wspolrzedne::operator () (int _x, int _y){
+    this->x = _x;
+    this->y = _y;
+    return *this;
+}

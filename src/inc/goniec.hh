@@ -7,7 +7,7 @@
 class goniec: public figura{
     public:
     goniec(kolor _kol, wspolrzedne _wsp);
-    std::vector<mozliwosc> *zasady_ruchu();
+    mozliwosc *zasady_ruchu();
 };
 
 #endif

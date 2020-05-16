@@ -8,8 +8,8 @@ krol::krol(kolor _kol, wspolrzedne _wsp){
     this->nazwa = 'k'; // jak w notacji szachowej
 }
 
-std::vector<mozliwosc> *krol::zasady_ruchu(){
-    std::vector<mozliwosc> *moj_vector = new std::vector<mozliwosc>{
+mozliwosc *krol::zasady_ruchu(){
+    mozliwosc *moj_vector = new mozliwosc[8]{
     // wszystkie mozliwosci ruchu po skosie i kolumnach
     // dowolna ilosc powtorzen (max 7 przez wymiar planszy)
     (mozliwosc(1,1,1)),

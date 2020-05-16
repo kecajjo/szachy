@@ -3,8 +3,6 @@
 
 plansza::plansza(){
 
-this->czas1 = 0;
-this->czas2 = 0;
     // ustawia stan poczatkowy szachownicy
     this->wynik = 0;
     this->biel = new druzyna(biali);
@@ -33,7 +31,7 @@ figura* plansza::zwroc_pole(wspolrzedne wsp){
     return this->pola[wsp.y][wsp.x];
 }
 
-bool plansza::czy_puste(wspolrzedne wsp){
+bool plansza::czy_puste(wspolrzedne wsp) const{
     if(this->pola[wsp.y][wsp.x] == nullptr){
         return true; // nikogo nie ma
     }
@@ -104,16 +102,14 @@ void plansza::rusz(wspolrzedne start, wspolrzedne koniec){
         std::cout << " Pole puste, nie mozna sie stad ruszyc" << std::endl;
         return;
     }
-std::clock_t czas2_start = std::clock();
-    std::vector<wspolrzedne> *mozliwe_pola_koncowe = mozliwe_ruchy(start);
+
+    tablica_ruchow *mozliwe_pola_koncowe = mozliwe_ruchy(start);
     // jesli nie mozna sie ruszyc na zadne pole konczy dzialanie funkcji
     if(mozliwe_pola_koncowe == nullptr){
         return;
     }
 
-std::clock_t czas2_koniec = std::clock();
-this->czas2 += (double)(czas2_koniec-czas2_start)/CLOCKS_PER_SEC;
-    int rozmiar = mozliwe_pola_koncowe->size();
+    int rozmiar = mozliwe_pola_koncowe->rozmiar;
     for(int i=0;i<rozmiar;i++){
         // czy chcemy sie ruszyc na dostepne dla figury pole
         if(koniec == (*mozliwe_pola_koncowe)[i]){
@@ -126,6 +122,18 @@ this->czas2 += (double)(czas2_koniec-czas2_start)/CLOCKS_PER_SEC;
             delete mozliwe_pola_koncowe;
             // aktualizuje pole i konczy dzialanie funkcji
             this->aktualizuj_pola(koniec, *(*this)(start));
+            char nazwa = (*this)(koniec)->zwroc_nazwe();
+            if(nazwa == 'p'){
+                dynamic_cast<pionek*>((*this)(koniec))->ruszono();
+            } else{
+                if(nazwa == 'k'){
+                    dynamic_cast<krol*>((*this)(koniec))->ruszono();
+                } else {
+                    if(nazwa == 'w'){
+                        dynamic_cast<wieza*>((*this)(koniec))->ruszono();
+                    }
+                }
+            }
             return;
         }
     }
@@ -136,7 +144,7 @@ this->czas2 += (double)(czas2_koniec-czas2_start)/CLOCKS_PER_SEC;
     std::cout << "RUCH NIEDOZWOLONY" << std::endl;
 }
 
-std::vector<wspolrzedne> *plansza::mozliwe_ruchy(wspolrzedne start){
+tablica_ruchow *plansza::mozliwe_ruchy(wspolrzedne start) const{
 
     // jesli podano pozycje startowa spoza szachownicy zwraca nullptr
     if(plansza::czy_poza_plansza(start)){
@@ -150,31 +158,40 @@ std::vector<wspolrzedne> *plansza::mozliwe_ruchy(wspolrzedne start){
         return nullptr;
     }
 
-    std::vector<wspolrzedne> *tablica_ruchow = new std::vector<wspolrzedne>;
-std::clock_t czas1_start = std::clock();
+    tablica_ruchow *tab_ruch = new tablica_ruchow;
     figura *fig = (*this)(start);
     // przechowuje wektory w jakich moze sie poruszac figura
-    std::vector<mozliwosc> *wektory_ruchu = fig->zasady_ruchu();
-std::clock_t czas1_koniec = std::clock();
-this->czas1 += (double)(czas1_koniec-czas1_start)/CLOCKS_PER_SEC;
-    int rozmiar_listy = wektory_ruchu->size();
+    mozliwosc *wektory_ruchu = fig->zasady_ruchu();
+
+    int rozmiar_listy;
+    char rodzaj_fig = fig->zwroc_nazwe();
+    if(rodzaj_fig == 'h' || rodzaj_fig == 'k' || rodzaj_fig == 's'){
+        rozmiar_listy = 8;
+    } else{
+        if(rodzaj_fig == 'g' || rodzaj_fig == 'w'){
+            rozmiar_listy = 4;
+        } else{ // pionek
+            rozmiar_listy = 1;
+        }
+    }
+
     for(int i=0;i<rozmiar_listy;i++){
         // dodaje do listy ruchy ktore mozna wykonac po danym wektorze
-        this->mozliwy_po_wektorze(*fig, (*wektory_ruchu)[i], tablica_ruchow);
+        this->mozliwy_po_wektorze(*fig, wektory_ruchu[i], tab_ruch);
     }
     // trzeba zwolnic miejsce po liscie wektorow, lista w destruktorze sie czysci
-    delete wektory_ruchu;
+    delete [] wektory_ruchu;
 
     // uwzglednienie bicia przez pionki
     if(fig->zwroc_nazwe() == 'p'){
         pionek *pion = dynamic_cast<pionek*>(fig);
-        mozliwe_bicia_pionkiem(*pion, tablica_ruchow);
+        mozliwe_bicia_pionkiem(*pion, tab_ruch);
     }
     // zwraca wszystkie dostepne z danego pola ruchy
-    return tablica_ruchow;
+    return tab_ruch;
 }
 
-void plansza::wyswietl(){
+void plansza::wyswietl() const{
     
     char pomocniczy = '\0';
 
@@ -214,8 +231,15 @@ bool plansza::czy_poza_plansza(wspolrzedne wsp){
     return false;
 }
 
+bool plansza::czy_poza_plansza(int _x, int _y){
+    if(_x < 0 || _x >= ROZMIAR || _y < 0 || _y >= ROZMIAR){
+        return true;
+    }
+    return false;
+}
+
 void plansza::mozliwy_po_wektorze(figura &fig,
-        const mozliwosc &_mozliwosc, std::vector<wspolrzedne> *tablica_ruchow){
+        const mozliwosc &_mozliwosc, tablica_ruchow *tab_ruch) const{
 
     // ile razy mozna powtorzyc rucho o wektor
     int powtorzen = _mozliwosc.zasieg;
@@ -249,13 +273,13 @@ void plansza::mozliwy_po_wektorze(figura &fig,
                 if(fig.zwroc_nazwe() == 'p'){
                     return;
                 } else{// mozna bic, ale dalej sie nie ruszymy
-                    tablica_ruchow->push_back(mozliwy_ruch);
+                    tab_ruch->dodaj_elem(mozliwy_ruch);
                     return;
                 }
             }
         }
         // nie ma na drodze zadnych przeszkod
-        tablica_ruchow->push_back(mozliwy_ruch);
+        tab_ruch->dodaj_elem(mozliwy_ruch);
     }
 }
 
@@ -287,7 +311,7 @@ void plansza::aktualizuj_pola(const wspolrzedne &docelowe, figura &fig){
     (*this)(docelowe) = &fig;
 }
 
-void plansza::mozliwe_bicia_pionkiem(pionek &pion, std::vector<wspolrzedne> *tablica_ruchow){
+void plansza::mozliwe_bicia_pionkiem(pionek &pion, tablica_ruchow *tab_ruch) const{
     wspolrzedne wektory_bicia[2];
     pion.zasady_bicia(wektory_bicia);
     wspolrzedne pozycja_piona = pion.aktualna_pozycja();
@@ -298,7 +322,7 @@ void plansza::mozliwe_bicia_pionkiem(pionek &pion, std::vector<wspolrzedne> *tab
                 // if chroni przed proba sprawdzenia koloru jesli pole wskazuje na nullptr
                 if((*this)(proba_bicia) != nullptr){
                     if((*this)(proba_bicia)->ktora_druzyna() != pion.ktora_druzyna()){ // jesli pole jest zajete przez przeciwnika
-                        tablica_ruchow->push_back(proba_bicia);
+                        tab_ruch->dodaj_elem(proba_bicia);
                     }
                 }
             }
@@ -306,7 +330,7 @@ void plansza::mozliwe_bicia_pionkiem(pionek &pion, std::vector<wspolrzedne> *tab
     }
 }
 
-druzyna* plansza::zwroc_druzyne(kolor kol){
+druzyna* plansza::zwroc_druzyne(kolor kol) const{
     if(kol == biali){
         return this->biel;
     }
@@ -317,9 +341,7 @@ druzyna* plansza::zwroc_druzyne(kolor kol){
     return nullptr;
 }
 
-// TODO dokonczyc
-bool plansza::czy_bede_szachowany(wspolrzedne start, wspolrzedne wektor){
-    
+bool plansza::czy_bede_szachowany(wspolrzedne start, wspolrzedne wektor) const{
     if((*this)(start) == nullptr){
         std::cout << "proba ruchu z pustego pola" << std::endl;;
         return false;
@@ -332,11 +354,16 @@ bool plansza::czy_bede_szachowany(wspolrzedne start, wspolrzedne wektor){
         if(czy_zakaz_ruchu == true){
             return true;
         }
+    } else{
+        bool czy_zakaz_ruchu = this->krol_sie_szachuje(start, fig->ktora_druzyna());
+        if(czy_zakaz_ruchu == true){
+            return true;
+        }
     }
     return false;
 }
 
-bool plansza::czy_odsloni_krola(wspolrzedne start, wspolrzedne wektor){
+bool plansza::czy_odsloni_krola(wspolrzedne start, wspolrzedne wektor) const{
 
     figura *fig = (*this)(start);
     kolor kol = fig->ktora_druzyna();
@@ -371,9 +398,10 @@ bool plansza::czy_odsloni_krola(wspolrzedne start, wspolrzedne wektor){
             // jesli jakies pole jest zajete
             if((*this)(start) != nullptr){
                 fig = (*this)(start);
+                char nazwa_fig = fig->zwroc_nazwe();
                 if(po_przekatnej == true){
                     // jesli zajmuje je goniec albo hetman
-                    if(fig->zwroc_nazwe() == 'g' || fig->zwroc_nazwe() == 'h'){
+                    if(nazwa_fig == 'g' || nazwa_fig == 'h'){
                         // jesli jest przeciwnego koloru
                         if(fig->ktora_druzyna() != kol){
                             return true;
@@ -383,7 +411,7 @@ bool plansza::czy_odsloni_krola(wspolrzedne start, wspolrzedne wektor){
                     return false;
                 } else{
                     // jesli zajmuje je wieza albo hetman
-                    if(fig->zwroc_nazwe() == 'w' || fig->zwroc_nazwe() == 'h'){
+                    if(nazwa_fig == 'w' || nazwa_fig == 'h'){
                         // jesli jest przeciwnego koloru
                         if(fig->ktora_druzyna() != kol){
                             return true;
@@ -402,52 +430,57 @@ bool plansza::czy_odsloni_krola(wspolrzedne start, wspolrzedne wektor){
     return false;
 }
 
-wspolrzedne plansza::wektor_od_krola(wspolrzedne poz_fig, wspolrzedne poz_krola){
-    
+wspolrzedne plansza::wektor_od_krola(wspolrzedne poz_fig, wspolrzedne poz_krola) const{
+
     wspolrzedne wynik(10,10);
+    int xfig = poz_fig.x;
+    int xkrol = poz_krola.x;
+    int yfig = poz_fig.y;
+    int ykrol = poz_krola.y;
+
     // jesli roznica x i y jest taka sama
     // to ruszana figura jest pod skosem do krola
-    int roznica_x = poz_fig.x - poz_krola.x;
-    int roznica_y = poz_fig.y - poz_krola.y;
+    int roznica_x = xfig - xkrol;
+    int roznica_y = yfig - ykrol;
     if(roznica_x == roznica_y){
         // figura jest po przekatnej na polnocny wschod od krola
-        if(poz_fig.x > poz_krola.x){
+        if(xfig > xkrol){
             wynik = wspolrzedne(1,1);
         } else{ // figura jest na poludniowy zachod od krola
             wynik = wspolrzedne(-1,-1);
         }
-    }
-
-    // jesli roznica a.x - b.x == b.y -a.y
-    // to ruszana figura jest pod skosem do krola
-    roznica_x = poz_fig.x - poz_krola.x;
-    roznica_y = poz_krola.y - poz_fig.y;
-    if(roznica_x == roznica_y){
-        // figura jest po przekatnej na poludniowy wschod od krola
-        if(poz_fig.x > poz_krola.x){
-            wynik = wspolrzedne(-1,1);
-        } else{ // figura jest na polnocny zachod od krola
-            wynik = wspolrzedne(1,-1);
-        }
-    }
-
-    // jesli krol i figura sa w tej samej kolumnie
-    if(poz_fig.x == poz_krola.x){
-        // figura jest na polnoc
-        if(poz_fig.y > poz_krola.y){
-            wynik = wspolrzedne(0,1);
-        } else{ // figura jest na poludnie
-            wynik = wspolrzedne(0,-1);
-        }
-    }
-
-    // jesli krol i figura sa w tym samym wierszu
-    if(poz_fig.y == poz_krola.y){
-        // figura jest na wschod
-        if(poz_fig.x > poz_krola.x){
-            wynik = wspolrzedne(1,0);
+    } else{
+        // jesli roznica a.x - b.x == b.y -a.y
+        // to ruszana figura jest pod skosem do krola
+        roznica_x = xfig - xkrol;
+        roznica_y = ykrol - yfig;
+        if(roznica_x == roznica_y){
+            // figura jest po przekatnej na poludniowy wschod od krola
+            if(xfig > xkrol){
+                wynik = wspolrzedne(-1,1);
+            } else{ // figura jest na polnocny zachod od krola
+                wynik = wspolrzedne(1,-1);
+            }
         } else{
-            wynik = wspolrzedne(-1,0);
+            // jesli krol i figura sa w tej samej kolumnie
+            if(xfig == xkrol){
+                // figura jest na polnoc
+                if(yfig > ykrol){
+                    wynik = wspolrzedne(0,1);
+                } else{ // figura jest na poludnie
+                    wynik = wspolrzedne(0,-1);
+                }
+            } else{
+                // jesli krol i figura sa w tym samym wierszu
+                if(yfig == ykrol){
+                    // figura jest na wschod
+                    if(xfig > xkrol){
+                        wynik = wspolrzedne(1,0);
+                    } else{
+                        wynik = wspolrzedne(-1,0);
+                    }
+                }
+            }
         }
     }
 
@@ -462,6 +495,202 @@ wspolrzedne plansza::wektor_od_krola(wspolrzedne poz_fig, wspolrzedne poz_krola)
             poz_krola += wynik;
         }
     }
-
     return wynik;
+}
+
+bool plansza::krol_sie_szachuje(const wspolrzedne &pol_krola, const kolor &kol_krola) const{
+    
+    if(czy_szach_po_przekatnej(pol_krola, kol_krola) == true){
+        return true;
+    }
+    if(czy_szach_po_wier_lub_kol(pol_krola, kol_krola) == true){
+        return true;
+    }
+    if(czy_szach_przez_skoczka(pol_krola, kol_krola) == true){
+        return true;
+    }
+    return false;
+}
+
+bool plansza::czy_szach_po_wier_lub_kol(const wspolrzedne &pol_krola, const kolor &kol_krola) const{
+    int xkrola = pol_krola.x;
+    int ykrola = pol_krola.y;
+    int i;
+
+    for(i = xkrola-1;i>-1;i--){
+        // jesli pola na lewo od krola nie sa puste
+        if(czy_wroga_w_lub_h(i,ykrola,kol_krola) == true){
+            return true;
+        }
+    }
+
+    for(i = xkrola+1;i<8;i++){
+        // jesli pola na prawo od krola nie sa puste
+        if(czy_wroga_w_lub_h(i,ykrola,kol_krola) == true){
+            return true;
+        }
+    }
+
+    for(i = ykrola-1;i>-1;i--){
+        // jesli pola pod krolem nie sa puste
+        if(czy_wroga_w_lub_h(xkrola,i,kol_krola) == true){
+            return true;
+        }
+    }
+    for(i = ykrola+1;i<8;i++){
+        // jesli pola nad krolem nie sa puste
+        if(czy_wroga_w_lub_h(xkrola,i,kol_krola) == true){
+            return true;
+        }
+    }
+    return false;
+}
+
+bool plansza::czy_szach_po_przekatnej(const wspolrzedne &pol_krola, const kolor &kol_krola) const{
+    int xkrola = pol_krola.x;
+    int ykrola = pol_krola.y;
+    int i, j;
+    
+    // na poludniowy zachod od krola
+    i = xkrola-1;
+    j = ykrola-1;
+    while(i>-1 && j>-1){
+        if(czy_wrogi_g_lub_h(i,j,kol_krola) == true){
+            return true;
+        }
+        --i;
+        --j;
+    }
+    // na polnocny zachod od krola
+    i = xkrola-1;
+    j = ykrola+1;
+    while(i>-1 && j<8){
+        if(czy_wrogi_g_lub_h(i,j,kol_krola) == true){
+            return true;
+        }
+        --i;
+        ++j;
+    }
+    // na polnocny wschod od krola
+    i = xkrola+1;
+    j = ykrola+1;
+    while(i<8 && j<8){
+        if(czy_wrogi_g_lub_h(i,j,kol_krola) == true){
+            return true;
+        }
+        ++i;
+        ++j;
+    }
+    // na poludniowy wchod od krola
+    i = xkrola+1;
+    j = ykrola-1;
+    while(i<8 && j>-1){
+        if(czy_wrogi_g_lub_h(i,j,kol_krola) == true){
+            return true;
+        }
+        ++i;
+        --j;
+    }
+
+    return false;
+}
+
+bool plansza::czy_szach_przez_skoczka(const wspolrzedne &pol_krola, const kolor &kol_krola) const{
+    int x = pol_krola.x;
+    int y = pol_krola.y;
+    // wszystkie mozliwe ustawienia skoczka
+    x -= 2; y -= 1;
+    if(plansza::czy_poza_plansza(x,y)){
+        if(czy_wrogi_s(x,y,kol_krola)){
+            return true;
+        }
+    }
+    y +=2;
+    if(plansza::czy_poza_plansza(x,y)){
+        if(czy_wrogi_s(x,y,kol_krola)){
+            return true;
+        }
+    }
+    x += 1; y += 1;
+    if(plansza::czy_poza_plansza(x,y)){
+        if(czy_wrogi_s(x,y,kol_krola)){
+            return true;
+        }
+    }
+    x += 2;
+    if(plansza::czy_poza_plansza(x,y)){
+        if(czy_wrogi_s(x,y,kol_krola)){
+            return true;
+        }
+    }
+    x += 1; y -= 1;
+    if(plansza::czy_poza_plansza(x,y)){
+        if(czy_wrogi_s(x,y,kol_krola)){
+            return true;
+        }
+    }
+    y -= 2;
+    if(plansza::czy_poza_plansza(x,y)){
+        if(czy_wrogi_s(x,y,kol_krola)){
+            return true;
+        }
+    }
+    x -= 1; y -= 1;
+    if(plansza::czy_poza_plansza(x,y)){
+        if(czy_wrogi_s(x,y,kol_krola)){
+            return true;
+        }
+    }
+    x -=2;
+    if(plansza::czy_poza_plansza(x,y)){
+        if(czy_wrogi_s(x,y,kol_krola)){
+            return true;
+        }
+    }
+    return false;
+}
+
+bool plansza::czy_wroga_w_lub_h(const int &x_wsp, const int &y_wsp, const kolor &moj_kol) const{
+    // jesli pola na lewo od krola nie sa puste
+    char nazwa;
+    if((*this)(x_wsp,y_wsp) != nullptr){
+        nazwa = (*this)(x_wsp,y_wsp)->zwroc_nazwe();
+        if(nazwa == 'w' || nazwa == 'h'){
+            if((*this)(x_wsp,y_wsp)->ktora_druzyna() != moj_kol){
+                // wroga wieza lub hetman
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool plansza::czy_wrogi_g_lub_h(const int &x_wsp, const int &y_wsp, const kolor &moj_kol) const{
+    // jesli pola na lewo od krola nie sa puste
+    char nazwa;
+    if((*this)(x_wsp,y_wsp) != nullptr){
+        nazwa = (*this)(x_wsp,y_wsp)->zwroc_nazwe();
+        if(nazwa == 'g' || nazwa == 'h'){
+            if((*this)(x_wsp,y_wsp)->ktora_druzyna() != moj_kol){
+                // wrogi goniec lub hetman
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool plansza::czy_wrogi_s(const int &x_wsp, const int &y_wsp, const kolor &moj_kol) const{
+    // jesli pola na lewo od krola nie sa puste
+    char nazwa;
+    if((*this)(x_wsp,y_wsp) != nullptr){
+        nazwa = (*this)(x_wsp,y_wsp)->zwroc_nazwe();
+        if(nazwa == 's'){
+            if((*this)(x_wsp,y_wsp)->ktora_druzyna() != moj_kol){
+                // wrogi skoczek
+                return true;
+            }
+        }
+    }
+    return false;
 }

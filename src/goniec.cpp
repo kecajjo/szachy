@@ -8,8 +8,8 @@ goniec::goniec(kolor _kol, wspolrzedne _wsp){
     this->nazwa = 'g'; // tak jak w notacji szachowej
 }
 
-std::vector<mozliwosc> *goniec::zasady_ruchu(){
-    std::vector<mozliwosc> *moj_vector = new std::vector<mozliwosc>{
+mozliwosc *goniec::zasady_ruchu(){
+    mozliwosc *moj_vector = new mozliwosc[4]{
     // wszystkie mozliwosci ruchu po skosie
     // dowolna ilosc powtorzen (max 7 przez wymiar planszy)
     (mozliwosc(1,1,7)),

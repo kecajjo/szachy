@@ -12,6 +12,7 @@ struct wspolrzedne{
     wspolrzedne operator +(const wspolrzedne dodaj) const;
     void operator +=(const wspolrzedne dodaj);
     bool czy_poza_plansza();
+    wspolrzedne operator  () (int _x, int _y); // zamienia wspolrzedne na podane wartosci
 };
 
 #endif

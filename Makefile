@@ -44,7 +44,7 @@ obj/druzyna.o: src/druzyna.cpp src/inc/druzyna.hh src/inc/figura.hh src/inc/goni
 	$(CXX) ${CXXFLAGS} -o obj/druzyna.o src/druzyna.cpp
 
 obj/plansza.o: src/plansza.cpp src/inc/plansza.hh src/inc/wspolrzedne.hh src/inc/figura.hh\
-			src/inc/mozliwosc.hh src/inc/druzyna.hh
+			src/inc/mozliwosc.hh src/inc/druzyna.hh src/inc/tablica_ruchow.hh
 	$(CXX) ${CXXFLAGS} -o obj/plansza.o src/plansza.cpp
 
 obj/wspolrzedne.o: src/wspolrzedne.cpp src/inc/wspolrzedne.hh

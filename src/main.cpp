@@ -55,9 +55,10 @@ int main(){
     std::cout<<std::endl<<std::endl<<std::endl<<std::endl<<std::endl;
 
     std::clock_t start_czasu = std::clock();
+    szachownica.rusz(wspolrzedne(3,4), wspolrzedne(4,3));
     for(int i=0;i<1000000;i++){
-        szachownica.rusz(wspolrzedne(3,4), wspolrzedne(0,1));
-        szachownica.rusz(wspolrzedne(0,1), wspolrzedne(3,4));
+        szachownica.rusz(wspolrzedne(4,3), wspolrzedne(1,3));
+        szachownica.rusz(wspolrzedne(1,3), wspolrzedne(4,3));
     }
     std::clock_t koniec_czasu = std::clock();
 
@@ -106,10 +107,8 @@ int main(){
     szachownica.rusz(wspolrzedne(3,4), wspolrzedne(4,3));
     szachownica.wyswietl();
 
-    std::cout << "4mln ruchow zajmuje: ";
+    std::cout << "2mln ruchow zajmuje: ";
     std::cout << (float)(koniec_czasu - start_czasu)/CLOCKS_PER_SEC << std::endl;
-    std::cout << "czas1: " << szachownica.czas1 << std::endl;
-    std::cout << "czas2: " << szachownica.czas2 << std::endl;
     
     return 0;
 }

@@ -8,21 +8,21 @@ pionek::pionek(kolor _kol, wspolrzedne _wsp){
     this->nazwa = 'p'; //jak w notacji szachowej
 }
 
-std::vector<mozliwosc> *pionek::zasady_ruchu(){
+mozliwosc *pionek::zasady_ruchu(){
     // inicjalizujemy tylko 1 mozliwoscia wiec moze byc push back
-    std::vector<mozliwosc> *moj_vector = new std::vector<mozliwosc>;
+    mozliwosc *moj_vector;
     if(this->kol == biali){
         if(pierwszy_ruch == true){
-            moj_vector->push_back(mozliwosc(0,1,2));
+            moj_vector = new mozliwosc[1]{(mozliwosc(0,1,2))};
         } else{
-            moj_vector->push_back(mozliwosc(0,1,1));
+            moj_vector = new mozliwosc[1]{(mozliwosc(0,1,1))};
         }
     }
     if(this->kol == czarni){
         if(pierwszy_ruch == true){
-            moj_vector->push_back(mozliwosc(0,-1,2));
+            moj_vector = new mozliwosc[1]{(mozliwosc(0,-1,2))};
         } else{
-            moj_vector->push_back(mozliwosc(0,-1,1));
+            moj_vector = new mozliwosc[1]{(mozliwosc(0,-1,1))};
         }
     }
     return moj_vector;

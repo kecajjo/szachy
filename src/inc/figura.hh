@@ -1,7 +1,6 @@
 #ifndef FIGURA_HH
 #define FIGURA_HH
 
-#include <vector>
 #include "wspolrzedne.hh"
 #include "mozliwosc.hh"
 
@@ -23,7 +22,7 @@ class figura{
     wspolrzedne aktualna_pozycja();
     void przesun(wspolrzedne nowa_pozycja);
     char zwroc_nazwe();
-    virtual std::vector<mozliwosc> *zasady_ruchu() = 0;
+    virtual mozliwosc *zasady_ruchu() = 0;
     kolor ktora_druzyna();
 };
 
