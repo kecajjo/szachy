@@ -29,22 +29,22 @@ class plansza{
     figura*& operator ()(int _x, int _y); // zwraca adres wskaznika na figure
     figura* operator ()(wspolrzedne wsp) const;
     figura*& operator ()(wspolrzedne wsp); // zwraca adres wskaznika na figure
-    void ruch_gracza(wspolrzedne start, wspolrzedne koniec); // jesli jest to zgodne z zasadami rusza figure z pola start na pole koniec
     tablica_ruchow *mozliwe_ruchy(wspolrzedne start, blokada_szacha *tab_blok); // zwraca liste dostepnych ruchow z danego pola
     void wyswietl() const; // wyswietla plansze
     static bool czy_poza_plansza(wspolrzedne wsp); // sprawdza czy istnieje pole o takich wspolrzednych
     static bool czy_poza_plansza(int _x, int _y); // sprawdza czy istnieje pole o takich wspolrzednych
-    void czytaj_ruch(); // pozwala uzytkownikowi wpisac ruch
     druzyna* zwroc_druzyne(kolor kol) const; // zwraca wskaznik na druzyne w danym kolorze 
     // zmiana osoby, ktora sie rusza
     void zmien_ture();
+    // sprawdza na ktore pola mozna sie ruszyc figura inna niz krol, zeby powstrzymac szacha i zapisuej je w blokadzie_szacha
+    void mozliwe_blokowanie_szacha(wspolrzedne kr, wspolrzedne szachujaca, blokada_szacha *tab_blok) const;
+    void zbij(figura *fig); // bije figure i aktualizuje wynik
+    void aktualizuj_stan_gry(const wspolrzedne &docelowe, figura *fig); // aktualizuje stan szachownicy po ruchu
 
     private:
     // dodaje ruch do listy jesli nie jest to wbrew zasadom
     void mozliwy_po_wektorze(figura &fig, const mozliwosc &_mozliwosc,
         tablica_ruchow *tab_ruch, blokada_szacha *tab_blok);
-    void zbij(figura *fig); // bije figure i aktualizuje wynik
-    void aktualizuj_stan_gry(const wspolrzedne &docelowe, figura *fig); // aktualizuje stan szachownicy po ruchu
     // zwraca mozliwe bicia pionkiem
     void mozliwe_bicia_pionkiem(pionek &pion, tablica_ruchow *tab_ruch, blokada_szacha *tab_blok);
     // sprawdza czy ruszajac sie nie spowodujemy szacha na wlasnym krolu
@@ -76,8 +76,6 @@ class plansza{
     bool czy_wrogi_p(const figura &fig, const kolor &moj_kol) const;
     // sprawdza czy cos jest pomiedzy figurami na polach start i koniec, potrzebuje wektor w ktorym sie przemieszcza
     bool czy_cos_na_drodze(wspolrzedne start, const wspolrzedne &koniec, const wspolrzedne &wektor) const;
-    // sprawdza na ktore pola mozna sie ruszyc figura inna niz krol, zeby powstrzymac szacha i zapisuej je w blokadzie_szacha
-    void mozliwe_blokowanie_szacha(wspolrzedne kr, wspolrzedne szachujaca, blokada_szacha *tab_blok) const;
 
 };
 

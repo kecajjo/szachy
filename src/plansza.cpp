@@ -73,75 +73,6 @@ figura*& plansza::operator ()(wspolrzedne wsp){
     return this->pola[0][0];
 }
 
-void plansza::ruch_gracza(wspolrzedne start, wspolrzedne koniec){
-
-    // jesli podano pozycje startowa spoza szachownicy konczy dzialanie funkcji
-    if(plansza::czy_poza_plansza(start)){
-        std::cout << "Proba ruchu z pola poza plansza" << std::endl;
-        return;
-    }
-
-    // jesli podano pole docelowe spoza szachownicy konczy dzialanie funkcji
-    if(plansza::czy_poza_plansza(koniec)){
-        std::cout << "Proba ruchu na pole poza plansza" << std::endl;
-        return;
-    }
-
-    // jesli proba ruchu nastepuje z pustego pola konczy dzialanie funkcji
-    if((*this)(start) == nullptr){
-        std::cout << " Pole puste, nie mozna sie stad ruszyc" << std::endl;
-        return;
-    }
-
-    blokada_szacha *tab_blok;
-    druzyna *gracz = this->zwroc_druzyne(this->tura);
-    // jesli gracz nie jest szachowany
-    if(gracz->czy_szach() == nullptr){
-        tab_blok = nullptr;
-    } else{ // jesli gracz jest szachowany
-        tab_blok = new blokada_szacha;
-        this->mozliwe_blokowanie_szacha((*gracz)[0]->aktualna_pozycja(), gracz->czy_szach()->aktualna_pozycja(), tab_blok);
-    }
-
-    tablica_ruchow *mozliwe_pola_koncowe = mozliwe_ruchy(start, tab_blok);
-    // jesli nie mozna sie ruszyc na zadne pole konczy dzialanie funkcji
-    if(mozliwe_pola_koncowe == nullptr){
-        if(tab_blok != nullptr){
-            delete tab_blok;
-        }
-        std::cout << "RUCH NIEDOZWOLONY" << std::endl;
-        return;
-    }
-
-    int rozmiar = mozliwe_pola_koncowe->rozmiar;
-    for(int i=0;i<rozmiar;i++){
-        // czy chcemy sie ruszyc na dostepne dla figury pole
-        if(koniec == (*mozliwe_pola_koncowe)[i]){
-            // jesli ruszamy sie na pole, ktore nie jest puste
-            if((*this)(koniec) != nullptr){
-                // bijemy figure na polu docelowym
-                this->zbij((*this)(koniec));
-            }
-            // zwolnienie pamieci
-            if(tab_blok != nullptr){
-                delete tab_blok;
-            }
-            delete mozliwe_pola_koncowe;
-            // aktualizuje pole i konczy dzialanie funkcji
-            this->aktualizuj_stan_gry(koniec, (*this)(start));
-            return;
-        }
-    }
-    // zwolnienie pamieci
-    if(tab_blok != nullptr){
-        delete tab_blok;
-    }
-    delete mozliwe_pola_koncowe;
-
-    // nie mozna sie tak ruszyc
-    std::cout << "RUCH NIEDOZWOLONY" << std::endl;
-}
-
 tablica_ruchow *plansza::mozliwe_ruchy(wspolrzedne start, blokada_szacha *tab_blok){
 
     // jesli podano pozycje startowa spoza szachownicy zwraca nullptr
@@ -236,35 +167,6 @@ bool plansza::czy_poza_plansza(int _x, int _y){
     return false;
 }
 
-// TODO dokonczyc wczytywanie ruchu z klawiatury i poprawic calosc
-void plansza::czytaj_ruch(){
-    // pozycje startowe
-    char kolumna_st;
-    int wiersz_st;
-    int kol_po_konw_st;
-    std::cin >> kolumna_st;
-    std::cin >> wiersz_st;
-
-    kolumna_st = toupper(kolumna_st); // jesli uzytkownik poda mala litere to nic to nie zmieni
-    kol_po_konw_st = int(kolumna_st); // konwertujemy char na ASCII
-    kol_po_konw_st -= 65; // zamienia A na 0, B na 1 itd
-    // zamieni 1 na 0 itd, zeby program liczyl od 0 a uzytkownik operowal jak na szachownicy od 1
-    --wiersz_st;
-
-    char kolumna_kon;
-    int wiersz_kon;
-    int kol_po_konw_kon;
-    std::cin >> kolumna_kon;
-    std::cin >> wiersz_kon;
-
-    kolumna_kon = toupper(kolumna_kon); // jesli uzytkownik poda mala litere to nic to nie zmieni
-    kol_po_konw_kon = int(kolumna_kon); // konwertujemy char na ASCII
-    kol_po_konw_kon -= 65; // zamienia A na 0, B na 1 itd
-    // zamieni 1 na 0 itd, zeby program liczyl od 0 a uzytkownik operowal jak na szachownicy od 1
-    --wiersz_kon;
-    this->ruch_gracza(wspolrzedne(kol_po_konw_st,wiersz_st), wspolrzedne(kol_po_konw_kon,wiersz_kon));
-}
-
 druzyna* plansza::zwroc_druzyne(kolor kol) const{
     if(kol == biali){
         return this->biel;
@@ -285,6 +187,82 @@ void plansza::zmien_ture(){
             this->tura = biali;
         }
     }
+}
+
+void plansza::mozliwe_blokowanie_szacha(wspolrzedne kr, wspolrzedne szachujaca, blokada_szacha *tab_blok) const{
+    // funkcja powinna byc uzywana tylko jesli jest szach, inaczej wyrzuci bledy
+    
+    wspolrzedne wektor = this->wektor_od_krola(szachujaca, kr);
+    // wspolrzedne swiadczace o braku wspolnej kolumny, wiersza lub przekatnej
+    if(wektor == (wspolrzedne(10,10))){
+        figura *fig;
+        fig = czy_szach_przez_skoczka(kr,(*this)(kr)->ktora_druzyna());
+        // jesli skoczek grozi krolowi to mozna jedynie ruszyc krola albo zbic skoczka
+        tab_blok->dodaj_elem(fig->aktualna_pozycja());
+    } else{
+        while(kr != szachujaca){
+            // pomija pozycje krola
+            // doda sie jeszcze pozycja figury szachujacej
+            kr += wektor;
+            tab_blok->dodaj_elem(kr);
+        }
+    }
+}
+
+void plansza::zbij(figura *fig){
+    fig->zbito();
+    int zmiana_pkt = 0;
+    switch(fig->zwroc_nazwe()){
+        case 'p': zmiana_pkt = 1; break;
+        case 's': zmiana_pkt = 3; break;
+        case 'g': zmiana_pkt = 3; break;
+        case 'w': zmiana_pkt = 5; break;
+        case 'h': zmiana_pkt = 9; break;
+        case 'k':zmiana_pkt = 100; break;
+        default: 
+            std::cout << "Proba zbicia, nie ma takiego rodzaju figury" << std::endl;
+            break;
+    }
+
+    if(fig->ktora_druzyna() == biali){
+        this->wynik += zmiana_pkt;
+    } else{
+        this->wynik -=zmiana_pkt;
+    }
+}
+
+void plansza::aktualizuj_stan_gry(const wspolrzedne &docelowe, figura *fig){
+    (*this)(fig->aktualna_pozycja()) = nullptr;
+    fig->przesun(docelowe);
+    (*this)(docelowe) = fig;
+    // po ruchu nigdy nie bede szachowany
+    kolor moj_kolor = fig->ktora_druzyna();
+    this->zwroc_druzyne(moj_kolor)->ustaw_szach(nullptr);
+    // sprawdza czy po ruchu przeciwna druzyna jest w szachu
+    // i ustawia wlasciwa zmienna
+    if(moj_kolor == biali){
+        figura *czarny_krol = (*this->zwroc_druzyne(czarni))[0];
+        figura *szachuje = this->czy_szach(czarny_krol->aktualna_pozycja(), czarni);
+        this->zwroc_druzyne(czarni)->ustaw_szach(szachuje);
+    } else{
+        figura *bialy_krol = (*this->zwroc_druzyne(biali))[0];
+        figura *szachuje = this->czy_szach(bialy_krol->aktualna_pozycja(), biali);
+        this->zwroc_druzyne(biali)->ustaw_szach(szachuje);
+    }
+
+    char nazwa = fig->zwroc_nazwe();
+    if(nazwa == 'p'){
+        dynamic_cast<pionek*>(fig)->ruszono();
+    } else{
+        if(nazwa == 'k'){
+            dynamic_cast<krol*>(fig)->ruszono();
+        } else {
+            if(nazwa == 'w'){
+                dynamic_cast<wieza*>(fig)->ruszono();
+            }
+        }
+    }
+    this->zmien_ture();
 }
 
 void plansza::mozliwy_po_wektorze(figura &fig, const mozliwosc &_mozliwosc,
@@ -362,62 +340,6 @@ void plansza::mozliwy_po_wektorze(figura &fig, const mozliwosc &_mozliwosc,
             tab_ruch->dodaj_elem(mozliwy_ruch);
         }
     }
-}
-
-void plansza::zbij(figura *fig){
-    fig->zbito();
-    int zmiana_pkt = 0;
-    switch(fig->zwroc_nazwe()){
-        case 'p': zmiana_pkt = 1; break;
-        case 's': zmiana_pkt = 3; break;
-        case 'g': zmiana_pkt = 3; break;
-        case 'w': zmiana_pkt = 5; break;
-        case 'h': zmiana_pkt = 9; break;
-        case 'k':zmiana_pkt = 100; break;
-        default: 
-            std::cout << "Proba zbicia, nie ma takiego rodzaju figury" << std::endl;
-            break;
-    }
-
-    if(fig->ktora_druzyna() == biali){
-        this->wynik += zmiana_pkt;
-    } else{
-        this->wynik -=zmiana_pkt;
-    }
-}
-
-void plansza::aktualizuj_stan_gry(const wspolrzedne &docelowe, figura *fig){
-    (*this)(fig->aktualna_pozycja()) = nullptr;
-    fig->przesun(docelowe);
-    (*this)(docelowe) = fig;
-    // po ruchu nigdy nie bede szachowany
-    kolor moj_kolor = fig->ktora_druzyna();
-    this->zwroc_druzyne(moj_kolor)->ustaw_szach(nullptr);
-    // sprawdza czy po ruchu przeciwna druzyna jest w szachu
-    // i ustawia wlasciwa zmienna
-    if(moj_kolor == biali){
-        figura *czarny_krol = (*this->zwroc_druzyne(czarni))[0];
-        figura *szachuje = this->czy_szach(czarny_krol->aktualna_pozycja(), czarni);
-        this->zwroc_druzyne(czarni)->ustaw_szach(szachuje);
-    } else{
-        figura *bialy_krol = (*this->zwroc_druzyne(biali))[0];
-        figura *szachuje = this->czy_szach(bialy_krol->aktualna_pozycja(), biali);
-        this->zwroc_druzyne(biali)->ustaw_szach(szachuje);
-    }
-
-    char nazwa = fig->zwroc_nazwe();
-    if(nazwa == 'p'){
-        dynamic_cast<pionek*>(fig)->ruszono();
-    } else{
-        if(nazwa == 'k'){
-            dynamic_cast<krol*>(fig)->ruszono();
-        } else {
-            if(nazwa == 'w'){
-                dynamic_cast<wieza*>(fig)->ruszono();
-            }
-        }
-    }
-    this->zmien_ture();
 }
 
 void plansza::mozliwe_bicia_pionkiem(pionek &pion, tablica_ruchow *tab_ruch, blokada_szacha *tab_blok){
@@ -940,24 +862,4 @@ bool plansza::czy_cos_na_drodze(wspolrzedne start, const wspolrzedne &koniec, co
         start += wektor;
     }
     return false;
-}
-
-void plansza::mozliwe_blokowanie_szacha(wspolrzedne kr, wspolrzedne szachujaca, blokada_szacha *tab_blok) const{
-    // funkcja powinna byc uzywana tylko jesli jest szach, inaczej wyrzuci bledy
-    
-    wspolrzedne wektor = this->wektor_od_krola(szachujaca, kr);
-    // wspolrzedne swiadczace o braku wspolnej kolumny, wiersza lub przekatnej
-    if(wektor == (wspolrzedne(10,10))){
-        figura *fig;
-        fig = czy_szach_przez_skoczka(kr,(*this)(kr)->ktora_druzyna());
-        // jesli skoczek grozi krolowi to mozna jedynie ruszyc krola albo zbic skoczka
-        tab_blok->dodaj_elem(fig->aktualna_pozycja());
-    } else{
-        while(kr != szachujaca){
-            // pomija pozycje krola
-            // doda sie jeszcze pozycja figury szachujacej
-            kr += wektor;
-            tab_blok->dodaj_elem(kr);
-        }
-    }
 }

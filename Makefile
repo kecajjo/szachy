@@ -2,7 +2,7 @@ CXX = g++
 CXXFLAGS = -c -Ihh -Icpp -Wall -pedantic -std=c++17 -g
 OBJ = obj/main.o obj/wspolrzedne.o obj/figura.o obj/goniec.o\
 	obj/hetman.o obj/krol.o obj/pionek.o obj/skoczek.o obj/wieza.o\
-	obj/druzyna.o obj/plansza.o
+	obj/druzyna.o obj/plansza.o obj/szachy.o
 
 __start__: szachy
 	
@@ -14,7 +14,7 @@ szachy: obj obj/main.o $(OBJ)
 obj: 
 	mkdir obj
 
-obj/main.o: src/main.cpp src/inc/plansza.hh
+obj/main.o: src/main.cpp src/inc/szachy.hh
 	$(CXX) ${CXXFLAGS} -o obj/main.o src/main.cpp
 
 obj/figura.o: src/figura.cpp src/inc/figura.hh src/inc/wspolrzedne.hh src/inc/mozliwosc.hh
@@ -44,11 +44,14 @@ obj/druzyna.o: src/druzyna.cpp src/inc/druzyna.hh src/inc/figura.hh src/inc/goni
 	$(CXX) ${CXXFLAGS} -o obj/druzyna.o src/druzyna.cpp
 
 obj/plansza.o: src/plansza.cpp src/inc/plansza.hh src/inc/wspolrzedne.hh src/inc/figura.hh\
-			src/inc/mozliwosc.hh src/inc/druzyna.hh src/inc/tablica_ruchow.hh
+			src/inc/mozliwosc.hh src/inc/druzyna.hh src/inc/tablica_ruchow.hh src/inc/blokada_szacha.hh
 	$(CXX) ${CXXFLAGS} -o obj/plansza.o src/plansza.cpp
 
 obj/wspolrzedne.o: src/wspolrzedne.cpp src/inc/wspolrzedne.hh
 	$(CXX) ${CXXFLAGS} -o obj/wspolrzedne.o src/wspolrzedne.cpp
+
+obj/szachy.o: src/szachy.cpp src/inc/szachy.hh src/inc/plansza.hh
+	$(CXX) ${CXXFLAGS} -o obj/szachy.o src/szachy.cpp
 
 clean_linux:
 	rm -f obj/*.o szachy.exe
