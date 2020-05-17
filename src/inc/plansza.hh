@@ -29,7 +29,11 @@ class plansza{
     figura*& operator ()(int _x, int _y); // zwraca adres wskaznika na figure
     figura* operator ()(wspolrzedne wsp) const;
     figura*& operator ()(wspolrzedne wsp); // zwraca adres wskaznika na figure
-    tablica_ruchow *mozliwe_ruchy(wspolrzedne start, blokada_szacha *tab_blok); // zwraca liste dostepnych ruchow z danego pola
+    // zwraca tablice wskaznikow na tablic_ruchow zawierajaca wszystkie mozliwe ruchy danej druzyny
+    // trzeba pamietac o zwolnieniu z pamieci wszystkich elementow
+    void wszystkie_mozliwe_ruchy_druzyny(kolor kol, tablica_ruchow **wszystkie_ruchy);
+    // zwraca strukture majaca tablice dostepnych ruchow z danego pola
+    tablica_ruchow *mozliwe_ruchy(wspolrzedne start, blokada_szacha *tab_blok);
     void wyswietl() const; // wyswietla plansze
     static bool czy_poza_plansza(wspolrzedne wsp); // sprawdza czy istnieje pole o takich wspolrzednych
     static bool czy_poza_plansza(int _x, int _y); // sprawdza czy istnieje pole o takich wspolrzednych
@@ -76,6 +80,8 @@ class plansza{
     bool czy_wrogi_p(const figura &fig, const kolor &moj_kol) const;
     // sprawdza czy cos jest pomiedzy figurami na polach start i koniec, potrzebuje wektor w ktorym sie przemieszcza
     bool czy_cos_na_drodze(wspolrzedne start, const wspolrzedne &koniec, const wspolrzedne &wektor) const;
+    // sprawdza czy druzyna jest w podwojnym szachu
+    bool czy_podwojny_szach(kolor kol) const;
 
 };
 

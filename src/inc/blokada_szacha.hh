@@ -34,7 +34,7 @@ struct blokada_szacha{
 
     void dodaj_elem(wspolrzedne wsp){
         if(rozmiar>6){
-            std::cout << "proba przepelnienia tablicy ruchow" << std::endl;
+            std::cout << "proba przepelnienia tablicy blokady" << std::endl << "x: " << wsp.x << " y: " << wsp.y << std::endl;
             return;
         }
         this->tablica[rozmiar] = wsp;

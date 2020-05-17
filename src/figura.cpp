@@ -19,3 +19,10 @@ char figura::zwroc_nazwe() const{
 kolor figura::ktora_druzyna() const{
     return this->kol;
 }
+
+bool figura::czy_aktywna(){
+    if(this->czy_aktywny == true){
+        return true;
+    }
+    return false;
+}

@@ -1,6 +1,8 @@
 #ifndef WSPOLRZEDNE_HH
 #define WSPOLRZEDNE_HH
 
+#include <iostream>
+
 struct wspolrzedne{
     int x;
     int y;

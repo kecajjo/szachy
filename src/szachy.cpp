@@ -1,13 +1,27 @@
 #include "inc/szachy.hh"
 
-// TODO dokonczyc wczytywanie ruchu z klawiatury i poprawic calosc
+// TODO poprawic zeby bylo czytelniejsze
 void szachy::czytaj_ruch(){
     // pozycje startowe
     char kolumna_st;
     int wiersz_st;
     int kol_po_konw_st;
     std::cin >> kolumna_st;
+    while(std::cin.fail() || ((kolumna_st < 'A' || kolumna_st > 'H')
+     && (kolumna_st < 'a' || kolumna_st > 'h'))){
+
+        std::cout << "Blad przy wczytywaniu kolumny startowej" << std::endl << "podaj litere A-H"<<std::endl;
+        std::cin.clear();
+        std::cin.ignore(10000, '\n');
+        std::cin >> kolumna_st;
+    }
     std::cin >> wiersz_st;
+    while(std::cin.fail() || wiersz_st < 1 || wiersz_st > 8){
+        std::cout << "Blad przy wczytywaniu wiersza startowego" << std::endl << "podaj cyfre 1-8" <<std::endl;
+        std::cin.clear();
+        std::cin.ignore(10000, '\n');
+        std::cin >> wiersz_st;
+    }
 
     kolumna_st = toupper(kolumna_st); // jesli uzytkownik poda mala litere to nic to nie zmieni
     kol_po_konw_st = int(kolumna_st); // konwertujemy char na ASCII
@@ -19,7 +33,20 @@ void szachy::czytaj_ruch(){
     int wiersz_kon;
     int kol_po_konw_kon;
     std::cin >> kolumna_kon;
+    while(std::cin.fail()|| ((kolumna_kon < 'A' || kolumna_kon > 'H')
+     && (kolumna_kon < 'a' || kolumna_kon > 'h'))){
+        std::cout << "Blad przy wczytywaniu kolumny koncowej" << std::endl << "podaj litere A-H"<<std::endl;
+        std::cin.clear();
+        std::cin.ignore(10000, '\n');
+        std::cin >> kolumna_kon;
+    }
     std::cin >> wiersz_kon;
+    while(std::cin.fail() || wiersz_kon < 1 || wiersz_kon > 8){
+        std::cout << "Blad przy wczytywaniu wiersza startowego" << std::endl << "podaj cyfre 1-8" <<std::endl;
+        std::cin.clear();
+        std::cin.ignore(10000, '\n');
+        std::cin >> wiersz_kon;
+    }
 
     kolumna_kon = toupper(kolumna_kon); // jesli uzytkownik poda mala litere to nic to nie zmieni
     kol_po_konw_kon = int(kolumna_kon); // konwertujemy char na ASCII
@@ -61,6 +88,15 @@ void szachy::ruch_gracza(wspolrzedne start, wspolrzedne koniec){
 
     blokada_szacha *tab_blok;
     druzyna *gracz = this->szachownica.zwroc_druzyne(tura);
+
+    // jesli gracz jest w podwojnym szachu to moze sie ruszyc tylko krolem
+    if(gracz->czy_podwojny_szach() == true){
+        if(this->szachownica(start)->zwroc_nazwe() != 'k'){
+            std::cout << "RUCH NIEDOZWOLONY" << std::endl;
+            return;
+        }
+    }
+
     // jesli gracz nie jest szachowany
     if(gracz->czy_szach() == nullptr){
         tab_blok = nullptr;
@@ -93,7 +129,7 @@ void szachy::ruch_gracza(wspolrzedne start, wspolrzedne koniec){
                 delete tab_blok;
             }
             delete mozliwe_pola_koncowe;
-            // aktualizuje pole i konczy dzialanie funkcji
+            // aktualizuje stan gry i konczy dzialanie funkcji
             this->szachownica.aktualizuj_stan_gry(koniec, this->szachownica(start));
             return;
         }
@@ -107,3 +143,4 @@ void szachy::ruch_gracza(wspolrzedne start, wspolrzedne koniec){
     // nie mozna sie tak ruszyc
     std::cout << "RUCH NIEDOZWOLONY" << std::endl;
 }
+

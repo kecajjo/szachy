@@ -73,6 +73,37 @@ figura*& plansza::operator ()(wspolrzedne wsp){
     return this->pola[0][0];
 }
 
+void plansza::wszystkie_mozliwe_ruchy_druzyny(kolor kol, tablica_ruchow **wszystkie_ruchy){
+    
+    druzyna *_druzyna = this->zwroc_druzyne(kol);
+    figura *fig;
+    if(_druzyna->czy_podwojny_szach() == true){
+        fig = (*_druzyna)[0];
+        blokada_szacha *tab_blok = new blokada_szacha;
+        // wpisuje w dany element wszystkie mozliwe dla danej figury ruchy
+        wszystkie_ruchy[0] = this->mozliwe_ruchy(fig->aktualna_pozycja(), tab_blok);
+        delete tab_blok;
+        // jesli jest podwojny szach to tylko krol sie moze ruszac
+        for(int i=1;i<16;i++){
+            wszystkie_ruchy[i] = nullptr;
+        }
+    } else{
+        // kazdej figurze tworzymy tablice_ruchow
+        for(int i=0;i<16;i++){ // druzyna ma zawsze 16 figur
+            fig = (*_druzyna)[i];
+            // jesli figura zostala zbita nie jest brana pod uwage
+            if(fig->czy_aktywna() == true){
+                blokada_szacha *tab_blok = new blokada_szacha;
+                // wpisuje w dany element wszystkie mozliwe dla danej figury ruchy
+                wszystkie_ruchy[i] = this->mozliwe_ruchy(fig->aktualna_pozycja(), tab_blok);
+                delete tab_blok;
+            } else{ // jesli figura byla zbita wpisuje do tablicy nullptr
+                wszystkie_ruchy[i] = nullptr;
+            }
+        }
+    }
+}
+
 tablica_ruchow *plansza::mozliwe_ruchy(wspolrzedne start, blokada_szacha *tab_blok){
 
     // jesli podano pozycje startowa spoza szachownicy zwraca nullptr
@@ -238,17 +269,6 @@ void plansza::aktualizuj_stan_gry(const wspolrzedne &docelowe, figura *fig){
     // po ruchu nigdy nie bede szachowany
     kolor moj_kolor = fig->ktora_druzyna();
     this->zwroc_druzyne(moj_kolor)->ustaw_szach(nullptr);
-    // sprawdza czy po ruchu przeciwna druzyna jest w szachu
-    // i ustawia wlasciwa zmienna
-    if(moj_kolor == biali){
-        figura *czarny_krol = (*this->zwroc_druzyne(czarni))[0];
-        figura *szachuje = this->czy_szach(czarny_krol->aktualna_pozycja(), czarni);
-        this->zwroc_druzyne(czarni)->ustaw_szach(szachuje);
-    } else{
-        figura *bialy_krol = (*this->zwroc_druzyne(biali))[0];
-        figura *szachuje = this->czy_szach(bialy_krol->aktualna_pozycja(), biali);
-        this->zwroc_druzyne(biali)->ustaw_szach(szachuje);
-    }
 
     char nazwa = fig->zwroc_nazwe();
     if(nazwa == 'p'){
@@ -263,6 +283,16 @@ void plansza::aktualizuj_stan_gry(const wspolrzedne &docelowe, figura *fig){
         }
     }
     this->zmien_ture();
+    moj_kolor = this->czyja_tura();
+    // sprawdza czy po ruchu przeciwna druzyna jest w szachu
+    // i ustawia wlasciwa zmienna
+    figura *krol = (*this->zwroc_druzyne(moj_kolor))[0];
+    figura *szachuje = this->czy_szach(krol->aktualna_pozycja(), moj_kolor);
+    druzyna *dr = this->zwroc_druzyne(moj_kolor);
+    dr->ustaw_szach(szachuje);
+    // sprawdza czy jest podwojny szach i ustawia zmienna w druzynie
+    dr->ustaw_podwojny_szach(this->czy_podwojny_szach(moj_kolor));
+
 }
 
 void plansza::mozliwy_po_wektorze(figura &fig, const mozliwosc &_mozliwosc,
@@ -507,9 +537,9 @@ wspolrzedne plansza::wektor_od_krola(wspolrzedne poz_fig, wspolrzedne poz_krola)
         if(roznica_x == roznica_y){
             // figura jest po przekatnej na poludniowy wschod od krola
             if(xfig > xkrol){
-                wynik = wspolrzedne(-1,1);
-            } else{ // figura jest na polnocny zachod od krola
                 wynik = wspolrzedne(1,-1);
+            } else{ // figura jest na polnocny zachod od krola
+                wynik = wspolrzedne(-1,1);
             }
         } else{
             // jesli krol i figura sa w tej samej kolumnie
@@ -853,13 +883,49 @@ bool plansza::czy_cos_na_drodze(wspolrzedne start, const wspolrzedne &koniec, co
     start += wektor;
     while(start != koniec){
         if(plansza::czy_poza_plansza(start)){
-            std::cout << "proba sprawdzenia czy cos jest na drodze, wyszla poza plansze" << std::endl;
+            // std::cout << "proba sprawdzenia czy cos jest na drodze, wyszla poza plansze" << std::endl;
             return false;
         }
         if((*this)(start) != nullptr){
             return true;
         }
         start += wektor;
+    }
+    return false;
+}
+
+bool plansza::czy_podwojny_szach(kolor kol) const{
+    
+    druzyna *_druzyna = this->zwroc_druzyne(kol);
+    // podwojny szach moze byc tylko jesli jest szach
+    // nie da sie spowodowac 2 chachow po przekatnej badz 2 po wierszach lub kolumnach itd
+    if(_druzyna->czy_szach() != nullptr){
+        wspolrzedne wsp_krola = (*_druzyna)[0]->aktualna_pozycja();
+        bool szach1 = false;
+        if(czy_szach_po_wier_lub_kol(wsp_krola, kol) != nullptr){
+            szach1 = true;
+        }
+        bool szach2 = false;
+        if(czy_szach_po_przekatnej(wsp_krola, kol) != nullptr){
+            szach2 = true;
+        }
+        if(szach1 && szach2){
+            return true;
+        }
+        bool szach3 = false;
+        if(czy_szach_przez_skoczka(wsp_krola, kol) != nullptr){
+            szach3 = true;
+        }
+        if((szach1 && szach3) || (szach2 && szach3)){
+            return true;
+        }
+        bool szach4 = false;
+        if(czy_szach_przez_pionka(wsp_krola, kol) != nullptr){
+            szach4 = true;
+        }
+        if((szach1 && szach4) || (szach2 && szach4) || (szach3 && szach4)){
+            return true;
+        }
     }
     return false;
 }

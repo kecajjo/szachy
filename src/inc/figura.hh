@@ -24,6 +24,7 @@ class figura{
     char zwroc_nazwe() const;
     virtual mozliwosc *zasady_ruchu() = 0;
     kolor ktora_druzyna() const;
+    bool czy_aktywna(); // sprawdza czy dana figura byla juz zbita
 };
 
 #endif
