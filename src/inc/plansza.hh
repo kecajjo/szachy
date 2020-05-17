@@ -23,6 +23,7 @@ class plansza{
 
     public:
     plansza(); // ustawia obydwie druzyny, tura bialych
+    ~plansza();
     kolor czyja_tura(); // zwraca czyja jest teraz kolej
     bool czy_puste(wspolrzedne wsp) const; // sprawdza czy nikogo nie ma na danym polu
     figura* operator ()(int _x, int _y) const;
@@ -44,6 +45,8 @@ class plansza{
     void mozliwe_blokowanie_szacha(wspolrzedne kr, wspolrzedne szachujaca, blokada_szacha *tab_blok) const;
     void zbij(figura *fig); // bije figure i aktualizuje wynik
     void aktualizuj_stan_gry(const wspolrzedne &docelowe, figura *fig); // aktualizuje stan szachownicy po ruchu
+    // rusza wybrana figura jesli jest to dozwolone
+    void ruch_figura(wspolrzedne start, wspolrzedne koniec);
 
     private:
     // dodaje ruch do listy jesli nie jest to wbrew zasadom

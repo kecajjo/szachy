@@ -28,3 +28,6 @@ mozliwosc *krol::zasady_ruchu(){
 void krol::ruszono(){
     this->pierwszy_ruch = false;
 }
+
+krol::~krol(){
+}

@@ -7,6 +7,7 @@ class skoczek: public figura{
     public:
     skoczek(kolor _kol, wspolrzedne _wsp);
     mozliwosc *zasady_ruchu();
+    ~skoczek();
 };
 
 #endif

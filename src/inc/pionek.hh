@@ -11,6 +11,7 @@ class pionek: public figura{
     void ruszono(); // pionek zostal ruszony
     // zapisuje wektory jakimi pionki moga bic do przekazanej tablicy
     void zasady_bicia(wspolrzedne *tablica_zasad);
+    ~pionek();
 };
 
 #endif

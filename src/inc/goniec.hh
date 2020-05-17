@@ -8,6 +8,7 @@ class goniec: public figura{
     public:
     goniec(kolor _kol, wspolrzedne _wsp);
     mozliwosc *zasady_ruchu();
+    ~goniec();
 };
 
 #endif

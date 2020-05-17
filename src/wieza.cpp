@@ -23,3 +23,6 @@ mozliwosc *wieza::zasady_ruchu(){
 void wieza::ruszono(){
     this->pierwszy_ruch = false;
 }
+
+wieza::~wieza(){
+}

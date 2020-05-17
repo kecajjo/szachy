@@ -18,6 +18,7 @@ class druzyna{
     bool szach_podwojny; // czy druzyna jest pod podwojnym szachem
     public:
     druzyna(kolor _kol);
+    ~druzyna();
     kolor sprawdz_kolor();
     figura* operator[](int indeks) const;
     figura*& operator[](int indeks);

@@ -43,3 +43,6 @@ void pionek::zasady_bicia(wspolrzedne *tablica_zasad){
         tablica_zasad[1] = wspolrzedne(-1,-1);
     }
 }
+
+pionek::~pionek(){
+}

@@ -23,3 +23,6 @@ mozliwosc *skoczek::zasady_ruchu(){
 
     return moj_vector;
 }
+
+skoczek::~skoczek(){
+}

@@ -18,6 +18,7 @@ class figura{
     bool czy_aktywny; // jesli false to figura zbita
 
     public:
+    virtual ~figura(){}
     void zbito();
     wspolrzedne aktualna_pozycja() const;
     void przesun(wspolrzedne nowa_pozycja);

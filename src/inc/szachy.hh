@@ -2,6 +2,7 @@
 #define SZACHY_HH
 
 #include "plansza.hh"
+#include "lifo.hh"
 
 class szachy{
     

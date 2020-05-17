@@ -38,6 +38,12 @@ druzyna::druzyna(kolor _kol){
     }
 }
 
+druzyna::~druzyna(){
+    for(int i=0;i<16;i++){
+        delete this->wszystkie_fig[i];
+    }
+}
+
 figura* druzyna::operator[](int indeks) const{
     if(indeks<16){
         return this->wszystkie_fig[indeks];

@@ -9,6 +9,7 @@ class krol: public figura{
     krol(kolor _kol, wspolrzedne _wsp);
     mozliwosc *zasady_ruchu();
     void ruszono(); // krol zostal ruszony
+    ~krol();
 };
 
 #endif

@@ -20,3 +20,6 @@ mozliwosc *goniec::zasady_ruchu(){
     
     return moj_vector;
 }
+
+goniec::~goniec(){
+}

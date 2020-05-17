@@ -23,3 +23,6 @@ mozliwosc *hetman::zasady_ruchu(){
     
     return moj_vector;
 }
+
+hetman::~hetman(){
+}

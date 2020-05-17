@@ -7,6 +7,7 @@ class hetman: public figura{
     public:
     hetman(kolor _kol, wspolrzedne _wsp);
     mozliwosc *zasady_ruchu();
+    ~hetman();
 };
 
 #endif

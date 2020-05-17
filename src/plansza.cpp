@@ -22,6 +22,11 @@ plansza::plansza(){
     this->tura = biali;
 }
 
+plansza::~plansza(){
+    delete this->biel;
+    delete this->czern;
+}
+
 kolor plansza::czyja_tura(){
     return tura;
 }
@@ -293,6 +298,90 @@ void plansza::aktualizuj_stan_gry(const wspolrzedne &docelowe, figura *fig){
     // sprawdza czy jest podwojny szach i ustawia zmienna w druzynie
     dr->ustaw_podwojny_szach(this->czy_podwojny_szach(moj_kolor));
 
+}
+
+void plansza::ruch_figura(wspolrzedne start, wspolrzedne koniec){
+
+    // jesli podano pozycje startowa spoza szachownicy konczy dzialanie funkcji
+    if(plansza::czy_poza_plansza(start)){
+        std::cout << "Proba ruchu z pola poza plansza" << std::endl;
+        return;
+    }
+
+    // jesli podano pole docelowe spoza szachownicy konczy dzialanie funkcji
+    if(plansza::czy_poza_plansza(koniec)){
+        std::cout << "Proba ruchu na pole poza plansza" << std::endl;
+        return;
+    }
+
+    // jesli proba ruchu nastepuje z pustego pola konczy dzialanie funkcji
+    if((*this)(start) == nullptr){
+        std::cout << " Pole puste, nie mozna sie stad ruszyc" << std::endl;
+        return;
+    }
+
+    kolor tura = this->czyja_tura();
+    if((*this)(start)->ktora_druzyna() != tura){
+        std::cout << "Blad: Proba ruchu figura przeciwnika!" << std::endl;
+        return;
+    }
+
+    blokada_szacha *tab_blok;
+    druzyna *gracz = this->zwroc_druzyne(tura);
+
+    // jesli gracz jest w podwojnym szachu to moze sie ruszyc tylko krolem
+    if(gracz->czy_podwojny_szach() == true){
+        if((*this)(start)->zwroc_nazwe() != 'k'){
+            std::cout << "RUCH NIEDOZWOLONY" << std::endl;
+            return;
+        }
+    }
+
+    // jesli gracz nie jest szachowany
+    if(gracz->czy_szach() == nullptr){
+        tab_blok = nullptr;
+    } else{ // jesli gracz jest szachowany
+        tab_blok = new blokada_szacha;
+        this->mozliwe_blokowanie_szacha((*gracz)[0]->aktualna_pozycja(), gracz->czy_szach()->aktualna_pozycja(), tab_blok);
+    }
+
+    tablica_ruchow *mozliwe_pola_koncowe = this->mozliwe_ruchy(start, tab_blok);
+    // jesli nie mozna sie ruszyc na zadne pole konczy dzialanie funkcji
+    if(mozliwe_pola_koncowe == nullptr){
+        if(tab_blok != nullptr){
+            delete tab_blok;
+        }
+        std::cout << "RUCH NIEDOZWOLONY" << std::endl;
+        return;
+    }
+
+    int rozmiar = mozliwe_pola_koncowe->rozmiar;
+    for(int i=0;i<rozmiar;i++){
+        // czy chcemy sie ruszyc na dostepne dla figury pole
+        if(koniec == (*mozliwe_pola_koncowe)[i]){
+            // jesli ruszamy sie na pole, ktore nie jest puste
+            if((*this)(koniec) != nullptr){
+                // bijemy figure na polu docelowym
+                this->zbij((*this)(koniec));
+            }
+            // zwolnienie pamieci
+            if(tab_blok != nullptr){
+                delete tab_blok;
+            }
+            delete mozliwe_pola_koncowe;
+            // aktualizuje stan gry i konczy dzialanie funkcji
+            this->aktualizuj_stan_gry(koniec, (*this)(start));
+            return;
+        }
+    }
+    // zwolnienie pamieci
+    if(tab_blok != nullptr){
+        delete tab_blok;
+    }
+    delete mozliwe_pola_koncowe;
+
+    // nie mozna sie tak ruszyc
+    std::cout << "RUCH NIEDOZWOLONY" << std::endl;
 }
 
 void plansza::mozliwy_po_wektorze(figura &fig, const mozliwosc &_mozliwosc,
