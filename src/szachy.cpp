@@ -76,6 +76,169 @@ bool szachy::czy_koniec(kolor kol){
     return false;
 }
 
-void ruch_si(){
-    // TODO
+void szachy::ruch_si(){
+    ruch ruch_komputera = this->alfa_beta_zewn(GLEBOKOSC_SI);
+    this->szachownica.ruch_figura(ruch_komputera.skad,ruch_komputera.docelowo);
+}
+
+ruch szachy::alfa_beta_zewn(int glebokosc){
+    if(glebokosc == 0){
+        return ruch();
+    }
+    tablica_ruchow **wszystkie_ruchy = new tablica_ruchow*[16];
+    this->szachownica.ruchy_druzyny(this->szachownica.czyja_tura(), wszystkie_ruchy);
+    if(this->szachownica.czy_mat_pat(wszystkie_ruchy)){
+        this->usun_tab_wsz_ruch(wszystkie_ruchy);
+        // nie mozna wykonac ruchu jesli jest juz mat/pat
+        return ruch();
+    }
+
+    ruch najlepszy_ruch;
+    float najlepszy_wynik;
+    wspolrzedne docelowo;
+    kolor kol = this->szachownica.czyja_tura();
+    druzyna *dr = this->szachownica.zwroc_druzyne(kol);
+
+    if(kol == biali){
+        najlepszy_wynik = 1000000; // liczba znacznie wieksza niz jakikolwiek mozliwy do uzyskania wynik
+    } else{
+        najlepszy_wynik = -1000000; // liczba znacznie mniejsza niz jakikolwiek mozliwy do uzyskania wynik
+    }
+    for(int i=0;i<16;i++){
+        // jesli wszystkie ruchy wskazuja na nullptr to pomijamy figure
+        if(wszystkie_ruchy[i] != nullptr){
+            int ile_ruchow_fig = wszystkie_ruchy[i]->rozmiar;
+            figura *aktualna_fig = (*dr)[i];
+            for(int j=0; j<ile_ruchow_fig; j++){
+                docelowo = (*wszystkie_ruchy[i])[j];
+                // ruszamy sie, by rozwazyc dana mozliwosc
+                // jako ze sprawdzamy tylko mozlwie ruchy mozemy od razu aktualizowac plansze
+                this->szachownica.aktualizuj_stan_gry(docelowo, aktualna_fig);
+                float wynik_ruchu;
+                if(kol == biali){
+                    wynik_ruchu = this->alfa_beta_wewn(glebokosc-1, -1000000, najlepszy_wynik, czarni);
+                    // cofamy sie do poprzedniego ustawienia szachownicy
+                    this->cofnij();
+                    if(wynik_ruchu < najlepszy_wynik){
+                        najlepszy_wynik = wynik_ruchu;
+                        // jako docelowo ustawia wpolrzedne koncowe ktore sprawdzilismy w ruchu
+                        najlepszy_ruch.ustaw_docelowo(docelowo);
+                        // jako skad ustawia pozycje figury, ktora ruszalismy
+                        najlepszy_ruch.ustaw_skad(aktualna_fig->aktualna_pozycja());
+                    }
+                } else{
+                    wynik_ruchu = this->alfa_beta_wewn(glebokosc-1, najlepszy_wynik, 1000000, biali);
+                    // cofamy sie do poprzedniego ustawienia szachownicy
+                    this->cofnij();
+                    if(wynik_ruchu > najlepszy_wynik){
+                        najlepszy_wynik = wynik_ruchu;
+                        // jako docelowo ustawia wpolrzedne koncowe ktore sprawdzilismy w ruchu
+                        najlepszy_ruch.ustaw_docelowo(docelowo);
+                        // jako skad ustawia pozycje figury, ktora ruszalismy
+                        najlepszy_ruch.ustaw_skad(aktualna_fig->aktualna_pozycja());
+                    }
+                }
+            }
+        }
+    }
+    this->usun_tab_wsz_ruch(wszystkie_ruchy);
+
+    return najlepszy_ruch;
+}
+
+float szachy::alfa_beta_wewn(int glebokosc, float alfa, float beta, kolor kol){
+    
+    tablica_ruchow **wszystkie_ruchy = new tablica_ruchow*[16];
+    this->szachownica.ruchy_druzyny(this->szachownica.czyja_tura(), wszystkie_ruchy);
+    if(this->szachownica.czy_mat_pat(wszystkie_ruchy) == true){
+        // nie mozna wykonac ruchu jesli jest juz mat/pat
+        if(this->szachownica.czyja_tura() == biali){
+            if(this->szachownica.zwroc_druzyne(biali)->czy_szach() != nullptr){
+                this->usun_tab_wsz_ruch(wszystkie_ruchy);
+                // czarne wygraly, zwracamy duzy wynik
+                return 1000;
+            } else{ // pat czyli remis
+                this->usun_tab_wsz_ruch(wszystkie_ruchy);
+                return 0;
+            }
+        } else{
+            if(this->szachownica.zwroc_druzyne(czarni)->czy_szach() != nullptr){
+                this->usun_tab_wsz_ruch(wszystkie_ruchy);
+                // biale wygraly, zwracamy maly wynik
+                return -1000;
+            } else{ // pat czyli remis
+                this->usun_tab_wsz_ruch(wszystkie_ruchy);
+                return 0;
+            }
+        }
+    }
+    
+    // jesli doszlismy do konca rekurencji zwracamy wynik
+    if(glebokosc == 0){
+        this->usun_tab_wsz_ruch(wszystkie_ruchy);
+        return this->szachownica.zwroc_wynik();
+    }
+
+
+    float najlepszy_wynik;
+    wspolrzedne docelowo;
+    druzyna *dr = this->szachownica.zwroc_druzyne(kol);
+
+    if(kol == biali){
+        najlepszy_wynik = 1000000; // liczba znacznie wieksza niz jakikolwiek mozliwy do uzyskania wynik
+    } else{
+        najlepszy_wynik = -1000000; // liczba znacznie mniejsza niz jakikolwiek mozliwy do uzyskania wynik
+    }
+
+    for(int i=0;i<16;i++){
+        // jesli wszystkie ruchy wskazuja na nullptr to pomijamy figure
+        if(wszystkie_ruchy[i] != nullptr){
+            int ile_ruchow_fig = wszystkie_ruchy[i]->rozmiar;
+            figura *aktualna_fig = (*dr)[i];
+            for(int j=0; j<ile_ruchow_fig; j++){
+                docelowo = (*wszystkie_ruchy[i])[j];
+                // ruszamy sie, by rozwazyc dana mozliwosc
+                // jako ze sprawdzamy tylko mozlwie ruchy mozemy od razu aktualizowac plansze
+                this->szachownica.aktualizuj_stan_gry(docelowo, aktualna_fig);
+                float wynik_ruchu;
+                if(kol == biali){
+                    wynik_ruchu = this->alfa_beta_wewn(glebokosc-1, alfa, beta, czarni);
+                    if(wynik_ruchu < najlepszy_wynik){
+                        najlepszy_wynik = wynik_ruchu;
+                    }
+                    if(beta < wynik_ruchu){
+                        beta = wynik_ruchu;
+                    }
+                } else{
+                    wynik_ruchu = this->alfa_beta_wewn(glebokosc-1, alfa, beta, biali);
+                    if(wynik_ruchu > najlepszy_wynik){
+                        najlepszy_wynik = wynik_ruchu;
+                    }
+                    if(alfa > wynik_ruchu){
+                        alfa = wynik_ruchu;
+                    }
+                }
+                // cofamy sie do poprzendiego ustawienia szachownicy
+                this->cofnij();
+                // usuwanie mozliwosci, ktore nie wplywaja na wynik
+                if(beta <= alfa){
+                    this->usun_tab_wsz_ruch(wszystkie_ruchy);
+                    return najlepszy_wynik;
+                }
+            }
+        }
+    }
+    this->usun_tab_wsz_ruch(wszystkie_ruchy);
+    return najlepszy_wynik;
+}
+
+void szachy::usun_tab_wsz_ruch(tablica_ruchow **usun){
+    if(usun != nullptr){
+        for(int i=0;i>16;i++){
+            if(usun[i] != nullptr){
+                delete usun[i];
+            }
+            delete [] usun;
+        }
+    }
 }

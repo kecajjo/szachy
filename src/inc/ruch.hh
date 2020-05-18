@@ -28,6 +28,10 @@ struct ruch{
     void wykon_ruch_spec(); // wykonano specjalny ruch
     void ustaw_szach(figura *fig);
     void ustaw_podw_szach(bool ustaw);
+    void ustaw_skad(const wspolrzedne &wsp);
+    wspolrzedne zwroc_skad();
+    void ustaw_docelowo(const wspolrzedne &wsp);
+    wspolrzedne zwroc_docelowo();
 };
 
 #endif

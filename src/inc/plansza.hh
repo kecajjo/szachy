@@ -44,7 +44,7 @@ class plansza{
     // sprawdza czy juz koniec gry, sprawdza czy ktorakolwiek figura moze wykonac ruch
     // standardowo jest 16 figur stad rozmiar = 16
     bool czy_mat_pat(tablica_ruchow **wszystkie_ruchy, int rozmiar = 16);
-    // znacznie wolniej niz wyzsza funkcja sprawdza czy juz koniec gry
+    // czy dana druzyna przegrala/zremisowala(pat)
     bool czy_mat_pat(kolor kol);
     void wyswietl() const; // wyswietla plansze
     static bool czy_poza_plansza(wspolrzedne wsp); // sprawdza czy istnieje pole o takich wspolrzednych

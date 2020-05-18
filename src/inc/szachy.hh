@@ -4,9 +4,17 @@
 #include "plansza.hh"
 #include "lifo.hh"
 
+#define GLEBOKOSC_SI 4
+
 class szachy{
     
     plansza szachownica;
+    // realizacja algorytmu alfa beta (ulepszony minmax)
+    // zapamietuje pierwszy ruch
+    // za pomoca alfa_beta_wewn sprawdza, ktory pierwszy ruch jest najlepszy
+    ruch alfa_beta_zewn(int glebokosc);
+    float alfa_beta_wewn(int glebokosc, float alfa, float beta, kolor kol); // algorytm alfa beta zwraca najlepszy wynik
+    void usun_tab_wsz_ruch(tablica_ruchow **usun);
 
     public:
     void czytaj_ruch(); // pozwala uzytkownikowi wpisac ruch

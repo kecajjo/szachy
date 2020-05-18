@@ -51,3 +51,19 @@ void ruch::ustaw_szach(figura *fig){
 void ruch::ustaw_podw_szach(bool ustaw){
     this->podw_szach = ustaw;
 }
+
+void ruch::ustaw_skad(const wspolrzedne &wsp){
+    this->skad = wsp;
+}
+
+wspolrzedne ruch::zwroc_skad(){
+    return this->skad;
+}
+
+void ruch::ustaw_docelowo(const wspolrzedne &wsp){
+    this->docelowo = wsp;
+}
+
+wspolrzedne ruch::zwroc_docelowo(){
+    return this->docelowo;
+}
