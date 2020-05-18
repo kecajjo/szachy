@@ -60,6 +60,6 @@ obj/ruch.o: src/ruch.cpp src/inc/ruch.hh src/inc/wspolrzedne.hh src/inc/figura.h
 	$(CXX) ${CXXFLAGS} -o obj/ruch.o src/ruch.cpp
 
 clean_linux:
-	rm -f obj/*.o szachy.exe
+	rm -f obj/* szachy.exe
 clean:
 	del /f obj szachy.exe

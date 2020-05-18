@@ -30,10 +30,10 @@ class plansza{
     ~plansza();
     kolor czyja_tura(); // zwraca czyja jest teraz kolej
     bool czy_puste(wspolrzedne wsp) const; // sprawdza czy nikogo nie ma na danym polu
-    figura* operator ()(int _x, int _y) const;
-    figura*& operator ()(int _x, int _y); // zwraca adres wskaznika na figure
-    figura* operator ()(wspolrzedne wsp) const;
-    figura*& operator ()(wspolrzedne wsp); // zwraca adres wskaznika na figure
+    figura* operator ()(const int &_x, const int &_y) const;
+    figura*& operator ()(const int &_x, const int &_y); // zwraca adres wskaznika na figure
+    figura* operator ()(const wspolrzedne &wsp) const;
+    figura*& operator ()(const wspolrzedne &wsp); // zwraca adres wskaznika na figure
     // zwraca tablice wskaznikow na tablic_ruchow zawierajaca wszystkie mozliwe ruchy danej druzyny
     // trzeba pamietac o zwolnieniu z pamieci wszystkich elementow
     void ruchy_druzyny(kolor kol, tablica_ruchow **wszystkie_ruchy);
@@ -43,17 +43,17 @@ class plansza{
     void cofnij_ruch();
     // sprawdza czy juz koniec gry, sprawdza czy ktorakolwiek figura moze wykonac ruch
     // standardowo jest 16 figur stad rozmiar = 16
-    bool czy_mat_pat(tablica_ruchow **wszystkie_ruchy, int rozmiar = 16);
+    bool czy_mat_pat(tablica_ruchow **wszystkie_ruchy, const int &rozmiar = 16);
     // czy dana druzyna przegrala/zremisowala(pat)
     bool czy_mat_pat(kolor kol);
     void wyswietl() const; // wyswietla plansze
-    static bool czy_poza_plansza(wspolrzedne wsp); // sprawdza czy istnieje pole o takich wspolrzednych
-    static bool czy_poza_plansza(int _x, int _y); // sprawdza czy istnieje pole o takich wspolrzednych
-    druzyna* zwroc_druzyne(kolor kol) const; // zwraca wskaznik na druzyne w danym kolorze 
+    static bool czy_poza_plansza(const wspolrzedne &wsp); // sprawdza czy istnieje pole o takich wspolrzednych
+    static bool czy_poza_plansza(const int &_x, const int &_y); // sprawdza czy istnieje pole o takich wspolrzednych
+    druzyna* zwroc_druzyne(const kolor &kol) const; // zwraca wskaznik na druzyne w danym kolorze 
     // zmiana osoby, ktora sie rusza
     void zmien_ture();
     // sprawdza na ktore pola mozna sie ruszyc figura inna niz krol, zeby powstrzymac szacha i zapisuej je w blokadzie_szacha
-    void mozliwe_blokowanie_szacha(wspolrzedne kr, wspolrzedne szachujaca, blokada_szacha *tab_blok) const;
+    void mozliwe_blokowanie_szacha(wspolrzedne kr, const wspolrzedne &szachujaca, blokada_szacha *tab_blok) const;
     void zbij(figura *fig); // bije figure i aktualizuje wynik
     void aktualizuj_stan_gry(const wspolrzedne &docelowe, figura *fig); // aktualizuje stan szachownicy po ruchu
     // rusza wybrana figura jesli jest to dozwolone

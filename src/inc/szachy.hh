@@ -24,7 +24,7 @@ class szachy{
     bool czy_koniec(kolor kol);
     // sztuczna inteligencja wykarzystujaca algorytm alfa beta
     void ruch_si();
-    
+    void graj_przeciw_komputerowi(const kolor &kol_gracza);
 };
 
 #endif

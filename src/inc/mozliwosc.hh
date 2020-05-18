@@ -16,6 +16,12 @@ struct mozliwosc{
         this->wektor.y = _wsp.y;
         this->zasieg = _zasieg;
     }
+
+    mozliwosc operator =(mozliwosc moz){
+        this->wektor = moz.wektor;
+        this->zasieg = moz.zasieg;
+        return *this;
+    }
 };
 
 #endif

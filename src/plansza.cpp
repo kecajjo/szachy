@@ -38,7 +38,7 @@ bool plansza::czy_puste(wspolrzedne wsp) const{
     return false; // pole zajete
 }
 
-figura* plansza::operator ()(int _x, int _y) const{
+figura* plansza::operator ()(const int &_x, const int &_y) const{
     if(_x < ROZMIAR && _y < ROZMIAR){
         return this->pola[_y][_x];
     }
@@ -48,7 +48,7 @@ figura* plansza::operator ()(int _x, int _y) const{
     return this->pola[0][0];
 }
 
-figura*& plansza::operator ()(int _x, int _y){
+figura*& plansza::operator ()(const int &_x, const int &_y){
     if(_x < ROZMIAR && _y < ROZMIAR){
         return this->pola[_y][_x];
     }
@@ -58,7 +58,7 @@ figura*& plansza::operator ()(int _x, int _y){
     return this->pola[0][0];
 }
 
-figura* plansza::operator ()(wspolrzedne wsp) const{
+figura* plansza::operator ()(const wspolrzedne &wsp) const{
     if(wsp.x < ROZMIAR && wsp.y < ROZMIAR){
         return this->pola[wsp.y][wsp.x];
     }
@@ -68,7 +68,7 @@ figura* plansza::operator ()(wspolrzedne wsp) const{
     return this->pola[0][0];
 }
 
-figura*& plansza::operator ()(wspolrzedne wsp){
+figura*& plansza::operator ()(const wspolrzedne &wsp){
     if(wsp.x < ROZMIAR && wsp.y < ROZMIAR){
         return this->pola[wsp.y][wsp.x];
     }
@@ -155,8 +155,6 @@ tablica_ruchow *plansza::mozliwe_ruchy(wspolrzedne start, blokada_szacha *tab_bl
         // dodaje do listy ruchy ktore mozna wykonac po danym wektorze
         this->mozliwy_po_wektorze(*fig, wektory_ruchu[i], tab_ruch, tab_blok);
     }
-    // trzeba zwolnic miejsce po liscie wektorow, lista w destruktorze sie czysci
-    delete [] wektory_ruchu;
 
     // uwzglednienie bicia przez pionki
     if(fig->zwroc_nazwe() == 'p'){
@@ -216,7 +214,7 @@ void plansza::cofnij_ruch(){
     }
 }
 
-bool plansza::czy_mat_pat(tablica_ruchow **wszystkie_ruchy, int rozmiar){
+bool plansza::czy_mat_pat(tablica_ruchow **wszystkie_ruchy, const int &rozmiar){
     for(int i=0;i<rozmiar;i++){
         tablica_ruchow *tab_ruch = wszystkie_ruchy[i];
         if(tab_ruch != nullptr){
@@ -274,21 +272,21 @@ void plansza::wyswietl() const{
     std::cout << std::endl << std::endl << std::endl;
 }
 
-bool plansza::czy_poza_plansza(wspolrzedne wsp){
+bool plansza::czy_poza_plansza(const wspolrzedne &wsp){
     if(wsp.x < 0 || wsp.x >= ROZMIAR || wsp.y < 0 || wsp.y >= ROZMIAR){
         return true;
     }
     return false;
 }
 
-bool plansza::czy_poza_plansza(int _x, int _y){
+bool plansza::czy_poza_plansza(const int &_x, const int &_y){
     if(_x < 0 || _x >= ROZMIAR || _y < 0 || _y >= ROZMIAR){
         return true;
     }
     return false;
 }
 
-druzyna* plansza::zwroc_druzyne(kolor kol) const{
+druzyna* plansza::zwroc_druzyne(const kolor &kol) const{
     if(kol == biali){
         return this->biel;
     }
@@ -310,7 +308,7 @@ void plansza::zmien_ture(){
     }
 }
 
-void plansza::mozliwe_blokowanie_szacha(wspolrzedne kr, wspolrzedne szachujaca, blokada_szacha *tab_blok) const{
+void plansza::mozliwe_blokowanie_szacha(wspolrzedne kr, const wspolrzedne &szachujaca, blokada_szacha *tab_blok) const{
     // funkcja powinna byc uzywana tylko jesli jest szach, inaczej wyrzuci bledy
     
     wspolrzedne wektor = this->wektor_od_krola(szachujaca, kr);
@@ -374,28 +372,28 @@ void plansza::aktualizuj_stan_gry(const wspolrzedne &docelowe, figura *fig){
     this->zwroc_druzyne(moj_kolor)->ustaw_podwojny_szach(false);
 
     char nazwa = fig->zwroc_nazwe();
-    if(nazwa == 'p'){
-        pionek *pion = dynamic_cast<pionek*>(fig);
-        if(pion->czy_pierwszy() == true){
-            obecny_ruch.wykon_pierw_ruch();
-        }
-        pion->ruszono();
-    } else{
-        if(nazwa == 'k'){
+    switch(nazwa){
+        case 'p':{
+            pionek *pion = dynamic_cast<pionek*>(fig);
+            if(pion->czy_pierwszy() == true){
+                obecny_ruch.wykon_pierw_ruch();
+            }
+            pion->ruszono();
+            break;
+        } case 'k':{
             krol *kr = dynamic_cast<krol*>(fig);
             if(kr->czy_pierwszy() == true){
                 obecny_ruch.wykon_pierw_ruch();
             }
             kr->ruszono();
-        } else{
-            if(nazwa == 'w'){
-                wieza *wi = dynamic_cast<wieza*>(fig);
-                if(wi->czy_pierwszy()){
-                    obecny_ruch.wykon_pierw_ruch();
-                }
-                wi->ruszono();
+            break;
+        } case 'w':{
+            wieza *wi = dynamic_cast<wieza*>(fig);
+            if(wi->czy_pierwszy()){
+                obecny_ruch.wykon_pierw_ruch();
             }
-        }
+            wi->ruszono();
+        } default: break;
     }
     this->zmien_ture();
     moj_kolor = this->czyja_tura();
@@ -408,6 +406,9 @@ void plansza::aktualizuj_stan_gry(const wspolrzedne &docelowe, figura *fig){
     // sprawdza czy jest podwojny szach i ustawia zmienna w druzynie
     dr->ustaw_podwojny_szach(this->czy_podwojny_szach(moj_kolor));
     this->poprzednie_ruchy.dodaj_elem(obecny_ruch);
+
+    // dodatkowe punkty za utrzymywanie srodkowych pol planszy
+    // sprawdzic czy nie pogorszy AI, ale powinno polepszyc
 
 }
 

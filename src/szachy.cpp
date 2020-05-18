@@ -104,7 +104,7 @@ ruch szachy::alfa_beta_zewn(int glebokosc){
     } else{
         najlepszy_wynik = -1000000; // liczba znacznie mniejsza niz jakikolwiek mozliwy do uzyskania wynik
     }
-    for(int i=0;i<16;i++){
+    for(int i=15;i>-1;i--){ // bedzie preferowac ruch pionkami
         // jesli wszystkie ruchy wskazuja na nullptr to pomijamy figure
         if(wszystkie_ruchy[i] != nullptr){
             int ile_ruchow_fig = wszystkie_ruchy[i]->rozmiar;
@@ -156,7 +156,7 @@ float szachy::alfa_beta_wewn(int glebokosc, float alfa, float beta, kolor kol){
             if(this->szachownica.zwroc_druzyne(biali)->czy_szach() != nullptr){
                 this->usun_tab_wsz_ruch(wszystkie_ruchy);
                 // czarne wygraly, zwracamy duzy wynik
-                return 1000;
+                return 1000000;
             } else{ // pat czyli remis
                 this->usun_tab_wsz_ruch(wszystkie_ruchy);
                 return 0;
@@ -165,7 +165,7 @@ float szachy::alfa_beta_wewn(int glebokosc, float alfa, float beta, kolor kol){
             if(this->szachownica.zwroc_druzyne(czarni)->czy_szach() != nullptr){
                 this->usun_tab_wsz_ruch(wszystkie_ruchy);
                 // biale wygraly, zwracamy maly wynik
-                return -1000;
+                return -1000000;
             } else{ // pat czyli remis
                 this->usun_tab_wsz_ruch(wszystkie_ruchy);
                 return 0;
@@ -190,7 +190,7 @@ float szachy::alfa_beta_wewn(int glebokosc, float alfa, float beta, kolor kol){
         najlepszy_wynik = -1000000; // liczba znacznie mniejsza niz jakikolwiek mozliwy do uzyskania wynik
     }
 
-    for(int i=0;i<16;i++){
+    for(int i=15;i>-1;i--){ // bedzie preferowac ruch pionkami
         // jesli wszystkie ruchy wskazuja na nullptr to pomijamy figure
         if(wszystkie_ruchy[i] != nullptr){
             int ile_ruchow_fig = wszystkie_ruchy[i]->rozmiar;
@@ -234,11 +234,28 @@ float szachy::alfa_beta_wewn(int glebokosc, float alfa, float beta, kolor kol){
 
 void szachy::usun_tab_wsz_ruch(tablica_ruchow **usun){
     if(usun != nullptr){
-        for(int i=0;i>16;i++){
+        for(int i=0;i<16;i++){
             if(usun[i] != nullptr){
                 delete usun[i];
             }
-            delete [] usun;
         }
+        delete [] usun;
+    }
+}
+
+void szachy::graj_przeciw_komputerowi(const kolor &kol_gracza){
+    while(this->czy_koniec(biali) == false && this->czy_koniec(czarni) == false){
+        this->wyswietl_stan_gry();
+        if(this->szachownica.czyja_tura() == kol_gracza){
+            this->czytaj_ruch();
+        } else{
+            this->ruch_si();
+        }
+    }
+    if(this->czy_koniec(biali) == true){
+        std::cout << "Czarni wygrali" << std::endl;
+    }
+    if(this->czy_koniec(czarni) == true){
+        std::cout << "biali wygrali" << std::endl;
     }
 }
