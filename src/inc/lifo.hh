@@ -1,3 +1,6 @@
+#ifndef LIFO_HH
+#define LIFO_HH
+
 #include <iostream>
 // statyczny rozmiar pozwala zaoszczedzic czas na alokowanie pamieci
 // w grze bedzie tylko 1 taka struktura o niewielkim rozmiarze
@@ -37,7 +40,7 @@ template <typename typ, int maks_rozmiar>
 typ lifo<typ, maks_rozmiar>::sciagnij_elem(){
     if(this->rozmiar < 1){
         std::cout << "struktura pusta, nie mozna sciagnac elementu" << std::endl;
-        return static_cast<typ>(0);        
+        return this->elementy[0];
     }
     typ zwroc = this->elementy[aktualny_elem];
     // w ten sposob modulo zawsze zwroci poprzedni element
@@ -50,8 +53,8 @@ typ lifo<typ, maks_rozmiar>::sciagnij_elem(){
 template <typename typ, int maks_rozmiar>
 typ lifo<typ, maks_rozmiar>::sprawdz_gore(){
     if(this->rozmiar < 1){
-        std::cout << "struktura pusta, nie mozna sciagnac elementu" << std::endl;
-        return static_cast<typ>(0);        
+        std::cout << "struktura pusta, nie mozna sprawdzic elementu" << std::endl;
+        return this->elementy[0];
     }
     return this->elementy[aktualny_elem];
 }
@@ -60,3 +63,5 @@ template <typename typ, int maks_rozmiar>
 int lifo<typ, maks_rozmiar>::zwroc_rozmiar(){
     return this->rozmiar;
 }
+
+#endif

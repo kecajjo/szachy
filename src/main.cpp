@@ -5,7 +5,7 @@
 int main(){
     szachy gra;
     
-    while(1){
+    while(gra.czy_koniec(biali) == false && gra.czy_koniec(czarni) == false){
         gra.wyswietl_stan_gry();
         gra.czytaj_ruch();
     }

@@ -78,33 +78,44 @@ figura*& plansza::operator ()(wspolrzedne wsp){
     return this->pola[0][0];
 }
 
-void plansza::wszystkie_mozliwe_ruchy_druzyny(kolor kol, tablica_ruchow **wszystkie_ruchy){
+void plansza::ruchy_druzyny(kolor kol, tablica_ruchow **wszystkie_ruchy){
     
     druzyna *_druzyna = this->zwroc_druzyne(kol);
     figura *fig;
     if(_druzyna->czy_podwojny_szach() == true){
         fig = (*_druzyna)[0];
-        blokada_szacha *tab_blok = new blokada_szacha;
+        // jesli jest podwojny szach to blokada_szacha i tak nie jest rozpatrywana,
+        // bo moze sie ruszac tylko krol
+        blokada_szacha *tab_blok = nullptr;
         // wpisuje w dany element wszystkie mozliwe dla danej figury ruchy
         wszystkie_ruchy[0] = this->mozliwe_ruchy(fig->aktualna_pozycja(), tab_blok);
-        delete tab_blok;
         // jesli jest podwojny szach to tylko krol sie moze ruszac
         for(int i=1;i<16;i++){
             wszystkie_ruchy[i] = nullptr;
         }
     } else{
+        blokada_szacha *tab_blok = nullptr;
+        // fakt szachowania druzyny nie jest zalezny od uzycia konkretnej figury
+        // jesli nie ma szacha blokada_szacha powinna wskazywac na nullptr
+        if(_druzyna->czy_szach() != nullptr){
+            tab_blok = new blokada_szacha;
+            wspolrzedne poz_kr = (*_druzyna)[0]->aktualna_pozycja();
+            wspolrzedne poz_szach = _druzyna->czy_szach()->aktualna_pozycja();
+            this->mozliwe_blokowanie_szacha(poz_kr, poz_szach, tab_blok);
+        }
         // kazdej figurze tworzymy tablice_ruchow
         for(int i=0;i<16;i++){ // druzyna ma zawsze 16 figur
             fig = (*_druzyna)[i];
             // jesli figura zostala zbita nie jest brana pod uwage
             if(fig->czy_aktywna() == true){
-                blokada_szacha *tab_blok = new blokada_szacha;
                 // wpisuje w dany element wszystkie mozliwe dla danej figury ruchy
                 wszystkie_ruchy[i] = this->mozliwe_ruchy(fig->aktualna_pozycja(), tab_blok);
-                delete tab_blok;
             } else{ // jesli figura byla zbita wpisuje do tablicy nullptr
                 wszystkie_ruchy[i] = nullptr;
             }
+        }
+        if(tab_blok != nullptr){
+            delete tab_blok;
         }
     }
 }
@@ -154,6 +165,80 @@ tablica_ruchow *plansza::mozliwe_ruchy(wspolrzedne start, blokada_szacha *tab_bl
     }
     // zwraca wszystkie dostepne z danego pola ruchy
     return tab_ruch;
+}
+
+void plansza::cofnij_ruch(){
+    ruch poprzedni = this->poprzednie_ruchy.sciagnij_elem();
+    this->wynik = poprzedni.wynik;
+    // ustawiamy figure z pozycji docelowej na poprzednia pozycje
+    (*this)(poprzedni.skad) = (*this)(poprzedni.docelowo);
+    // jesli faktycznie cos zbilismy, trzeba aktywowac zbita figure
+    // i przywrocic ja na miejsce
+    if(poprzedni.zbito != nullptr){
+        poprzedni.zbito->zmien_na_aktywna();
+        (*this)(poprzedni.docelowo) = poprzedni.zbito;
+    }else{ // jesli nie bilismy, ustawiamy koncowe pole na nullptr
+        (*this)(poprzedni.docelowo) = nullptr;
+    }
+    figura *fig = (*this)(poprzedni.skad);
+    fig->przesun(poprzedni.skad);
+    // jako ze tury sa na zmiane to zamiast cofac,
+    // mozna zmienic na nastepna (nie liczymy ich)
+    this->zmien_ture();
+
+    druzyna *dr = this->zwroc_druzyne(this->czyja_tura());
+    dr->ustaw_szach(poprzedni.szach);
+    dr->ustaw_podwojny_szach(poprzedni.podw_szach);
+
+    if(poprzedni.pierw_ruch == true){
+        char nazwa;
+        nazwa = fig->zwroc_nazwe();
+        switch(nazwa){
+            case 'p':
+                dynamic_cast<pionek*>(fig)->ustaw_nie_ruszono();
+             break;
+            case 'w':
+                dynamic_cast<wieza*>(fig)->ustaw_nie_ruszono();
+             break;
+            case 'k':
+                dynamic_cast<krol*>(fig)->ustaw_nie_ruszono();
+             break;
+            default:
+                std::cout << "BLAD: zle dodany ruch, ktory probuje sie cofnac" << std::endl;
+             break;
+        }
+    } else{
+        if(poprzedni.ruch_spec == true){
+            // jesli nie jest to pierwszy ruch a jest specjalny
+            // to musi to byc promocja
+            // TODO co robic podczas cofania promocji
+        }
+    }
+}
+
+bool plansza::czy_mat_pat(tablica_ruchow **wszystkie_ruchy, int rozmiar){
+    for(int i=0;i<rozmiar;i++){
+        tablica_ruchow *tab_ruch = wszystkie_ruchy[i];
+        if(tab_ruch != nullptr){
+            // jesli istnieje przynajmniej jeden ruch nie ma mata
+            if(tab_ruch->rozmiar != 0){
+                return false;
+            }
+        }
+    }
+    // jesli nie znaleziono zadnego ruchu to mat
+    return true;
+}
+
+bool plansza::czy_mat_pat(kolor kol){
+    tablica_ruchow **wszystkie_ruchy = new tablica_ruchow*[16];
+    this->ruchy_druzyny(kol, wszystkie_ruchy);
+    bool wynik = this->czy_mat_pat(wszystkie_ruchy);
+    for(int i=0;i<16;i++){
+        delete wszystkie_ruchy[i];
+    }
+    delete [] wszystkie_ruchy;
+    return wynik;
 }
 
 void plansza::wyswietl() const{
@@ -268,22 +353,47 @@ void plansza::zbij(figura *fig){
 }
 
 void plansza::aktualizuj_stan_gry(const wspolrzedne &docelowe, figura *fig){
+
+    ruch obecny_ruch(this->wynik, fig->aktualna_pozycja(), docelowe, (*this)(docelowe));
+    // jesli ruszamy sie na pole, ktore nie jest puste
+    if((*this)(docelowe) != nullptr){
+        // bijemy figure na polu docelowym
+        this->zbij((*this)(docelowe));
+    }
+
     (*this)(fig->aktualna_pozycja()) = nullptr;
     fig->przesun(docelowe);
     (*this)(docelowe) = fig;
     // po ruchu nigdy nie bede szachowany
     kolor moj_kolor = fig->ktora_druzyna();
+
+    obecny_ruch.ustaw_szach(this->zwroc_druzyne(moj_kolor)->czy_szach());
+    obecny_ruch.ustaw_podw_szach(this->zwroc_druzyne(moj_kolor)->czy_podwojny_szach());
+
     this->zwroc_druzyne(moj_kolor)->ustaw_szach(nullptr);
+    this->zwroc_druzyne(moj_kolor)->ustaw_podwojny_szach(false);
 
     char nazwa = fig->zwroc_nazwe();
     if(nazwa == 'p'){
-        dynamic_cast<pionek*>(fig)->ruszono();
+        pionek *pion = dynamic_cast<pionek*>(fig);
+        if(pion->czy_pierwszy() == true){
+            obecny_ruch.wykon_pierw_ruch();
+        }
+        pion->ruszono();
     } else{
         if(nazwa == 'k'){
-            dynamic_cast<krol*>(fig)->ruszono();
-        } else {
+            krol *kr = dynamic_cast<krol*>(fig);
+            if(kr->czy_pierwszy() == true){
+                obecny_ruch.wykon_pierw_ruch();
+            }
+            kr->ruszono();
+        } else{
             if(nazwa == 'w'){
-                dynamic_cast<wieza*>(fig)->ruszono();
+                wieza *wi = dynamic_cast<wieza*>(fig);
+                if(wi->czy_pierwszy()){
+                    obecny_ruch.wykon_pierw_ruch();
+                }
+                wi->ruszono();
             }
         }
     }
@@ -297,6 +407,7 @@ void plansza::aktualizuj_stan_gry(const wspolrzedne &docelowe, figura *fig){
     dr->ustaw_szach(szachuje);
     // sprawdza czy jest podwojny szach i ustawia zmienna w druzynie
     dr->ustaw_podwojny_szach(this->czy_podwojny_szach(moj_kolor));
+    this->poprzednie_ruchy.dodaj_elem(obecny_ruch);
 
 }
 
@@ -359,11 +470,6 @@ void plansza::ruch_figura(wspolrzedne start, wspolrzedne koniec){
     for(int i=0;i<rozmiar;i++){
         // czy chcemy sie ruszyc na dostepne dla figury pole
         if(koniec == (*mozliwe_pola_koncowe)[i]){
-            // jesli ruszamy sie na pole, ktore nie jest puste
-            if((*this)(koniec) != nullptr){
-                // bijemy figure na polu docelowym
-                this->zbij((*this)(koniec));
-            }
             // zwolnienie pamieci
             if(tab_blok != nullptr){
                 delete tab_blok;
@@ -382,6 +488,10 @@ void plansza::ruch_figura(wspolrzedne start, wspolrzedne koniec){
 
     // nie mozna sie tak ruszyc
     std::cout << "RUCH NIEDOZWOLONY" << std::endl;
+}
+
+float plansza::zwroc_wynik(){
+    return this->wynik;
 }
 
 void plansza::mozliwy_po_wektorze(figura &fig, const mozliwosc &_mozliwosc,

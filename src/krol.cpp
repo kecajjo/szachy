@@ -29,5 +29,13 @@ void krol::ruszono(){
     this->pierwszy_ruch = false;
 }
 
+void krol::ustaw_nie_ruszono(){
+    this->pierwszy_ruch = true;
+}
+
+bool krol::czy_pierwszy(){
+    return this->pierwszy_ruch;
+}
+
 krol::~krol(){
 }

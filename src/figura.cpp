@@ -1,7 +1,11 @@
 #include "inc/figura.hh"
 
 void figura::zbito(){
-    this->czy_aktywny=false;
+    this->czy_aktywny = false;
+}
+
+void figura::zmien_na_aktywna(){
+    this->czy_aktywny = true;
 }
 
 wspolrzedne figura::aktualna_pozycja() const{

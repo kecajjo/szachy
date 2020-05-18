@@ -2,6 +2,7 @@
 
 // TODO poprawic zeby bylo czytelniejsze
 void szachy::czytaj_ruch(){
+    std::cout << std::endl << "Podaj ruch, np A1 B6,\ngdzie A1 to pozycja startowa, B6 to pozycja koncowa" << std::endl;
     // pozycje startowe
     char kolumna_st;
     int wiersz_st;
@@ -64,3 +65,17 @@ void szachy::ruch_gracza(wspolrzedne start, wspolrzedne koniec){
     this->szachownica.ruch_figura(start, koniec);
 }
 
+void szachy::cofnij(){
+    this->szachownica.cofnij_ruch();
+}
+
+bool szachy::czy_koniec(kolor kol){
+    if(this->szachownica.czy_mat_pat(kol) == true){
+        return true;
+    }
+    return false;
+}
+
+void ruch_si(){
+    // TODO
+}

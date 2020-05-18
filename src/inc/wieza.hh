@@ -8,7 +8,10 @@ class wieza: public figura{
     public:
     wieza(kolor _kol, wspolrzedne _wsp);
     mozliwosc *zasady_ruchu();
-    void ruszono(); // wieza zostal 
+    void ruszono(); // wieza zostala ruszona
+    bool czy_pierwszy(); // zwraca czy wieza jeszcze sie nie ruszala
+    // w razie cofniecia pierwszego ruchu wiezy
+    void ustaw_nie_ruszono();
     ~wieza();
 };
 

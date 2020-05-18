@@ -32,6 +32,14 @@ void pionek::ruszono(){
     this->pierwszy_ruch = false;
 }
 
+void pionek::ustaw_nie_ruszono(){
+    this->pierwszy_ruch = true;
+}
+
+bool pionek::czy_pierwszy(){
+    return this->pierwszy_ruch;
+}
+
 void pionek::zasady_bicia(wspolrzedne *tablica_zasad){
 
     // pionki czarne bija w jedna strone a pionki biale w druga

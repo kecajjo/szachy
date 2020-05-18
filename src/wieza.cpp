@@ -24,5 +24,13 @@ void wieza::ruszono(){
     this->pierwszy_ruch = false;
 }
 
+void wieza::ustaw_nie_ruszono(){
+    this->pierwszy_ruch = true;
+}
+
+bool wieza::czy_pierwszy(){
+    return this->pierwszy_ruch;
+}
+
 wieza::~wieza(){
 }

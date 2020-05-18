@@ -6,3 +6,5 @@ szachy
 .vscode
 .vscode/*
 src/*.exe
+lib/*
+lib

@@ -20,6 +20,7 @@ class figura{
     public:
     virtual ~figura(){}
     void zbito();
+    void zmien_na_aktywna();
     wspolrzedne aktualna_pozycja() const;
     void przesun(wspolrzedne nowa_pozycja);
     char zwroc_nazwe() const;

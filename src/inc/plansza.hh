@@ -7,7 +7,10 @@
 #include "druzyna.hh"
 #include "tablica_ruchow.hh"
 #include "blokada_szacha.hh"
+#include "lifo.hh"
+#include "ruch.hh"
 
+#define PAMIEC_WSTECZ 10
 
 #define ROZMIAR 8
 
@@ -20,6 +23,7 @@ class plansza{
     // nie int zeby poza materialem moc pozycje na stole nagradzac 
     // biale chca jak najmniejszy czarne jak najwiekszy, poczatkowy to 0
     float wynik;
+    lifo<ruch, PAMIEC_WSTECZ> poprzednie_ruchy;
 
     public:
     plansza(); // ustawia obydwie druzyny, tura bialych
@@ -32,9 +36,16 @@ class plansza{
     figura*& operator ()(wspolrzedne wsp); // zwraca adres wskaznika na figure
     // zwraca tablice wskaznikow na tablic_ruchow zawierajaca wszystkie mozliwe ruchy danej druzyny
     // trzeba pamietac o zwolnieniu z pamieci wszystkich elementow
-    void wszystkie_mozliwe_ruchy_druzyny(kolor kol, tablica_ruchow **wszystkie_ruchy);
+    void ruchy_druzyny(kolor kol, tablica_ruchow **wszystkie_ruchy);
     // zwraca strukture majaca tablice dostepnych ruchow z danego pola
     tablica_ruchow *mozliwe_ruchy(wspolrzedne start, blokada_szacha *tab_blok);
+    // pozwala cofnac ruch
+    void cofnij_ruch();
+    // sprawdza czy juz koniec gry, sprawdza czy ktorakolwiek figura moze wykonac ruch
+    // standardowo jest 16 figur stad rozmiar = 16
+    bool czy_mat_pat(tablica_ruchow **wszystkie_ruchy, int rozmiar = 16);
+    // znacznie wolniej niz wyzsza funkcja sprawdza czy juz koniec gry
+    bool czy_mat_pat(kolor kol);
     void wyswietl() const; // wyswietla plansze
     static bool czy_poza_plansza(wspolrzedne wsp); // sprawdza czy istnieje pole o takich wspolrzednych
     static bool czy_poza_plansza(int _x, int _y); // sprawdza czy istnieje pole o takich wspolrzednych
@@ -47,6 +58,7 @@ class plansza{
     void aktualizuj_stan_gry(const wspolrzedne &docelowe, figura *fig); // aktualizuje stan szachownicy po ruchu
     // rusza wybrana figura jesli jest to dozwolone
     void ruch_figura(wspolrzedne start, wspolrzedne koniec);
+    float zwroc_wynik(); // zwraca aktualny wynik
 
     private:
     // dodaje ruch do listy jesli nie jest to wbrew zasadom
