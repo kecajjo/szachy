@@ -990,42 +990,55 @@ figura* plansza::czy_szach_przez_pionka(const wspolrzedne &pol_krola, const kolo
     int x1 = pol_krola.x - 1;
     int x2 = pol_krola.x + 1;
     int y = pol_krola.y;
+    figura *fig;
     // jesli biali to czarny pionek
     if(kol_krola == biali){
         // pionek musi byc nad krolem
         ++y;
-        figura *fig = (*this)(x1,y);
-        if(fig != nullptr){
-            if(fig->zwroc_nazwe() == 'p'){
-                if(fig->ktora_druzyna() == czarni){
-                    return fig;
+        if(y<8){
+            if(x1>=0){
+                fig = (*this)(x1,y);
+                if(fig != nullptr){
+                    if(fig->zwroc_nazwe() == 'p'){
+                        if(fig->ktora_druzyna() == czarni){
+                            return fig;
+                        }
+                    }
                 }
             }
-        }
-        fig = (*this)(x2,y);
-        if(fig != nullptr){
-            if(fig->zwroc_nazwe() == 'p'){
-                if(fig->ktora_druzyna() == czarni){
-                    return fig;
+            if(x2<8){
+                fig = (*this)(x2,y);
+                if(fig != nullptr){
+                    if(fig->zwroc_nazwe() == 'p'){
+                        if(fig->ktora_druzyna() == czarni){
+                            return fig;
+                        }
+                    }
                 }
             }
         }
     } else{ // jesli czarni to bialy pionek
         // pionek musi byc pod krolem
         --y;
-        figura *fig = (*this)(x1,y);
-        if(fig != nullptr){
-            if(fig->zwroc_nazwe() == 'p'){
-                if(fig->ktora_druzyna() == biali){
-                    return fig;
+        if(y>=0){
+            if(x1>=0){
+                fig = (*this)(x1,y);
+                if(fig != nullptr){
+                    if(fig->zwroc_nazwe() == 'p'){
+                        if(fig->ktora_druzyna() == biali){
+                            return fig;
+                        }
+                    }
                 }
             }
-        }
-        fig = (*this)(x2,y);
-        if(fig != nullptr){
-            if(fig->zwroc_nazwe() == 'p'){
-                if(fig->ktora_druzyna() == biali){
-                    return fig;
+            if(x2<8){
+                fig = (*this)(x2,y);
+                if(fig != nullptr){
+                    if(fig->zwroc_nazwe() == 'p'){
+                        if(fig->ktora_druzyna() == biali){
+                            return fig;
+                        }
+                    }
                 }
             }
         }

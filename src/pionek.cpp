@@ -31,7 +31,7 @@ void pionek::ustaw_nie_ruszono(){
 }
 
 bool pionek::czy_pierwszy(){
-    return this->pierwszy_ruch;
+    return this->nie_ruszyl;
 }
 
 void pionek::zasady_bicia(wspolrzedne *tablica_zasad){
