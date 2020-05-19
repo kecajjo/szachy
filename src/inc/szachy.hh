@@ -3,6 +3,7 @@
 
 #include "plansza.hh"
 #include "lifo.hh"
+#include <ctime>
 
 #define GLEBOKOSC_SI 4
 

@@ -249,7 +249,11 @@ void szachy::graj_przeciw_komputerowi(const kolor &kol_gracza){
         if(this->szachownica.czyja_tura() == kol_gracza){
             this->czytaj_ruch();
         } else{
+            std::clock_t start = std::clock();
             this->ruch_si();
+            std::clock_t koniec = std::clock();
+            double czas = (double)(koniec-start)/CLOCKS_PER_SEC;
+            std::cout << "czas liczenia przez AI: " << czas << std::endl;
         }
     }
     if(this->czy_koniec(biali) == true){
