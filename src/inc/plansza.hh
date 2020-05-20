@@ -9,6 +9,7 @@
 #include "blokada_szacha.hh"
 #include "lifo.hh"
 #include "ruch.hh"
+#include <iostream>
 
 #define PAMIEC_WSTECZ 10
 
@@ -99,7 +100,12 @@ class plansza{
     bool czy_podwojny_szach(kolor kol) const;
     // probuje zrobic roszade w danej druzynie
     void roszada_mozliwa(const kolor &kol, tablica_ruchow *tab_ruch);
-
+    // sprawdza czy nastapila roszada, jesli tak to aktualizuje wieze
+    void aktualizuj_roszada(const wspolrzedne &docelowe, figura *fig, ruch &obecny_ruch);
+    // aktualizuj pionka na figure podczas promocji
+    void aktualizuj_promocja(figura *&fig, const char &na_co_prom = 'h');
+    // wylicza wynik na podstawie obecnej sytuacji na planszy
+    void wylicz_wynik();
 };
 
 #endif

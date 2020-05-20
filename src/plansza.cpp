@@ -1,5 +1,4 @@
 #include "inc/plansza.hh"
-#include <iostream>
 
 plansza::plansza(){
 
@@ -187,18 +186,16 @@ void plansza::cofnij_ruch(){
     }
     figura *fig = (*this)(poprzedni.zwroc_skad());
     fig->przesun(poprzedni.zwroc_skad());
+
     // jako ze tury sa na zmiane to zamiast cofac,
     // mozna zmienic na nastepna (nie liczymy ich)
     this->zmien_ture();
-
     druzyna *dr = this->zwroc_druzyne(this->czyja_tura());
     dr->ustaw_szach(poprzedni.zwroc_szach());
     dr->ustaw_podwojny_szach(poprzedni.czy_podw_szach());
 
     if(poprzedni.czy_pier_ruch() == true){
-        char nazwa;
-        nazwa = fig->zwroc_nazwe();
-        switch(nazwa){
+        switch(fig->zwroc_nazwe()){
             case 'p':
                 dynamic_cast<pionek*>(fig)->ustaw_nie_ruszono();
              break;
@@ -214,7 +211,7 @@ void plansza::cofnij_ruch(){
         }
     } 
     switch(poprzedni.zwroc_ruch_spec()){
-        case 'r': 
+        case 'r':{
             // dluga roszada
             int y = poprzedni.zwroc_docelowo().y;
             if(poprzedni.zwroc_docelowo().x == 2){
@@ -230,8 +227,25 @@ void plansza::cofnij_ruch(){
                 w->ustaw_nie_ruszono();
                 w->przesun(wspolrzedne(7,y));
             }
-         break;
-        // TODO co robic podczas cofania promocji, roszady i bicia w przelocie
+            break;
+        }
+        case 'p':{
+            druzyna *dr = this->zwroc_druzyne(this->czyja_tura());
+            // tylko figury z tego zakresu moga byc po promocy
+            wspolrzedne pomocnicze = fig->aktualna_pozycja();
+            for(int i=8;i<16;i++){
+                if((*dr)[i]->aktualna_pozycja() == pomocnicze){
+                    delete (*dr)[i];
+                    pionek *pion = new pionek(dr->sprawdz_kolor(), pomocnicze);
+                    pion->ruszono();
+                    (*dr)[i] = pion;
+                    (*this)(pomocnicze) = pion;
+                    break;
+                }
+            }
+            break;
+        }
+        // TODO co robic podczas bicia w przelocie
     }
 }
 
@@ -359,24 +373,6 @@ void plansza::mozliwe_blokowanie_szacha(wspolrzedne kr, const wspolrzedne &szach
 
 void plansza::zbij(figura *fig){
     fig->zbito();
-    int zmiana_pkt = 0;
-    switch(fig->zwroc_nazwe()){
-        case 'p': zmiana_pkt = 1; break;
-        case 's': zmiana_pkt = 3; break;
-        case 'g': zmiana_pkt = 3; break;
-        case 'w': zmiana_pkt = 5; break;
-        case 'h': zmiana_pkt = 9; break;
-        case 'k':zmiana_pkt = 100; break;
-        default: 
-            std::cout << "Proba zbicia, nie ma takiego rodzaju figury" << std::endl;
-            break;
-    }
-
-    if(fig->ktora_druzyna() == biali){
-        this->wynik += zmiana_pkt;
-    } else{
-        this->wynik -=zmiana_pkt;
-    }
 }
 
 void plansza::aktualizuj_stan_gry(const wspolrzedne &docelowe, figura *fig){
@@ -390,35 +386,28 @@ void plansza::aktualizuj_stan_gry(const wspolrzedne &docelowe, figura *fig){
 
     // sprawdzenie czy to moze byc roszada
     if(fig->zwroc_nazwe() == 'k'){
-        // dluga roszada 
-        if((fig->aktualna_pozycja().x - docelowe.x) == 2){
-            // tylko uaktualnic wieze, dalsza czesc kodu uaktualni krola
-            figura *wieza = (*this)(0,docelowe.y);
-            (*this)(wieza->aktualna_pozycja()) = nullptr;
-            wieza->przesun(wspolrzedne(3,docelowe.y));
-            (*this)(3,docelowe.y) = wieza;
-            obecny_ruch.ustaw_ruch_spec('r');
-        } else{// krotka roszada
-            if(fig->aktualna_pozycja().x - docelowe.x == -2){
-                // tylko uaktualnic wieze, dalsza czesc kodu uaktualnia krola
-                figura *wieza = (*this)(7,docelowe.y);
-                (*this)(wieza->aktualna_pozycja()) = nullptr;
-                wieza->przesun(wspolrzedne(5,docelowe.y));
-                (*this)(5,docelowe.y) = wieza;
-                obecny_ruch.ustaw_ruch_spec('r');
-            }
+        aktualizuj_roszada(docelowe, fig, obecny_ruch);
+    }
+
+    // promocja i bicie w przelocie
+    if(fig->zwroc_nazwe() == 'p'){
+        // jesli pionek znajdzie sie w pierwszym lub ostatnim rzedzie
+        // jest promowany
+        if(docelowe.y == 0 || docelowe.y == 7){
+            this->aktualizuj_promocja(fig);
+            obecny_ruch.ustaw_ruch_spec('p');
         }
     }
 
     (*this)(fig->aktualna_pozycja()) = nullptr;
     fig->przesun(docelowe);
     (*this)(docelowe) = fig;
-    // po ruchu nigdy nie bede szachowany
-    kolor moj_kolor = fig->ktora_druzyna();
 
+    kolor moj_kolor = fig->ktora_druzyna();
     obecny_ruch.ustaw_szach(this->zwroc_druzyne(moj_kolor)->czy_szach());
     obecny_ruch.ustaw_podw_szach(this->zwroc_druzyne(moj_kolor)->czy_podwojny_szach());
 
+    // po ruchu nigdy nie bede szachowany
     this->zwroc_druzyne(moj_kolor)->ustaw_szach(nullptr);
     this->zwroc_druzyne(moj_kolor)->ustaw_podwojny_szach(false);
 
@@ -458,9 +447,7 @@ void plansza::aktualizuj_stan_gry(const wspolrzedne &docelowe, figura *fig){
     dr->ustaw_podwojny_szach(this->czy_podwojny_szach(moj_kolor));
     this->poprzednie_ruchy.dodaj_elem(obecny_ruch);
 
-    // dodatkowe punkty za utrzymywanie srodkowych pol planszy
-    // sprawdzic czy nie pogorszy AI, ale powinno polepszyc
-
+    this->wylicz_wynik();
 }
 
 void plansza::ruch_figura(wspolrzedne start, wspolrzedne koniec){
@@ -1231,3 +1218,96 @@ void plansza::roszada_mozliwa(const kolor &kol, tablica_ruchow *tab_ruch){
     }
 }
 
+void plansza::aktualizuj_roszada(const wspolrzedne &docelowe, figura *fig, ruch &obecny_ruch){
+    // dluga roszada 
+    if((fig->aktualna_pozycja().x - docelowe.x) == 2){
+        // tylko uaktualnic wieze, dalsza czesc kodu uaktualni krola
+        figura *wieza = (*this)(0,docelowe.y);
+        (*this)(wieza->aktualna_pozycja()) = nullptr;
+        wieza->przesun(wspolrzedne(3,docelowe.y));
+        (*this)(3,docelowe.y) = wieza;
+        obecny_ruch.ustaw_ruch_spec('r');
+    } else{// krotka roszada
+        if(fig->aktualna_pozycja().x - docelowe.x == -2){
+            // tylko uaktualnic wieze, dalsza czesc kodu uaktualnia krola
+            figura *wieza = (*this)(7,docelowe.y);
+            (*this)(wieza->aktualna_pozycja()) = nullptr;
+            wieza->przesun(wspolrzedne(5,docelowe.y));
+            (*this)(5,docelowe.y) = wieza;
+            obecny_ruch.ustaw_ruch_spec('r');
+        }
+    }
+}
+
+void plansza::aktualizuj_promocja(figura *&fig, const char &na_co_prom){
+    kolor kol = fig->ktora_druzyna();
+    wspolrzedne wsp = fig->aktualna_pozycja();
+    druzyna* dr = this->zwroc_druzyne(kol);
+    // pionki sa na miejscach 8-15
+    for(int i=8;i<16;i++){
+        if((*dr)[i]->aktualna_pozycja() == wsp){
+            delete (*dr)[i];
+            switch(na_co_prom){
+                case 'h':{
+                    (*dr)[i] = new hetman(kol, wsp);
+                    break;
+                }
+                case 's':{
+                    (*dr)[i] = new skoczek(kol, wsp);
+                    break;
+                }
+                case 'w':{
+                    (*dr)[i] = new wieza(kol, wsp);
+                    break;
+                }
+                case 'g':{
+                    (*dr)[i] = new goniec(kol, wsp);
+                    break;
+                }
+                default:{
+                    std::cout << "bledna nazwa figury przy promocji" <<std::endl;
+                    return;
+                    break;
+                }
+            }
+            (*this)(wsp) = (*dr)[i];
+            fig = (*dr)[i];
+            return;
+        }
+    }
+}
+
+void plansza::wylicz_wynik(){
+    float _wynik = 0;
+    druzyna *dr = this->zwroc_druzyne(biali);
+    for(int i=0;i<16;i++){
+        if((*dr)[i]->czy_aktywna() == true){
+            switch((*dr)[i]->zwroc_nazwe()){
+                case 'p': _wynik -= 1; break;
+                case 'g': _wynik -= 3; break;
+                case 's': _wynik -= 3; break;
+                case 'w': _wynik -= 5; break;
+                case 'h': _wynik -= 9; break;
+                case 'k': _wynik -= 100; break;
+                default: std::cout << "niedozwolona nazwa w druzynie" << std::endl;
+                break;
+            }
+        }
+    }
+    dr = this->zwroc_druzyne(czarni);
+    for(int i=0;i<16;i++){
+        if((*dr)[i]->czy_aktywna() == true){
+            switch((*dr)[i]->zwroc_nazwe()){
+                case 'p': _wynik += 1; break;
+                case 'g': _wynik += 3; break;
+                case 's': _wynik += 3; break;
+                case 'w': _wynik += 5; break;
+                case 'h': _wynik += 9; break;
+                case 'k': _wynik += 100; break;
+                default: std::cout << "niedozwolona nazwa w druzynie" << std::endl;
+                break;
+            }
+        }
+    }
+    this->wynik = _wynik;
+}

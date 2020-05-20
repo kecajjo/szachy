@@ -19,7 +19,7 @@ class druzyna{
     public:
     druzyna(kolor _kol);
     ~druzyna();
-    kolor sprawdz_kolor();
+    kolor sprawdz_kolor() const;
     figura* operator[](int indeks) const;
     figura*& operator[](int indeks);
     figura* czy_szach(); // zwraca czy druzyna jest szachowana czy nie

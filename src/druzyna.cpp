@@ -48,6 +48,10 @@ druzyna::~druzyna(){
     }
 }
 
+kolor druzyna::sprawdz_kolor() const{
+    return this->kol;
+}
+
 figura* druzyna::operator[](int indeks) const{
     if(indeks<16){
         return this->wszystkie_fig[indeks];

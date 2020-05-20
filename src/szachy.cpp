@@ -147,7 +147,7 @@ ruch szachy::alfa_beta_zewn(int glebokosc){
 
     // bedzie preferowac figury
     // (i+1)%16 spowoduje rozwzanie krola jako ostatniego
-    for(int i=0;i<16;i++){ // bedzie preferowac ruch pionkami
+    for(int i=0;i<16;i++){
         // jesli wszystkie ruchy wskazuja na nullptr to pomijamy figure
         if(wszystkie_ruchy[(i+1)%16] != nullptr){
             int ile_ruchow_fig = wszystkie_ruchy[(i+1)%16]->rozmiar;
