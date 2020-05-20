@@ -151,12 +151,12 @@ ruch szachy::alfa_beta_zewn(int glebokosc){
         // jesli wszystkie ruchy wskazuja na nullptr to pomijamy figure
         if(wszystkie_ruchy[(i+1)%16] != nullptr){
             int ile_ruchow_fig = wszystkie_ruchy[(i+1)%16]->rozmiar;
-            figura *aktualna_fig = (*dr)[(i+1)%16];
+            wspolrzedne wsp_fig = (*dr)[(i+1)%16]->aktualna_pozycja();
             for(int j=0; j<ile_ruchow_fig; j++){
                 docelowo = (*wszystkie_ruchy[(i+1)%16])[j];
                 // ruszamy sie, by rozwazyc dana mozliwosc
                 // jako ze sprawdzamy tylko mozlwie ruchy mozemy od razu aktualizowac plansze
-                this->szachownica.aktualizuj_stan_gry(docelowo, aktualna_fig);
+                this->szachownica.aktualizuj_stan_gry(docelowo, wsp_fig);
                 float wynik_ruchu;
                 if(kol == biali){
                     wynik_ruchu = this->alfa_beta_wewn(glebokosc-1, -1000000, najlepszy_wynik, czarni);
@@ -167,7 +167,7 @@ ruch szachy::alfa_beta_zewn(int glebokosc){
                         // jako docelowo ustawia wpolrzedne koncowe ktore sprawdzilismy w ruchu
                         najlepszy_ruch.ustaw_docelowo(docelowo);
                         // jako skad ustawia pozycje figury, ktora ruszalismy
-                        najlepszy_ruch.ustaw_skad(aktualna_fig->aktualna_pozycja());
+                        najlepszy_ruch.ustaw_skad(wsp_fig);
                     }
                 } else{
                     wynik_ruchu = this->alfa_beta_wewn(glebokosc-1, najlepszy_wynik, 1000000, biali);
@@ -178,7 +178,7 @@ ruch szachy::alfa_beta_zewn(int glebokosc){
                         // jako docelowo ustawia wpolrzedne koncowe ktore sprawdzilismy w ruchu
                         najlepszy_ruch.ustaw_docelowo(docelowo);
                         // jako skad ustawia pozycje figury, ktora ruszalismy
-                        najlepszy_ruch.ustaw_skad(aktualna_fig->aktualna_pozycja());
+                        najlepszy_ruch.ustaw_skad(wsp_fig);
                     }
                 }
             }
@@ -239,12 +239,12 @@ float szachy::alfa_beta_wewn(int glebokosc, float alfa, float beta, kolor kol){
         // jesli wszystkie ruchy wskazuja na nullptr to pomijamy figure
         if(wszystkie_ruchy[(i+1)%16] != nullptr){
             int ile_ruchow_fig = wszystkie_ruchy[(i+1)%16]->rozmiar;
-            figura *aktualna_fig = (*dr)[(i+1)%16];
+            wspolrzedne wsp_fig = (*dr)[(i+1)%16]->aktualna_pozycja();
             for(int j=0; j<ile_ruchow_fig; j++){
                 docelowo = (*wszystkie_ruchy[(i+1)%16])[j];
                 // ruszamy sie, by rozwazyc dana mozliwosc
                 // jako ze sprawdzamy tylko mozlwie ruchy mozemy od razu aktualizowac plansze
-                this->szachownica.aktualizuj_stan_gry(docelowo, aktualna_fig);
+                this->szachownica.aktualizuj_stan_gry(docelowo, wsp_fig);
                 float wynik_ruchu;
                 if(kol == biali){
                     wynik_ruchu = this->alfa_beta_wewn(glebokosc-1, alfa, beta, czarni);

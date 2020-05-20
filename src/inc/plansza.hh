@@ -56,7 +56,7 @@ class plansza{
     // sprawdza na ktore pola mozna sie ruszyc figura inna niz krol, zeby powstrzymac szacha i zapisuej je w blokadzie_szacha
     void mozliwe_blokowanie_szacha(wspolrzedne kr, const wspolrzedne &szachujaca, blokada_szacha *tab_blok) const;
     void zbij(figura *fig); // bije figure i aktualizuje wynik
-    void aktualizuj_stan_gry(const wspolrzedne &docelowe, figura *fig); // aktualizuje stan szachownicy po ruchu
+    void aktualizuj_stan_gry(const wspolrzedne &docelowe, const wspolrzedne &poczatkowe); // aktualizuje stan szachownicy po ruchu
     // rusza wybrana figura jesli jest to dozwolone
     void ruch_figura(wspolrzedne start, wspolrzedne koniec);
     float zwroc_wynik(); // zwraca aktualny wynik

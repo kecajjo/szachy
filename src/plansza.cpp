@@ -375,9 +375,10 @@ void plansza::zbij(figura *fig){
     fig->zbito();
 }
 
-void plansza::aktualizuj_stan_gry(const wspolrzedne &docelowe, figura *fig){
+void plansza::aktualizuj_stan_gry(const wspolrzedne &docelowe, const wspolrzedne &poczatkowe){
 
-    ruch obecny_ruch(this->wynik, fig->aktualna_pozycja(), docelowe, (*this)(docelowe));
+    figura *fig = (*this)(poczatkowe);
+    ruch obecny_ruch(this->wynik, poczatkowe, docelowe, (*this)(docelowe));
     // jesli ruszamy sie na pole, ktore nie jest puste
     if((*this)(docelowe) != nullptr){
         // bijemy figure na polu docelowym
@@ -515,7 +516,7 @@ void plansza::ruch_figura(wspolrzedne start, wspolrzedne koniec){
             }
             delete mozliwe_pola_koncowe;
             // aktualizuje stan gry i konczy dzialanie funkcji
-            this->aktualizuj_stan_gry(koniec, (*this)(start));
+            this->aktualizuj_stan_gry(koniec, start);
             return;
         }
     }
