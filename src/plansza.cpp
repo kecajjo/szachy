@@ -157,9 +157,16 @@ tablica_ruchow *plansza::mozliwe_ruchy(wspolrzedne start, blokada_szacha *tab_bl
     }
 
     // uwzglednienie bicia przez pionki
-    if(fig->zwroc_nazwe() == 'p'){
-        pionek *pion = dynamic_cast<pionek*>(fig);
-        mozliwe_bicia_pionkiem(*pion, tab_ruch, tab_blok);
+    switch(fig->zwroc_nazwe()){
+        case 'p':{
+            pionek *pion = dynamic_cast<pionek*>(fig);
+            mozliwe_bicia_pionkiem(*pion, tab_ruch, tab_blok);
+            break;
+        }
+        case 'k':
+            this->roszada_mozliwa(fig->ktora_druzyna(), tab_ruch);
+            break;
+        default: break;
     }
     // zwraca wszystkie dostepne z danego pola ruchy
     return tab_ruch;
@@ -167,28 +174,28 @@ tablica_ruchow *plansza::mozliwe_ruchy(wspolrzedne start, blokada_szacha *tab_bl
 
 void plansza::cofnij_ruch(){
     ruch poprzedni = this->poprzednie_ruchy.sciagnij_elem();
-    this->wynik = poprzedni.wynik;
+    this->wynik = poprzedni.zwroc_wynik();
     // ustawiamy figure z pozycji docelowej na poprzednia pozycje
-    (*this)(poprzedni.skad) = (*this)(poprzedni.docelowo);
+    (*this)(poprzedni.zwroc_skad()) = (*this)(poprzedni.zwroc_docelowo());
     // jesli faktycznie cos zbilismy, trzeba aktywowac zbita figure
     // i przywrocic ja na miejsce
-    if(poprzedni.zbito != nullptr){
-        poprzedni.zbito->zmien_na_aktywna();
-        (*this)(poprzedni.docelowo) = poprzedni.zbito;
+    if(poprzedni.zwroc_zbito() != nullptr){
+        poprzedni.zwroc_zbito()->zmien_na_aktywna();
+        (*this)(poprzedni.zwroc_docelowo()) = poprzedni.zwroc_zbito();
     }else{ // jesli nie bilismy, ustawiamy koncowe pole na nullptr
-        (*this)(poprzedni.docelowo) = nullptr;
+        (*this)(poprzedni.zwroc_docelowo()) = nullptr;
     }
-    figura *fig = (*this)(poprzedni.skad);
-    fig->przesun(poprzedni.skad);
+    figura *fig = (*this)(poprzedni.zwroc_skad());
+    fig->przesun(poprzedni.zwroc_skad());
     // jako ze tury sa na zmiane to zamiast cofac,
     // mozna zmienic na nastepna (nie liczymy ich)
     this->zmien_ture();
 
     druzyna *dr = this->zwroc_druzyne(this->czyja_tura());
-    dr->ustaw_szach(poprzedni.szach);
-    dr->ustaw_podwojny_szach(poprzedni.podw_szach);
+    dr->ustaw_szach(poprzedni.zwroc_szach());
+    dr->ustaw_podwojny_szach(poprzedni.czy_podw_szach());
 
-    if(poprzedni.pierw_ruch == true){
+    if(poprzedni.czy_pier_ruch() == true){
         char nazwa;
         nazwa = fig->zwroc_nazwe();
         switch(nazwa){
@@ -205,12 +212,26 @@ void plansza::cofnij_ruch(){
                 std::cout << "BLAD: zle dodany ruch, ktory probuje sie cofnac" << std::endl;
              break;
         }
-    } else{
-        if(poprzedni.ruch_spec == true){
-            // jesli nie jest to pierwszy ruch a jest specjalny
-            // to musi to byc promocja
-            // TODO co robic podczas cofania promocji
-        }
+    } 
+    switch(poprzedni.zwroc_ruch_spec()){
+        case 'r': 
+            // dluga roszada
+            int y = poprzedni.zwroc_docelowo().y;
+            if(poprzedni.zwroc_docelowo().x == 2){
+                wieza *w = dynamic_cast<wieza*>((*this)(3,y));
+                (*this)(0,y) = w;
+                (*this)(3,y) = nullptr;
+                w->ustaw_nie_ruszono();
+                w->przesun(wspolrzedne(0,y));
+            } else{ // krotka roszada
+                wieza *w = dynamic_cast<wieza*>((*this)(5,y));
+                (*this)(7,y) = w;
+                (*this)(5,y) = nullptr;
+                w->ustaw_nie_ruszono();
+                w->przesun(wspolrzedne(7,y));
+            }
+         break;
+        // TODO co robic podczas cofania promocji, roszady i bicia w przelocie
     }
 }
 
@@ -243,6 +264,13 @@ void plansza::wyswietl() const{
     
     char pomocniczy = '\0';
 
+    // wyswietla numery kolumn
+    std::cout << std::endl << "    ";
+    for(char i='A';i<'I';i++){
+        std::cout << i << " ";
+    }
+    std::cout << std::endl <<std::endl;
+
     for(int i=ROZMIAR-1;i>=0;i--){
         //wyswietla numery wierszy
         std::cout << i+1 << "   ";
@@ -250,7 +278,7 @@ void plansza::wyswietl() const{
         // wyswietla ulozenie figur, "+" oznacza puste pole
         for(int j=0;j<ROZMIAR;j++){
             if((*this)(j,i) == nullptr){
-                std::cout << "+ ";
+                std::cout << "x ";
             } else{
                 // biali beda wypisywaniu wielkimi literami
                 pomocniczy = (*this)(j,i)->zwroc_nazwe();
@@ -262,6 +290,7 @@ void plansza::wyswietl() const{
                 }
             }
         }
+        std::cout << "  " << i+1;
         std::cout << std::endl;
     }
     // wyswietla numery kolumn
@@ -357,6 +386,28 @@ void plansza::aktualizuj_stan_gry(const wspolrzedne &docelowe, figura *fig){
     if((*this)(docelowe) != nullptr){
         // bijemy figure na polu docelowym
         this->zbij((*this)(docelowe));
+    }
+
+    // sprawdzenie czy to moze byc roszada
+    if(fig->zwroc_nazwe() == 'k'){
+        // dluga roszada 
+        if((fig->aktualna_pozycja().x - docelowe.x) == 2){
+            // tylko uaktualnic wieze, dalsza czesc kodu uaktualni krola
+            figura *wieza = (*this)(0,docelowe.y);
+            (*this)(wieza->aktualna_pozycja()) = nullptr;
+            wieza->przesun(wspolrzedne(3,docelowe.y));
+            (*this)(3,docelowe.y) = wieza;
+            obecny_ruch.ustaw_ruch_spec('r');
+        } else{// krotka roszada
+            if(fig->aktualna_pozycja().x - docelowe.x == -2){
+                // tylko uaktualnic wieze, dalsza czesc kodu uaktualnia krola
+                figura *wieza = (*this)(7,docelowe.y);
+                (*this)(wieza->aktualna_pozycja()) = nullptr;
+                wieza->przesun(wspolrzedne(5,docelowe.y));
+                (*this)(5,docelowe.y) = wieza;
+                obecny_ruch.ustaw_ruch_spec('r');
+            }
+        }
     }
 
     (*this)(fig->aktualna_pozycja()) = nullptr;
@@ -1142,3 +1193,41 @@ bool plansza::czy_podwojny_szach(kolor kol) const{
     }
     return false;
 }
+
+void plansza::roszada_mozliwa(const kolor &kol, tablica_ruchow *tab_ruch){
+    druzyna *dr = this->zwroc_druzyne(kol);
+    if(dynamic_cast<krol*>((*dr)[0])->czy_pierwszy() == true){
+        int y = (*dr)[0]->aktualna_pozycja().y; // jesli krol sie nie ruszyl to zawsze bedzie albo w 0 albo 7 wierszu
+        if(dr->czy_szach() == nullptr){
+            figura *fig = (*this)(0,y);
+            if(fig != nullptr && (*this)(1,y) == nullptr
+            && (*this)(2,y) == nullptr && (*this)(3,y) == nullptr){
+                if(fig->zwroc_nazwe() == 'w'){
+                    if(dynamic_cast<wieza*>(fig)->czy_pierwszy() == true){
+                        // nie trzeba usuwac krola przed sprawdzeniem szacha,
+                        // nie jest szachowany obecnie, wiec w wierszu nie ma wrogiej wiezy lub hetmana
+                        if(this->czy_szach(wspolrzedne(3,y),kol) == nullptr
+                        && this->czy_szach(wspolrzedne(2,y),kol) == nullptr){
+                            tab_ruch->dodaj_elem(wspolrzedne(2,y)); // dodaje dluga roszade        
+                        }
+                    }
+                }
+            }
+            fig = (*this)(7,y);
+            if(fig != nullptr && (*this)(6,y) == nullptr
+            && (*this)(5,y) == nullptr){
+                if(fig->zwroc_nazwe() == 'w'){
+                    if(dynamic_cast<wieza*>(fig)->czy_pierwszy() == true){
+                        // nie trzeba usuwac krola przed sprawdzeniem szacha,
+                        // nie jest szachowany obecnie, wiec w wierszu nie ma wrogiej wiezy lub hetmana
+                        if(this->czy_szach(wspolrzedne(5,y),kol) == nullptr
+                        && this->czy_szach(wspolrzedne(6,y),kol) == nullptr){
+                            tab_ruch->dodaj_elem(wspolrzedne(6,y)); // dodaje krotka roszade        
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

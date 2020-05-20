@@ -97,6 +97,8 @@ class plansza{
     bool czy_cos_na_drodze(wspolrzedne start, const wspolrzedne &koniec, const wspolrzedne &wektor) const;
     // sprawdza czy druzyna jest w podwojnym szachu
     bool czy_podwojny_szach(kolor kol) const;
+    // probuje zrobic roszade w danej druzynie
+    void roszada_mozliwa(const kolor &kol, tablica_ruchow *tab_ruch);
 
 };
 

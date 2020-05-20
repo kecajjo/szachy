@@ -2,6 +2,10 @@
 
 // TODO poprawic zeby bylo czytelniejsze
 void szachy::czytaj_ruch(){
+    std::ofstream plik_z_ruchami;
+    plik_z_ruchami.open("kolejne_ruchy.txt", std::ofstream::app);
+    plik_z_ruchami << "gracz: ";
+
     std::cout << std::endl << "Podaj ruch, np A1 B6,\ngdzie A1 to pozycja startowa, B6 to pozycja koncowa" << std::endl;
     // pozycje startowe
     char kolumna_st;
@@ -23,6 +27,8 @@ void szachy::czytaj_ruch(){
         std::cin.ignore(10000, '\n');
         std::cin >> wiersz_st;
     }
+
+    plik_z_ruchami << kolumna_st << wiersz_st << " ";
 
     kolumna_st = toupper(kolumna_st); // jesli uzytkownik poda mala litere to nic to nie zmieni
     kol_po_konw_st = int(kolumna_st); // konwertujemy char na ASCII
@@ -48,6 +54,9 @@ void szachy::czytaj_ruch(){
         std::cin.ignore(10000, '\n');
         std::cin >> wiersz_kon;
     }
+
+    plik_z_ruchami << kolumna_kon << wiersz_kon << std::endl;
+    plik_z_ruchami.close();
 
     kolumna_kon = toupper(kolumna_kon); // jesli uzytkownik poda mala litere to nic to nie zmieni
     kol_po_konw_kon = int(kolumna_kon); // konwertujemy char na ASCII
@@ -77,8 +86,39 @@ bool szachy::czy_koniec(kolor kol){
 }
 
 void szachy::ruch_si(){
+    std::ofstream plik_z_ruchami;
+    plik_z_ruchami.open("kolejne_ruchy.txt", std::ofstream::app);
+    plik_z_ruchami << "SI: ";
+
     ruch ruch_komputera = this->alfa_beta_zewn(GLEBOKOSC_SI);
-    this->szachownica.ruch_figura(ruch_komputera.skad,ruch_komputera.docelowo);
+
+    switch(ruch_komputera.zwroc_skad().x){
+        case 0: plik_z_ruchami << "A"; break;
+        case 1: plik_z_ruchami << "B"; break;
+        case 2: plik_z_ruchami << "C"; break;
+        case 3: plik_z_ruchami << "D"; break;
+        case 4: plik_z_ruchami << "E"; break;
+        case 5: plik_z_ruchami << "F"; break;
+        case 6: plik_z_ruchami << "G"; break;
+        case 7: plik_z_ruchami << "H"; break;
+        default: plik_z_ruchami << "NIEDOZWOLONA LITERKA" << ruch_komputera.zwroc_skad().x << "    ";
+    }
+    plik_z_ruchami << ruch_komputera.zwroc_skad().y << " ";
+    switch(ruch_komputera.zwroc_docelowo().x){
+        case 0: plik_z_ruchami << "A"; break;
+        case 1: plik_z_ruchami << "B"; break;
+        case 2: plik_z_ruchami << "C"; break;
+        case 3: plik_z_ruchami << "D"; break;
+        case 4: plik_z_ruchami << "E"; break;
+        case 5: plik_z_ruchami << "F"; break;
+        case 6: plik_z_ruchami << "G"; break;
+        case 7: plik_z_ruchami << "H"; break;
+        default: plik_z_ruchami << "NIEDOZWOLONA LITERKA" << ruch_komputera.zwroc_docelowo().x << "    ";
+    }
+    plik_z_ruchami << ruch_komputera.zwroc_docelowo().y << std::endl;
+    plik_z_ruchami.close();
+
+    this->szachownica.ruch_figura(ruch_komputera.zwroc_skad(),ruch_komputera.zwroc_docelowo());
 }
 
 ruch szachy::alfa_beta_zewn(int glebokosc){
@@ -104,13 +144,16 @@ ruch szachy::alfa_beta_zewn(int glebokosc){
     } else{
         najlepszy_wynik = -1000000; // liczba znacznie mniejsza niz jakikolwiek mozliwy do uzyskania wynik
     }
-    for(int i=15;i>-1;i--){ // bedzie preferowac ruch pionkami
+
+    // bedzie preferowac figury
+    // (i+1)%16 spowoduje rozwzanie krola jako ostatniego
+    for(int i=0;i<16;i++){ // bedzie preferowac ruch pionkami
         // jesli wszystkie ruchy wskazuja na nullptr to pomijamy figure
-        if(wszystkie_ruchy[i] != nullptr){
-            int ile_ruchow_fig = wszystkie_ruchy[i]->rozmiar;
-            figura *aktualna_fig = (*dr)[i];
+        if(wszystkie_ruchy[(i+1)%16] != nullptr){
+            int ile_ruchow_fig = wszystkie_ruchy[(i+1)%16]->rozmiar;
+            figura *aktualna_fig = (*dr)[(i+1)%16];
             for(int j=0; j<ile_ruchow_fig; j++){
-                docelowo = (*wszystkie_ruchy[i])[j];
+                docelowo = (*wszystkie_ruchy[(i+1)%16])[j];
                 // ruszamy sie, by rozwazyc dana mozliwosc
                 // jako ze sprawdzamy tylko mozlwie ruchy mozemy od razu aktualizowac plansze
                 this->szachownica.aktualizuj_stan_gry(docelowo, aktualna_fig);
@@ -190,13 +233,15 @@ float szachy::alfa_beta_wewn(int glebokosc, float alfa, float beta, kolor kol){
         najlepszy_wynik = -1000000; // liczba znacznie mniejsza niz jakikolwiek mozliwy do uzyskania wynik
     }
 
-    for(int i=15;i>-1;i--){ // bedzie preferowac ruch pionkami
+    // bedzie preferowac figury
+    // (i+1)%16 spowoduje rozwzanie krola jako ostatniego
+    for(int i=0;i<16;i++){
         // jesli wszystkie ruchy wskazuja na nullptr to pomijamy figure
-        if(wszystkie_ruchy[i] != nullptr){
-            int ile_ruchow_fig = wszystkie_ruchy[i]->rozmiar;
-            figura *aktualna_fig = (*dr)[i];
+        if(wszystkie_ruchy[(i+1)%16] != nullptr){
+            int ile_ruchow_fig = wszystkie_ruchy[(i+1)%16]->rozmiar;
+            figura *aktualna_fig = (*dr)[(i+1)%16];
             for(int j=0; j<ile_ruchow_fig; j++){
-                docelowo = (*wszystkie_ruchy[i])[j];
+                docelowo = (*wszystkie_ruchy[(i+1)%16])[j];
                 // ruszamy sie, by rozwazyc dana mozliwosc
                 // jako ze sprawdzamy tylko mozlwie ruchy mozemy od razu aktualizowac plansze
                 this->szachownica.aktualizuj_stan_gry(docelowo, aktualna_fig);
@@ -244,6 +289,10 @@ void szachy::usun_tab_wsz_ruch(tablica_ruchow **usun){
 }
 
 void szachy::graj_przeciw_komputerowi(const kolor &kol_gracza){
+    std::ofstream plik_z_ruchami;
+    plik_z_ruchami.open("kolejne_ruchy.txt", std::ofstream::app);
+    plik_z_ruchami << std::endl << std::endl << std::endl;
+    plik_z_ruchami.close();
     while(this->czy_koniec(biali) == false && this->czy_koniec(czarni) == false){
         this->wyswietl_stan_gry();
         if(this->szachownica.czyja_tura() == kol_gracza){
@@ -262,4 +311,7 @@ void szachy::graj_przeciw_komputerowi(const kolor &kol_gracza){
     if(this->czy_koniec(czarni) == true){
         std::cout << "biali wygrali" << std::endl;
     }
+    std::cout << "koniec, wpisz dowolny znak" << std::endl;
+    char a;
+    std::cin >> a;
 }

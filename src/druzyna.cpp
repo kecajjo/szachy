@@ -16,7 +16,9 @@ druzyna::druzyna(kolor _kol){
         this->wszystkie_fig[6] = new skoczek(biali, wspolrzedne(1,0));
         this->wszystkie_fig[7] = new skoczek(biali, wspolrzedne(6,0));
         for(int i=0;i<8;i++){
-            this->wszystkie_fig[i+8] = new pionek(biali, wspolrzedne(i,1));
+            // takia dziwna kolejnosc w celu preferowania przez AI srodkowych pionkow
+            // jesli bedzie zaczynac od figur
+            this->wszystkie_fig[i+8] = new pionek(biali, wspolrzedne((i+2)%8,1));
         }
       break;
       case czarni:
@@ -29,7 +31,9 @@ druzyna::druzyna(kolor _kol){
         this->wszystkie_fig[6] = new skoczek(czarni, wspolrzedne(1,7));
         this->wszystkie_fig[7] = new skoczek(czarni, wspolrzedne(6,7));
         for(int i=0;i<8;i++){
-            this->wszystkie_fig[i+8] = new pionek(czarni, wspolrzedne(i,6));
+            // takia dziwna kolejnosc w celu preferowania przez AI srodkowych pionkow
+            // jesli bedzie zaczynac od figur
+            this->wszystkie_fig[i+8] = new pionek(czarni, wspolrzedne((i+2)%8,6));
         }
       break;
       default:
