@@ -3,6 +3,7 @@
 
 #include "plansza.hh"
 #include "lifo.hh"
+#include "GUI.hh"
 #include <ctime>
 #include <fstream>
 
@@ -11,6 +12,7 @@
 class szachy{
     
     plansza szachownica;
+    GUI okienko;
     // realizacja algorytmu alfa beta (ulepszony minmax)
     // zapamietuje pierwszy ruch
     // za pomoca alfa_beta_wewn sprawdza, ktory pierwszy ruch jest najlepszy
@@ -27,6 +29,7 @@ class szachy{
     // sztuczna inteligencja wykarzystujaca algorytm alfa beta
     void ruch_si();
     void graj_przeciw_komputerowi(const kolor &kol_gracza);
+
 };
 
 #endif

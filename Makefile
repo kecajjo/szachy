@@ -2,8 +2,9 @@ CXX = g++
 CXXFLAGS = -c -Ihh -Icpp -Wall -pedantic -std=c++17 -g
 OBJ = obj/main.o obj/wspolrzedne.o obj/figura.o obj/goniec.o\
 	obj/hetman.o obj/krol.o obj/pionek.o obj/skoczek.o obj/wieza.o\
-	obj/druzyna.o obj/plansza.o obj/szachy.o obj/ruch.o
-DOD_BIB = -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic
+	obj/druzyna.o obj/plansza.o obj/szachy.o obj/ruch.o obj/GUI.o
+DOD_BIB = -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic\
+	-lsfml-graphics -lsfml-window -lsfml-system -lopengl32
 
 __start__: szachy
 	
@@ -53,11 +54,14 @@ obj/plansza.o: src/plansza.cpp src/inc/plansza.hh src/inc/wspolrzedne.hh src/inc
 obj/wspolrzedne.o: src/wspolrzedne.cpp src/inc/wspolrzedne.hh
 	$(CXX) ${CXXFLAGS} -o obj/wspolrzedne.o src/wspolrzedne.cpp
 
-obj/szachy.o: src/szachy.cpp src/inc/szachy.hh src/inc/plansza.hh
+obj/szachy.o: src/szachy.cpp src/inc/szachy.hh src/inc/plansza.hh src/inc/GUI.hh
 	$(CXX) ${CXXFLAGS} -o obj/szachy.o src/szachy.cpp
 
 obj/ruch.o: src/ruch.cpp src/inc/ruch.hh src/inc/wspolrzedne.hh src/inc/figura.hh
 	$(CXX) ${CXXFLAGS} -o obj/ruch.o src/ruch.cpp
+
+obj/GUI.o: src/GUI.cpp src/inc/GUI.hh src/inc/plansza.hh
+	$(CXX) ${CXXFLAGS} -o obj/GUI.o src/GUI.cpp
 
 clean_linux:
 	rm -f obj/* szachy.exe

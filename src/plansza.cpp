@@ -245,7 +245,23 @@ void plansza::cofnij_ruch(){
             }
             break;
         }
-        // TODO co robic podczas bicia w przelocie
+        case 'b':{
+            druzyna *dr;
+            if(this->czyja_tura() == biali){
+                dr = this->zwroc_druzyne(czarni);
+            } else{
+                dr = this->zwroc_druzyne(biali);
+            }
+            wspolrzedne pomocnicze(poprzedni.zwroc_docelowo().x,
+                                poprzedni.zwroc_skad().y);
+            for(int i=8;i<16;i++){
+                if((*dr)[i]->aktualna_pozycja() == pomocnicze){
+                    (*dr)[i]->zmien_na_aktywna();
+                    (*this)(pomocnicze) = (*dr)[i];
+                }
+            }
+        }
+        default: break;
     }
 }
 
@@ -397,6 +413,15 @@ void plansza::aktualizuj_stan_gry(const wspolrzedne &docelowe, const wspolrzedne
         if(docelowe.y == 0 || docelowe.y == 7){
             this->aktualizuj_promocja(fig);
             obecny_ruch.ustaw_ruch_spec('p');
+        }
+        // jesli pinoke poruszyl sie po skosie (bil) na puste pole
+        // to wystapilo bicie w przelocie
+        if(((*this)(docelowe) == nullptr) && (docelowe.x != poczatkowe.x)){
+            obecny_ruch.ustaw_ruch_spec('b');
+            // bity pionek jest na przecieciu poczatkowego wiersza 
+            // i koncowej kolumny ruszanego pionka
+            this->zbij((*this)(docelowe.x, poczatkowe.y));
+            (*this)(docelowe.x,poczatkowe.y) = nullptr;
         }
     }
 
@@ -611,7 +636,7 @@ void plansza::mozliwy_po_wektorze(figura &fig, const mozliwosc &_mozliwosc,
     }
 }
 
-void plansza::mozliwe_bicia_pionkiem(pionek &pion, tablica_ruchow *tab_ruch, blokada_szacha *tab_blok){
+void plansza::mozliwe_bicia_pionkiem(const pionek &pion, tablica_ruchow *tab_ruch, blokada_szacha *tab_blok){
     
     wspolrzedne wektory_bicia[2];
     pion.zasady_bicia(wektory_bicia);
@@ -641,6 +666,132 @@ void plansza::mozliwe_bicia_pionkiem(pionek &pion, tablica_ruchow *tab_ruch, blo
                             tab_ruch->dodaj_elem(proba_bicia);
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+void plansza::mozliwe_bicie_w_przelocie(figura *&fig, tablica_ruchow *tab_ruch){
+    // tylko z tego wiersza biali moga bic w przelocie
+    if(fig->aktualna_pozycja().y == 4 && fig->ktora_druzyna() == biali){
+        this->w_przelocie_biali(fig, tab_ruch);
+    } else{
+        // tylko z tego wiersza czarni moga bic w przelocie
+        if(fig->aktualna_pozycja().y == 3 && fig->ktora_druzyna() == czarni){
+            this->w_przelocie_czarni(fig, tab_ruch);
+        }
+    }
+}
+
+void plansza::w_przelocie_biali(figura *&fig, tablica_ruchow *tab_ruch){
+    int x = fig->aktualna_pozycja().x + 1;
+    if(x<8){
+        if((*this)(x,4) != nullptr){
+            // w przelocie mozna bic tylko pionka
+            if(this->czy_wrogi_p(*(*this)(x,4),biali) == true){
+                ruch _ruch = this->poprzednie_ruchy.sprawdz_gore();
+                // pionek musial ruszyc sie o 2 pola
+                if(_ruch.zwroc_skad() == wspolrzedne(x,6)
+                && _ruch.zwroc_docelowo() == wspolrzedne(x,4)){
+                    // ciezko przewidziec wszystkie wyjatki,
+                    // wiec symulujemy ruch i sprawdzamy czy krol bedzie szachowany
+                    figura *bity = (*this)(x,4);
+                    (*this)(x,4) = nullptr;
+                    (*this)(x-1,4) = nullptr;
+                    (*this)(x,5) = fig;
+                    figura *szach = czy_szach((*this->zwroc_druzyne(biali))[0]->aktualna_pozycja(), biali);
+                    // cofamy symulacje
+                    (*this)(x,4) = bity;
+                    (*this)(x,5) = nullptr;
+                    (*this)(x-1,4) = fig;
+                    if(szach == nullptr){
+                        tab_ruch->dodaj_elem(wspolrzedne(x,5));
+                    } 
+                }
+            }
+        }
+    }
+    x -= 2;
+    if(x>=0){
+        if((*this)(x,4) != nullptr){
+            // w przelocie mozna bic tylko pionka
+            if(this->czy_wrogi_p(*(*this)(x,4),biali) == true){
+                ruch _ruch = this->poprzednie_ruchy.sprawdz_gore();
+                // pionek musial ruszyc sie o 2 pola
+                if(_ruch.zwroc_skad() == wspolrzedne(x,6)
+                && _ruch.zwroc_docelowo() == wspolrzedne(x,4)){
+                    // ciezko przewidziec wszystkie wyjatki,
+                    // wiec symulujemy ruch i sprawdzamy czy krol bedzie szachowany
+                    figura *bity = (*this)(x,4);
+                    (*this)(x,4) = nullptr;
+                    (*this)(x+1,4) = nullptr;
+                    (*this)(x,5) = fig;
+                    figura *szach = czy_szach((*this->zwroc_druzyne(biali))[0]->aktualna_pozycja(), biali);
+                    // cofamy symulacje
+                    (*this)(x,4) = bity;
+                    (*this)(x,5) = nullptr;
+                    (*this)(x+1,4) = fig;
+                    if(szach == nullptr){
+                        tab_ruch->dodaj_elem(wspolrzedne(x,5));
+                    } 
+                }
+            }
+        }
+    }
+}
+
+void plansza::w_przelocie_czarni(figura *&fig, tablica_ruchow *tab_ruch){
+    int x = fig->aktualna_pozycja().x + 1;
+    if(x<8){
+        if((*this)(x,3) != nullptr){
+            // w przelocie mozna bic tylko pionka
+            if(this->czy_wrogi_p(*(*this)(x,3),czarni) == true){
+                ruch _ruch = this->poprzednie_ruchy.sprawdz_gore();
+                // pionek musial ruszyc sie o 2 pola
+                if(_ruch.zwroc_skad() == wspolrzedne(x,1)
+                && _ruch.zwroc_docelowo() == wspolrzedne(x,3)){
+                    // ciezko przewidziec wszystkie wyjatki,
+                    // wiec symulujemy ruch i sprawdzamy czy krol bedzie szachowany
+                    figura *bity = (*this)(x,3);
+                    (*this)(x,3) = nullptr;
+                    (*this)(x-1,3) = nullptr;
+                    (*this)(x,2) = fig;
+                    figura *szach = czy_szach((*this->zwroc_druzyne(czarni))[0]->aktualna_pozycja(), czarni);
+                    // cofamy symulacje
+                    (*this)(x,3) = bity;
+                    (*this)(x,2) = nullptr;
+                    (*this)(x-1,3) = fig;
+                    if(szach == nullptr){
+                        tab_ruch->dodaj_elem(wspolrzedne(x,2));
+                    } 
+                }
+            }
+        }
+    }
+    x -= 2;
+    if(x>=0){
+        if((*this)(x,3) != nullptr){
+            // w przelocie mozna bic tylko pionka
+            if(this->czy_wrogi_p(*(*this)(x,3),czarni) == true){
+                ruch _ruch = this->poprzednie_ruchy.sprawdz_gore();
+                // pionek musial ruszyc sie o 2 pola
+                if(_ruch.zwroc_skad() == wspolrzedne(x,1)
+                && _ruch.zwroc_docelowo() == wspolrzedne(x,3)){
+                    // ciezko przewidziec wszystkie wyjatki,
+                    // wiec symulujemy ruch i sprawdzamy czy krol bedzie szachowany
+                    figura *bity = (*this)(x,3);
+                    (*this)(x,3) = nullptr;
+                    (*this)(x+1,3) = nullptr;
+                    (*this)(x,2) = fig;
+                    figura *szach = czy_szach((*this->zwroc_druzyne(czarni))[0]->aktualna_pozycja(), czarni);
+                    // cofamy symulacje
+                    (*this)(x,3) = bity;
+                    (*this)(x,2) = nullptr;
+                    (*this)(x+1,3) = fig;
+                    if(szach == nullptr){
+                        tab_ruch->dodaj_elem(wspolrzedne(x,2));
+                    } 
                 }
             }
         }
@@ -1086,7 +1237,6 @@ figura* plansza::czy_szach_przez_pionka(const wspolrzedne &pol_krola, const kolo
 }
 
 bool plansza::czy_wroga_w_lub_h(const figura &fig, const kolor &moj_kol) const{
-    // jesli pola na lewo od krola nie sa puste
     char nazwa = fig.zwroc_nazwe();
     if(nazwa == 'w' || nazwa == 'h'){
         if(fig.ktora_druzyna() != moj_kol){
@@ -1098,7 +1248,6 @@ bool plansza::czy_wroga_w_lub_h(const figura &fig, const kolor &moj_kol) const{
 }
 
 bool plansza::czy_wrogi_g_lub_h(const figura &fig, const kolor &moj_kol) const{
-    // jesli pola na lewo od krola nie sa puste
     char nazwa = fig.zwroc_nazwe();
     if(nazwa == 'g' || nazwa == 'h'){
         if(fig.ktora_druzyna() != moj_kol){
@@ -1110,7 +1259,6 @@ bool plansza::czy_wrogi_g_lub_h(const figura &fig, const kolor &moj_kol) const{
 }
 
 bool plansza::czy_wrogi_s(const figura &fig, const kolor &moj_kol) const{
-    // jesli pola na lewo od krola nie sa puste
     if(fig.zwroc_nazwe() == 's'){
         if(fig.ktora_druzyna() != moj_kol){
             // wrogi skoczek
@@ -1121,10 +1269,9 @@ bool plansza::czy_wrogi_s(const figura &fig, const kolor &moj_kol) const{
 }
 
 bool plansza::czy_wrogi_p(const figura &fig, const kolor &moj_kol) const{
-    // jesli pola na lewo od krola nie sa puste
     if(fig.zwroc_nazwe() == 'p'){
         if(fig.ktora_druzyna() != moj_kol){
-            // wrogi skoczek
+            // wrogi pionek
             return true;
         }
     }
@@ -1311,4 +1458,11 @@ void plansza::wylicz_wynik(){
         }
     }
     this->wynik = _wynik;
+}
+
+
+
+
+void plansza::test_bicia_w_przelocie(){
+
 }

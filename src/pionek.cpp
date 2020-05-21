@@ -34,7 +34,7 @@ bool pionek::czy_pierwszy(){
     return this->nie_ruszyl;
 }
 
-void pionek::zasady_bicia(wspolrzedne *tablica_zasad){
+void pionek::zasady_bicia(wspolrzedne *tablica_zasad) const{
 
     // pionki czarne bija w jedna strone a pionki biale w druga
     if(this->kol == biali){

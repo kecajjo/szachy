@@ -15,7 +15,7 @@ class pionek: public figura{
     void ustaw_nie_ruszono();
     bool czy_pierwszy(); // zwraca czy pionek pionek jeszcze sie nie ruszal
     // zapisuje wektory jakimi pionki moga bic do przekazanej tablicy
-    void zasady_bicia(wspolrzedne *tablica_zasad);
+    void zasady_bicia(wspolrzedne *tablica_zasad) const;
     ~pionek();
 };
 

@@ -66,7 +66,11 @@ class plansza{
     void mozliwy_po_wektorze(figura &fig, const mozliwosc &_mozliwosc,
         tablica_ruchow *tab_ruch, blokada_szacha *tab_blok);
     // zwraca mozliwe bicia pionkiem
-    void mozliwe_bicia_pionkiem(pionek &pion, tablica_ruchow *tab_ruch, blokada_szacha *tab_blok);
+    void mozliwe_bicia_pionkiem(const pionek &pion, tablica_ruchow *tab_ruch, blokada_szacha *tab_blok);
+    // sprawdza czy da sie bic pionkiem w przelocie
+    void mozliwe_bicie_w_przelocie(figura *&fig, tablica_ruchow *tab_ruch);
+    void w_przelocie_biali(figura *&fig, tablica_ruchow *tab_ruch);
+    void w_przelocie_czarni(figura *&fig, tablica_ruchow *tab_ruch);
     // sprawdza czy ruszajac sie nie spowodujemy szacha na wlasnym krolu
     // start to pole z ktorego sie ruszamy, wektor to wektor w jakim chcemy sie ruszyc
     // wektor poniewaz w jedna strone mozemy nie odslanic krola a w inna bedziemy odslaniac
@@ -106,6 +110,10 @@ class plansza{
     void aktualizuj_promocja(figura *&fig, const char &na_co_prom = 'h');
     // wylicza wynik na podstawie obecnej sytuacji na planszy
     void wylicz_wynik();
+
+
+
+    void test_bicia_w_przelocie();
 };
 
 #endif
