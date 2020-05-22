@@ -1431,26 +1431,27 @@ void plansza::wylicz_wynik(){
     for(int i=0;i<16;i++){
         if((*dr)[i]->czy_aktywna() == true){
             switch((*dr)[i]->zwroc_nazwe()){
-                case 'p': _wynik -= 1; break;
-                case 'g': _wynik -= 3; break;
-                case 's': _wynik -= 3; break;
-                case 'w': _wynik -= 5; break;
-                case 'h': _wynik -= 9; break;
+                case 'p': _wynik -= 1*((*dr)[i]->aktualna_pozycja().y*2+10)*0.1; break;
+                case 'g': _wynik -= 3*((*dr)[i]->aktualna_pozycja().y+10)*0.1; break;
+                case 's': _wynik -= 3*((*dr)[i]->aktualna_pozycja().y+10)*0.1; break;
+                case 'w': _wynik -= 5*((*dr)[i]->aktualna_pozycja().y*0.6+10)*0.1; break;
+                case 'h': _wynik -= 9*((*dr)[i]->aktualna_pozycja().y*0.4+10)*0.1; break;
                 case 'k': _wynik -= 100; break;
                 default: std::cout << "niedozwolona nazwa w druzynie" << std::endl;
                 break;
             }
         }
     }
+    // 17-y dla czarnych dziala tak jak y+10 dla bialych
     dr = this->zwroc_druzyne(czarni);
     for(int i=0;i<16;i++){
         if((*dr)[i]->czy_aktywna() == true){
             switch((*dr)[i]->zwroc_nazwe()){
-                case 'p': _wynik += 1; break;
-                case 'g': _wynik += 3; break;
-                case 's': _wynik += 3; break;
-                case 'w': _wynik += 5; break;
-                case 'h': _wynik += 9; break;
+                case 'p': _wynik += 1*((7-(*dr)[i]->aktualna_pozycja().y)*2+10)*0.1; break;
+                case 'g': _wynik += 3*((7-(*dr)[i]->aktualna_pozycja().y)+10)*0.1; break;
+                case 's': _wynik += 3*((7-(*dr)[i]->aktualna_pozycja().y)+10)*0.1; break;
+                case 'w': _wynik += 5*((7-(*dr)[i]->aktualna_pozycja().y)*0.6+10)*0.1; break;
+                case 'h': _wynik += 9*((7-(*dr)[i]->aktualna_pozycja().y)*0.4+10)*0.1; break;
                 case 'k': _wynik += 100; break;
                 default: std::cout << "niedozwolona nazwa w druzynie" << std::endl;
                 break;

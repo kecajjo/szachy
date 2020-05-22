@@ -289,12 +289,29 @@ void szachy::usun_tab_wsz_ruch(tablica_ruchow **usun){
 }
 
 void szachy::graj_przeciw_komputerowi(const kolor &kol_gracza){
+
     std::ofstream plik_z_ruchami;
     plik_z_ruchami.open("kolejne_ruchy.txt", std::ofstream::app);
     plik_z_ruchami << std::endl << std::endl << std::endl;
     plik_z_ruchami.close();
-    while(this->czy_koniec(biali) == false && this->czy_koniec(czarni) == false){
+
+    sf::RenderWindow okienko(sf::VideoMode(720,720), "szachy");
+    sf::Event wydarzenie;
+    while(okienko.isOpen() == true){
         this->wyswietl_stan_gry();
+        
+        while (okienko.pollEvent(wydarzenie))
+        {
+            // jesli okno zostalo zamkniete
+            if (wydarzenie.type == sf::Event::Closed){
+                okienko.close();
+                //konczy dzialanie funkcji
+                return;
+            }
+        }
+
+        this->obsluga_okienka.rysuj(this->szachownica, okienko);
+
         if(this->szachownica.czyja_tura() == kol_gracza){
             this->czytaj_ruch();
         } else{
@@ -304,14 +321,11 @@ void szachy::graj_przeciw_komputerowi(const kolor &kol_gracza){
             double czas = (double)(koniec-start)/CLOCKS_PER_SEC;
             std::cout << "czas liczenia przez AI: " << czas << std::endl;
         }
+        if(this->czy_koniec(biali) == true){
+            std::cout << "Czarni wygrali" << std::endl;
+        }
+        if(this->czy_koniec(czarni) == true){
+            std::cout << "biali wygrali" << std::endl;
+        }
     }
-    if(this->czy_koniec(biali) == true){
-        std::cout << "Czarni wygrali" << std::endl;
-    }
-    if(this->czy_koniec(czarni) == true){
-        std::cout << "biali wygrali" << std::endl;
-    }
-    std::cout << "koniec, wpisz dowolny znak" << std::endl;
-    char a;
-    std::cin >> a;
 }

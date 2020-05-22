@@ -3,17 +3,23 @@
 
 #include "plansza.hh"
 #include <SFML/Graphics.hpp>
-#include <thread>
-#include <mutex>
+#include <SFML/Window.hpp>
+#include <iostream>
 
 class GUI{
-    sf::RenderWindow okno;
-    sf::Event wydarzenie;
+
+    sf::Texture plansza_tex;
+    sf::Sprite plansza_sp;
+    // tablica figur
+    // pierwszy wymiar to rodzaj figury, drugi to kolor
+    sf::Texture figury_tex[6][2];
+    sf::Sprite figury_sp[6][2];
+    // polozenie konkretnych pol na planszy w pikselach
+    sf::Vector2f pola[8][8];
+
     public:
     GUI();
-    void wyswietl(const plansza &szachownica);
-    // sprawdza czy zamknieto okno albo zaznaczono figure
-    void sprawdzaj_wydarzenia();
+    void rysuj(const plansza &szachownica, sf::RenderWindow &okienko);
 };
 
 #endif

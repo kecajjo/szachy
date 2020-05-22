@@ -6,13 +6,14 @@
 #include "GUI.hh"
 #include <ctime>
 #include <fstream>
+#include <SFML/Graphics.hpp>
 
 #define GLEBOKOSC_SI 4
 
 class szachy{
     
     plansza szachownica;
-    GUI okienko;
+    GUI obsluga_okienka;
     // realizacja algorytmu alfa beta (ulepszony minmax)
     // zapamietuje pierwszy ruch
     // za pomoca alfa_beta_wewn sprawdza, ktory pierwszy ruch jest najlepszy
