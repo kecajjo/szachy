@@ -5,7 +5,7 @@
 int main(){
     szachy gra;
 
-    gra.graj_przeciw_komputerowi(biali);
+    gra.graj_przeciw_komputerowi(czarni);
     
     return 0;
 }

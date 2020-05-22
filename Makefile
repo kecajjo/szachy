@@ -60,7 +60,7 @@ obj/szachy.o: src/szachy.cpp src/inc/szachy.hh src/inc/plansza.hh src/inc/GUI.hh
 obj/ruch.o: src/ruch.cpp src/inc/ruch.hh src/inc/wspolrzedne.hh src/inc/figura.hh
 	$(CXX) ${CXXFLAGS} -o obj/ruch.o src/ruch.cpp
 
-obj/GUI.o: src/GUI.cpp src/inc/GUI.hh src/inc/plansza.hh
+obj/GUI.o: src/GUI.cpp src/inc/GUI.hh src/inc/plansza.hh src/inc/wspolrzedne.hh
 	$(CXX) ${CXXFLAGS} -o obj/GUI.o src/GUI.cpp
 
 clean_linux:

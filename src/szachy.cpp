@@ -299,7 +299,9 @@ void szachy::graj_przeciw_komputerowi(const kolor &kol_gracza){
     sf::Event wydarzenie;
     while(okienko.isOpen() == true){
         this->wyswietl_stan_gry();
-        
+
+        // jesli wybrano figure podczas ruchu komputera czysci to
+        // sprawdza czy nie zamknieto okna
         while (okienko.pollEvent(wydarzenie))
         {
             // jesli okno zostalo zamkniete
@@ -310,10 +312,18 @@ void szachy::graj_przeciw_komputerowi(const kolor &kol_gracza){
             }
         }
 
-        this->obsluga_okienka.rysuj(this->szachownica, okienko);
+        this->obsluga_okienka.rysuj(this->szachownica, okienko, kol_gracza);
 
         if(this->szachownica.czyja_tura() == kol_gracza){
-            this->czytaj_ruch();
+            wspolrzedne skad = this->obsluga_okienka.akcja_uzytkownika(okienko, kol_gracza);
+            if(skad == wspolrzedne(10,10)){
+                return;
+            }
+            wspolrzedne dokad = this->obsluga_okienka.akcja_uzytkownika(okienko, kol_gracza);
+            if(dokad == wspolrzedne(10,10)){
+                return;
+            }
+            this->szachownica.ruch_figura(skad, dokad);
         } else{
             std::clock_t start = std::clock();
             this->ruch_si();
