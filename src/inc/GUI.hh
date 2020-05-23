@@ -22,11 +22,13 @@ class GUI{
     public:
     GUI();
     // kolor to kolor z ktorego perspektywy wyswietlamy plansze
-    void rysuj(const plansza &szachownica, sf::RenderWindow &okienko, const kolor &kol_gracza);
+    void wyswietl(const plansza &szachownica, sf::RenderWindow &okienko, const kolor &kol_gracza);
+    void renderuj(const plansza &szachownica, sf::RenderWindow &okienko, const kolor &kol_gracza);
     // zaznacza pole ktore wybral uzytkownik i podaje jego wspolrzedne
     // jesli zamknal okno, zwraca wspolrzedne 10,10
     // kolor to kolor z ktorego perspektywy widzimy plansze
-    wspolrzedne akcja_uzytkownika(sf::RenderWindow &okienko, const kolor &kol_gracza);
+    wspolrzedne akcja_uzytkownika(const plansza &szachownica, sf::RenderWindow &okienko, const kolor &kol_gracza);
+    void koniec(const plansza &szachownica, sf::RenderWindow &okienko, const kolor &kol_gracza, const kolor &zwyciezcy);
 };
 
 #endif

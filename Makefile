@@ -1,17 +1,19 @@
 CXX = g++
-CXXFLAGS = -c -Ihh -Icpp -Wall -pedantic -std=c++17
+CXXFLAGS = -c -Ihh -Icpp -Wall -pedantic -std=c++17 $(SFML_NAGLOWKI)
 OBJ = obj/main.o obj/wspolrzedne.o obj/figura.o obj/goniec.o\
 	obj/hetman.o obj/krol.o obj/pionek.o obj/skoczek.o obj/wieza.o\
 	obj/druzyna.o obj/plansza.o obj/szachy.o obj/ruch.o obj/GUI.o
-DOD_BIB = -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic\
-	-lsfml-graphics -lsfml-window -lsfml-system -lopengl32 -lwinmm -lgdi32
+DOD_BIB = -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic
+SFML_NAGLOWKI = -DSFML_STATIC -I D:/PROGRAMY/programowanie/SFML/SFML/include
+SFML_BIBLIOTEKI = -L D:/PROGRAMY/programowanie/SFML/SFM/lib -lsfml-graphics-s\
+	-lsfml-window-s -lsfml-system-s -lopengl32 -lwinmm -lgdi32 -lfreetype
 
 __start__: szachy
 	
 
 szachy: obj obj/main.o $(OBJ)
 	ar rcs obj/libmoja_biblioteka.a $(OBJ)
-	g++ -Wall -Werror -Wextra -pedantic -std=c++17 -o szachy.exe -L ./obj -l moja_biblioteka $(DOD_BIB)
+	g++ -Wall -Werror -Wextra -pedantic -std=c++17 -o szachy.exe -L ./obj -l moja_biblioteka $(SFML_BIBLIOTEKI) $(DOD_BIB)
 	./szachy.exe
 
 obj: 

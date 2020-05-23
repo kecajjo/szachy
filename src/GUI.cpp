@@ -43,7 +43,12 @@ GUI::GUI(){
     
 }
 
-void GUI::rysuj(const plansza &szachownica, sf::RenderWindow &okienko, const kolor &kol_gracza){
+void GUI::wyswietl(const plansza &szachownica, sf::RenderWindow &okienko, const kolor &kol_gracza){
+    this->renderuj(szachownica, okienko, kol_gracza);
+    okienko.display();
+}
+
+void GUI::renderuj(const plansza &szachownica, sf::RenderWindow &okienko, const kolor &kol_gracza){
     okienko.clear();
 
     okienko.draw(this->plansza_sp);
@@ -58,29 +63,30 @@ void GUI::rysuj(const plansza &szachownica, sf::RenderWindow &okienko, const kol
                 } else{ // w przeciwnym razie beda czarne
                     kol = 1;
                 }
+                // pierwszy wiersz jest na dole nie na gorze
                 switch(szachownica(i,j)->zwroc_nazwe()){
                     case 'p':
-                        this->figury_sp[5][kol].setPosition(i*this->siatka_x, j*this->siatka_y);
+                        this->figury_sp[5][kol].setPosition(i*this->siatka_x, (7-j)*this->siatka_y);
                         okienko.draw(this->figury_sp[5][kol]);
                      break;
                     case 's':
-                        this->figury_sp[4][kol].setPosition(i*this->siatka_x, j*this->siatka_y);
+                        this->figury_sp[4][kol].setPosition(i*this->siatka_x, (7-j)*this->siatka_y);
                         okienko.draw(this->figury_sp[4][kol]);
                      break;
                     case 'g':
-                        this->figury_sp[3][kol].setPosition(i*this->siatka_x, j*this->siatka_y);
+                        this->figury_sp[3][kol].setPosition(i*this->siatka_x, (7-j)*this->siatka_y);
                         okienko.draw(this->figury_sp[3][kol]);
                      break;
                     case 'w':
-                        this->figury_sp[2][kol].setPosition(i*this->siatka_x, j*this->siatka_y);
+                        this->figury_sp[2][kol].setPosition(i*this->siatka_x, (7-j)*this->siatka_y);
                         okienko.draw(this->figury_sp[2][kol]);
                      break;
                     case 'h':
-                        this->figury_sp[1][kol].setPosition(i*this->siatka_x, j*this->siatka_y);
+                        this->figury_sp[1][kol].setPosition(i*this->siatka_x, (7-j)*this->siatka_y);
                         okienko.draw(this->figury_sp[1][kol]);
                      break;
                     case 'k':
-                        this->figury_sp[0][kol].setPosition(i*this->siatka_x, j*this->siatka_y);
+                        this->figury_sp[0][kol].setPosition(i*this->siatka_x, (7-j)*this->siatka_y);
                         okienko.draw(this->figury_sp[0][kol]);
                      break;
                     default: break;
@@ -88,10 +94,9 @@ void GUI::rysuj(const plansza &szachownica, sf::RenderWindow &okienko, const kol
             }
         }
     }
-    okienko.display();
 }
 
-wspolrzedne GUI::akcja_uzytkownika(sf::RenderWindow &okienko, const kolor &kol_gracza){
+wspolrzedne GUI::akcja_uzytkownika(const plansza &szachownica, sf::RenderWindow &okienko, const kolor &kol_gracza){
     // petla bedzie dzialac do momentu wykonania jednej z wymienionych akcji
     bool czy_koniec = false;
     wspolrzedne kliknieto(10,10);
@@ -103,20 +108,21 @@ wspolrzedne GUI::akcja_uzytkownika(sf::RenderWindow &okienko, const kolor &kol_g
                 czy_koniec = true;
              break;
             case sf::Event::MouseButtonPressed:
-            std::cout << "kliknieto myszka " << std::endl;
                 if(wydarzenie.mouseButton.button == sf::Mouse::Left){
-                    std::cout << "kliknieto lewy przycisk " << std::endl;
                     kliknieto.x = wydarzenie.mouseButton.x/this->siatka_x;
                     kliknieto.y = wydarzenie.mouseButton.y/this->siatka_y;
                     // jesli kliknieto poza pola
                     if(kliknieto.x < 0 || kliknieto.x >=8
                      || kliknieto.y < 0 || kliknieto.y >=8){
-                         kliknieto = wspolrzedne(10,10);
+                        kliknieto = wspolrzedne(10,10);
                     } else{ // jesli pliknieto na plansze, konczymy obieg petli
                         czy_koniec = true;
+                        this->renderuj(szachownica, okienko, kol_gracza);
                         // tworzy prostokat o rozmiarach pola
                         sf::RectangleShape prostokat(sf::Vector2f(this->siatka_x,this->siatka_y));
-                        prostokat.setPosition(kliknieto.x*this->siatka_x+4,kliknieto.y*this->siatka_y);
+                        // pierwsze pole jest na dole
+                        prostokat.setPosition(kliknieto.x*this->siatka_x,kliknieto.y*this->siatka_y+3);
+                        // jedynie kontury beda widoczne
                         prostokat.setFillColor(sf::Color::Transparent);
                         prostokat.setOutlineColor(sf::Color::Green);
                         prostokat.setOutlineThickness(5);
@@ -128,5 +134,70 @@ wspolrzedne GUI::akcja_uzytkownika(sf::RenderWindow &okienko, const kolor &kol_g
             default: break;
         }
     }
+    // pierwszy wiersza jest na dole
+    if(kliknieto != wspolrzedne(10,10)){
+        kliknieto.y = 7-kliknieto.y;
+    }
     return kliknieto;
+}
+void GUI::koniec(const plansza &szachownica, sf::RenderWindow &okienko, const kolor &kol_gracza, const kolor &kol_zwyciezcy){
+    this->renderuj(szachownica, okienko, kol_gracza);
+    
+    sf::Text tekst;
+    sf::Font czcionka;
+    sf::Color kolor_tekstu(0,80,150,255);
+    czcionka.loadFromFile("./obrazki/Arialn.ttf");
+    tekst.setFont(czcionka);
+    if(kol_zwyciezcy == biali){
+        tekst.setString("BIALI WYGRALI");
+    }
+    if(kol_zwyciezcy == czarni){
+        tekst.setString("CZARNI WYGRALI");
+    }
+    tekst.setCharacterSize(90); // wielkosc w pikselach
+    tekst.setFillColor(kolor_tekstu);
+    tekst.setStyle(sf::Text::Bold);
+    float szerokosc = tekst.getGlobalBounds().width;
+    float wysokosc = tekst.getGlobalBounds().height;
+    // mamy podzial 8x8, wiec srodek bedzie przy 4
+    // wskazujemy na lewy gorny rog, wiec musimy odjac polowe szerokosci napisu
+    // zeby napis byl ponad srodkiem odejmuejmy cala wysokosc
+    tekst.setPosition(this->siatka_x*4-szerokosc/2, this->siatka_y*4-wysokosc);
+    okienko.draw(tekst);
+
+    // informacja jak zakonczyc program
+    sf::Text jak_zakonczyc;
+    jak_zakonczyc.setFont(czcionka);
+    jak_zakonczyc.setString("wcisnij spacje zeby zakonczyc");
+    jak_zakonczyc.setCharacterSize(30);
+    jak_zakonczyc.setFillColor(kolor_tekstu);
+    szerokosc = jak_zakonczyc.getGlobalBounds().width;
+    wysokosc = jak_zakonczyc.getGlobalBounds().height;
+    jak_zakonczyc.setPosition(this->siatka_x*4-szerokosc/2, this->siatka_y*8-wysokosc-30);
+    okienko.draw(jak_zakonczyc);
+
+    okienko.display();
+
+    // konczy dzialanie programu jesli uzytkownik wcisnie spacje
+    sf::Event wydarzenie;
+    while(1){
+        while (okienko.waitEvent(wydarzenie)){
+            switch(wydarzenie.type){
+                case sf::Event::Closed: // jesli okno zostalo zamkniete
+                    okienko.close();
+                    //konczy dzialanie funkcji
+                    return;
+                 break;
+                case sf::Event::KeyPressed:
+                    // wcisnieto spacje
+                    if(wydarzenie.key.code == sf::Keyboard::Key::Space){
+                        okienko.close();
+                        // konczy dzialanie funkcji
+                        return;
+                    }
+                 break;
+                default: break;
+            }
+        }
+    }
 }

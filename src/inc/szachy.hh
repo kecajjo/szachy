@@ -30,6 +30,8 @@ class szachy{
     // sztuczna inteligencja wykarzystujaca algorytm alfa beta
     void ruch_si();
     void graj_przeciw_komputerowi(const kolor &kol_gracza);
+    // zapisuje do pliku jak gracz sie probowal ruszyc
+    void logi_gracza(const wspolrzedne &start, const wspolrzedne &koniec) const;
 
 };
 

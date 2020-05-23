@@ -1,6 +1,6 @@
 #include "inc/szachy.hh"
 
-// TODO poprawic zeby bylo czytelniejsze
+// nie uzywane, w razie potrzeby wymaga
 void szachy::czytaj_ruch(){
     std::ofstream plik_z_ruchami;
     plik_z_ruchami.open("kolejne_ruchy.txt", std::ofstream::app);
@@ -298,7 +298,6 @@ void szachy::graj_przeciw_komputerowi(const kolor &kol_gracza){
     sf::RenderWindow okienko(sf::VideoMode(720,720), "szachy");
     sf::Event wydarzenie;
     while(okienko.isOpen() == true){
-        this->wyswietl_stan_gry();
 
         // jesli wybrano figure podczas ruchu komputera czysci to
         // sprawdza czy nie zamknieto okna
@@ -312,30 +311,70 @@ void szachy::graj_przeciw_komputerowi(const kolor &kol_gracza){
             }
         }
 
-        this->obsluga_okienka.rysuj(this->szachownica, okienko, kol_gracza);
+        this->obsluga_okienka.wyswietl(this->szachownica, okienko, kol_gracza);
 
         if(this->szachownica.czyja_tura() == kol_gracza){
-            wspolrzedne skad = this->obsluga_okienka.akcja_uzytkownika(okienko, kol_gracza);
+            wspolrzedne skad = this->obsluga_okienka.akcja_uzytkownika(this->szachownica, okienko, kol_gracza);
             if(skad == wspolrzedne(10,10)){
                 return;
             }
-            wspolrzedne dokad = this->obsluga_okienka.akcja_uzytkownika(okienko, kol_gracza);
+            wspolrzedne dokad = this->obsluga_okienka.akcja_uzytkownika(this->szachownica, okienko, kol_gracza);
             if(dokad == wspolrzedne(10,10)){
                 return;
             }
+            // logi
+            this->logi_gracza(skad, dokad);
+
             this->szachownica.ruch_figura(skad, dokad);
         } else{
+            //logi
             std::clock_t start = std::clock();
             this->ruch_si();
             std::clock_t koniec = std::clock();
             double czas = (double)(koniec-start)/CLOCKS_PER_SEC;
-            std::cout << "czas liczenia przez AI: " << czas << std::endl;
+            std::ofstream plik_z_ruchami;
+            plik_z_ruchami.open("kolejne_ruchy.txt", std::ofstream::app);
+            plik_z_ruchami << "czas: " << czas <<std::endl;
+            plik_z_ruchami.close();
         }
         if(this->czy_koniec(biali) == true){
             std::cout << "Czarni wygrali" << std::endl;
+            this->obsluga_okienka.koniec(this->szachownica, okienko, kol_gracza, czarni);
         }
         if(this->czy_koniec(czarni) == true){
             std::cout << "biali wygrali" << std::endl;
+            this->obsluga_okienka.koniec(this->szachownica, okienko, kol_gracza, biali);
         }
     }
+}
+
+void szachy::logi_gracza(const wspolrzedne &start, const wspolrzedne &koniec) const{
+    std::ofstream plik_z_ruchami;
+    char kolumna_st;
+    char kolumna_kon;
+    switch(start.x){
+        case 0: kolumna_st = 'A'; break;
+        case 1: kolumna_st = 'B'; break;
+        case 2: kolumna_st = 'C'; break;
+        case 3: kolumna_st = 'D'; break;
+        case 4: kolumna_st = 'E'; break;
+        case 5: kolumna_st = 'F'; break;
+        case 6: kolumna_st = 'G'; break;
+        case 7: kolumna_st = 'H'; break;
+        default: std::cout << "BLAD: gracz podal niedozwolona kolumne" << std::endl;
+    }
+    switch(koniec.x){
+        case 0: kolumna_kon = 'A'; break;
+        case 1: kolumna_kon = 'B'; break;
+        case 2: kolumna_kon = 'C'; break;
+        case 3: kolumna_kon = 'D'; break;
+        case 4: kolumna_kon = 'E'; break;
+        case 5: kolumna_kon = 'F'; break;
+        case 6: kolumna_kon = 'G'; break;
+        case 7: kolumna_kon = 'H'; break;
+        default: std::cout << "BLAD: gracz podal niedozwolona kolumne" << std::endl;
+    }
+    plik_z_ruchami.open("kolejne_ruchy.txt", std::ofstream::app);
+    plik_z_ruchami << "gracz: "  << kolumna_st << start.y+1 << " " << kolumna_kon << koniec.y+1 <<std::endl;
+    plik_z_ruchami.close();
 }
