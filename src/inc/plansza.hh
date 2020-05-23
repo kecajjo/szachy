@@ -110,10 +110,9 @@ class plansza{
     void aktualizuj_promocja(figura *&fig, const char &na_co_prom = 'h');
     // wylicza wynik na podstawie obecnej sytuacji na planszy
     void wylicz_wynik();
-
-
-
-    void test_bicia_w_przelocie();
+    // sprawdza czy ktorys krol sasiaduje z danym polem
+    bool czy_obok_krola(const wspolrzedne &wsp);
+    
 };
 
 #endif

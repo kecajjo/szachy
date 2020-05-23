@@ -160,6 +160,7 @@ tablica_ruchow *plansza::mozliwe_ruchy(wspolrzedne start, blokada_szacha *tab_bl
         case 'p':{
             pionek *pion = dynamic_cast<pionek*>(fig);
             mozliwe_bicia_pionkiem(*pion, tab_ruch, tab_blok);
+            mozliwe_bicie_w_przelocie(fig, tab_ruch);
             break;
         }
         case 'k':
@@ -818,10 +819,15 @@ bool plansza::czy_bede_szachowany(wspolrzedne start, wspolrzedne wektor){
         (*this)(start) = nullptr;
 
         fig = this->czy_szach(start+wektor, fig->ktora_druzyna());
-
+        bool obok_kr = this->czy_obok_krola(start+wektor);
+        // sprawdza czy 2 krole nie beda obok siebie
         // po rozpatrzeniu ponownie umieszczamy krola na planszy
         (*this)(start) = kr;
         if(fig != nullptr){
+            return true;
+        }
+
+        if(obok_kr == true){
             return true;
         }
     }
@@ -1482,9 +1488,62 @@ void plansza::wylicz_wynik(){
     this->wynik = _wynik;
 }
 
-
-
-
-void plansza::test_bicia_w_przelocie(){
-
+bool plansza::czy_obok_krola(const wspolrzedne &wsp){
+    if(wsp.x != 7){ // jesli nie jest w ostatniej kolumnie
+        if((*this)(wsp.x+1,wsp.y) != nullptr){
+            if((*this)(wsp.x+1,wsp.y)->zwroc_nazwe() == 'k'){
+                return true;
+            }
+        }
+        if(wsp.y != 7){ // jesli nie naroznik
+            if((*this)(wsp.x+1,wsp.y+1) != nullptr){
+                if((*this)(wsp.x+1,wsp.y+1)->zwroc_nazwe() == 'k'){
+                    return true;
+                }
+            }
+        }
+        if(wsp.y != 0){ // jesli nie drugi naroznik
+            if((*this)(wsp.x+1,wsp.y-1) != nullptr){
+                if((*this)(wsp.x+1,wsp.y-1)->zwroc_nazwe() == 'k'){
+                    return true;
+                }
+            }
+        }
+    }
+    if(wsp.x != 0){ // jesli nie w pierwszej kolumnie
+        if((*this)(wsp.x-1,wsp.y) != nullptr){
+            if((*this)(wsp.x-1,wsp.y)->zwroc_nazwe() == 'k'){
+                return true;
+            }
+        }
+        if(wsp.y != 7){ // jesli nie trzeci naroznik
+            if((*this)(wsp.x-1,wsp.y+1) != nullptr){
+                if((*this)(wsp.x-1,wsp.y+1)->zwroc_nazwe() == 'k'){
+                    return true;
+                }
+            }
+        }
+        if(wsp.y != 0){ // jesli nie czwarty naroznik
+            if((*this)(wsp.x-1,wsp.y-1) != nullptr){
+                if((*this)(wsp.x-1,wsp.y-1)->zwroc_nazwe() == 'k'){
+                    return true;
+                }
+            }
+        }
+    }
+    if(wsp.y != 7){ // jesli nie w ostatnim wierszu
+        if((*this)(wsp.x,wsp.y+1) != nullptr){
+            if((*this)(wsp.x,wsp.y+1)->zwroc_nazwe() == 'k'){
+                return true;
+            }
+        }
+    }
+    if(wsp.y != 0){ // jesli nie w ostatniej kolumnie
+        if((*this)(wsp.x,wsp.y-1) != nullptr){
+            if((*this)(wsp.x,wsp.y-1)->zwroc_nazwe() == 'k'){
+                return true;
+            }
+        }
+    }
+    return false;
 }
