@@ -109,7 +109,7 @@ void szachy::ruch_si(){
         case 7: plik_z_ruchami << "H"; break;
         default: plik_z_ruchami << "NIEDOZWOLONA LITERKA" << ruch_komputera.zwroc_skad().x << "    ";
     }
-    plik_z_ruchami << ruch_komputera.zwroc_skad().y << " ";
+    plik_z_ruchami << ruch_komputera.zwroc_skad().y+1 << " ";
     switch(ruch_komputera.zwroc_docelowo().x){
         case 0: plik_z_ruchami << "A"; break;
         case 1: plik_z_ruchami << "B"; break;
@@ -121,7 +121,7 @@ void szachy::ruch_si(){
         case 7: plik_z_ruchami << "H"; break;
         default: plik_z_ruchami << "NIEDOZWOLONA LITERKA" << ruch_komputera.zwroc_docelowo().x << "    ";
     }
-    plik_z_ruchami << ruch_komputera.zwroc_docelowo().y << std::endl;
+    plik_z_ruchami << ruch_komputera.zwroc_docelowo().y+1 << std::endl;
     plik_z_ruchami.close();
 
     this->szachownica.ruch_figura(ruch_komputera.zwroc_skad(),ruch_komputera.zwroc_docelowo());
@@ -173,38 +173,35 @@ ruch szachy::alfa_beta_zewn(int glebokosc){
     // bedzie preferowac figury
     // (i+1)%16 spowoduje rozwzanie krola jako ostatniego
     for(int i=0;i<16;i++){
-        // jesli wszystkie ruchy wskazuja na nullptr to pomijamy figure
-        if(wszystkie_ruchy[glebokosc][(i+1)%16]->rozmiar != 0){
-            int ile_ruchow_fig = wszystkie_ruchy[glebokosc][(i+1)%16]->rozmiar;
-            wspolrzedne wsp_fig = (*dr)[(i+1)%16]->aktualna_pozycja();
-            for(int j=0; j<ile_ruchow_fig; j++){
-                docelowo = (*wszystkie_ruchy[glebokosc][(i+1)%16])[j];
-                // ruszamy sie, by rozwazyc dana mozliwosc
-                // jako ze sprawdzamy tylko mozlwie ruchy mozemy od razu aktualizowac plansze
-                this->szachownica.aktualizuj_stan_gry(docelowo, wsp_fig);
-                float wynik_ruchu;
-                if(kol == biali){
-                    wynik_ruchu = this->alfa_beta_wewn(glebokosc-1, -1000000, najlepszy_wynik, czarni, wszystkie_ruchy);
-                    // cofamy sie do poprzedniego ustawienia szachownicy
-                    this->cofnij();
-                    if(wynik_ruchu < najlepszy_wynik){
-                        najlepszy_wynik = wynik_ruchu;
-                        // jako docelowo ustawia wpolrzedne koncowe ktore sprawdzilismy w ruchu
-                        najlepszy_ruch.ustaw_docelowo(docelowo);
-                        // jako skad ustawia pozycje figury, ktora ruszalismy
-                        najlepszy_ruch.ustaw_skad(wsp_fig);
-                    }
-                } else{
-                    wynik_ruchu = this->alfa_beta_wewn(glebokosc-1, najlepszy_wynik, 1000000, biali, wszystkie_ruchy);
-                    // cofamy sie do poprzedniego ustawienia szachownicy
-                    this->cofnij();
-                    if(wynik_ruchu > najlepszy_wynik){
-                        najlepszy_wynik = wynik_ruchu;
-                        // jako docelowo ustawia wpolrzedne koncowe ktore sprawdzilismy w ruchu
-                        najlepszy_ruch.ustaw_docelowo(docelowo);
-                        // jako skad ustawia pozycje figury, ktora ruszalismy
-                        najlepszy_ruch.ustaw_skad(wsp_fig);
-                    }
+        int ile_ruchow_fig = wszystkie_ruchy[glebokosc][(i+1)%16]->rozmiar;
+        wspolrzedne wsp_fig = (*dr)[(i+1)%16]->aktualna_pozycja();
+        for(int j=0; j<ile_ruchow_fig; j++){
+            docelowo = (*wszystkie_ruchy[glebokosc][(i+1)%16])[j];
+            // ruszamy sie, by rozwazyc dana mozliwosc
+            // jako ze sprawdzamy tylko mozlwie ruchy mozemy od razu aktualizowac plansze
+            this->szachownica.aktualizuj_stan_gry(docelowo, wsp_fig);
+            float wynik_ruchu;
+            if(kol == biali){
+                wynik_ruchu = this->alfa_beta_wewn(glebokosc-1, -1000000, najlepszy_wynik, czarni, wszystkie_ruchy);
+                // cofamy sie do poprzedniego ustawienia szachownicy
+                this->cofnij();
+                if(wynik_ruchu < najlepszy_wynik){
+                    najlepszy_wynik = wynik_ruchu;
+                    // jako docelowo ustawia wpolrzedne koncowe ktore sprawdzilismy w ruchu
+                    najlepszy_ruch.ustaw_docelowo(docelowo);
+                    // jako skad ustawia pozycje figury, ktora ruszalismy
+                    najlepszy_ruch.ustaw_skad(wsp_fig);
+                }
+            } else{
+                wynik_ruchu = this->alfa_beta_wewn(glebokosc-1, najlepszy_wynik, 1000000, biali, wszystkie_ruchy);
+                // cofamy sie do poprzedniego ustawienia szachownicy
+                this->cofnij();
+                if(wynik_ruchu > najlepszy_wynik){
+                    najlepszy_wynik = wynik_ruchu;
+                    // jako docelowo ustawia wpolrzedne koncowe ktore sprawdzilismy w ruchu
+                    najlepszy_ruch.ustaw_docelowo(docelowo);
+                    // jako skad ustawia pozycje figury, ktora ruszalismy
+                    najlepszy_ruch.ustaw_skad(wsp_fig);
                 }
             }
         }
@@ -216,13 +213,24 @@ ruch szachy::alfa_beta_zewn(int glebokosc){
         delete [] wszystkie_ruchy[i];
     }
     delete [] wszystkie_ruchy;
-
+std::cout << "Najlepszy wynik: " << najlepszy_wynik << std::endl;
     return najlepszy_ruch;
 }
 
 float szachy::alfa_beta_wewn(int glebokosc, float alfa, float beta, kolor kol, tablica_ruchow ***wszystkie_ruchy){
     
 this->licznik +=1;
+
+    // jesli doszlismy do konca rekurencji zwracamy wynik
+    if(glebokosc == 0){
+        // przed wyjsciem z funkcji trzeb oproznic tablice,
+        // zeby kolejna funkcja miala czysta
+        for(int i=0;i<16;i++){
+            wszystkie_ruchy[glebokosc][i]->oproznij();
+        }
+        return this->szachownica.zwroc_wynik();
+    }
+
     this->szachownica.ruchy_druzyny(this->szachownica.czyja_tura(), wszystkie_ruchy[glebokosc]);
     if(this->szachownica.czy_mat_pat(wszystkie_ruchy[glebokosc]) == true){
         // przed wyjsciem z funkcji trzeb oproznic tablice,
@@ -234,39 +242,28 @@ this->licznik +=1;
         if(this->szachownica.czyja_tura() == biali){
             if(this->szachownica.zwroc_druzyne(biali)->czy_szach() != nullptr){
                 // czarne wygraly, zwracamy duzy wynik
-                return 1000000;
+                return 100000;
             } else{ // pat czyli remis
                 return 0;
             }
         } else{
             if(this->szachownica.zwroc_druzyne(czarni)->czy_szach() != nullptr){
                 // biale wygraly, zwracamy maly wynik
-                return -1000000;
+                return -100000;
             } else{ // pat czyli remis
                 return 0;
             }
         }
     }
-    
-    // jesli doszlismy do konca rekurencji zwracamy wynik
-    if(glebokosc == 0){
-        // przed wyjsciem z funkcji trzeb oproznic tablice,
-        // zeby kolejna funkcja miala czysta
-        for(int i=0;i<16;i++){
-            wszystkie_ruchy[glebokosc][i]->oproznij();
-        }
-        return this->szachownica.zwroc_wynik();
-    }
-
 
     float najlepszy_wynik;
     wspolrzedne docelowo;
     druzyna *dr = this->szachownica.zwroc_druzyne(kol);
 
     if(kol == biali){
-        najlepszy_wynik = 1000000; // liczba znacznie wieksza niz jakikolwiek mozliwy do uzyskania wynik
+        najlepszy_wynik = 10000000; // liczba znacznie wieksza niz jakikolwiek mozliwy do uzyskania wynik
     } else{
-        najlepszy_wynik = -1000000; // liczba znacznie mniejsza niz jakikolwiek mozliwy do uzyskania wynik
+        najlepszy_wynik = -10000000; // liczba znacznie mniejsza niz jakikolwiek mozliwy do uzyskania wynik
     }
 
     // bedzie preferowac figury
@@ -321,17 +318,6 @@ this->licznik +=1;
     return najlepszy_wynik;
 }
 
-void szachy::usun_tab_wsz_ruch(tablica_ruchow **usun){
-    if(usun != nullptr){
-        for(int i=0;i<16;i++){
-            if(usun[i] != nullptr){
-                delete usun[i];
-            }
-        }
-        delete [] usun;
-    }
-}
-
 void szachy::graj_przeciw_komputerowi(const kolor &kol_gracza){
 
     std::ofstream plik_z_ruchami;
@@ -373,10 +359,12 @@ void szachy::graj_przeciw_komputerowi(const kolor &kol_gracza){
         } else{
 this->szachownica.czas1 = 0;
 this->szachownica.czas2 = 0;
+this->szachownica.ilosc_przebiegow = 0;
             //logi
             std::clock_t start = std::clock();
             this->ruch_si();
             std::clock_t koniec = std::clock();
+std::cout << "ilosc przebiegow: " << this->szachownica.ilosc_przebiegow <<std::endl;
 std::cout << "czas1: " << this->szachownica.czas1 <<std::endl;
 std::cout << "czas2: " << this->szachownica.czas2 <<std::endl;
             double czas = (double)(koniec-start)/CLOCKS_PER_SEC;

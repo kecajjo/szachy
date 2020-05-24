@@ -82,7 +82,7 @@ figura*& plansza::operator ()(const wspolrzedne &wsp){
 }
 
 void plansza::ruchy_druzyny(kolor kol, tablica_ruchow **wszystkie_ruchy){
-    
+std::clock_t start_cz = clock();
     druzyna *_druzyna = this->zwroc_druzyne(kol);
     figura *fig;
     if(_druzyna->czy_podwojny_szach() == true){
@@ -112,6 +112,7 @@ void plansza::ruchy_druzyny(kolor kol, tablica_ruchow **wszystkie_ruchy){
             // jesli figura zostala zbita nie jest brana pod uwage
             if(fig->czy_aktywna() == true){
                 // wpisuje w dany element wszystkie mozliwe dla danej figury ruchy
+this->ilosc_przebiegow +=1;
 std::clock_t start = std::clock();
                 this->mozliwe_ruchy(fig->aktualna_pozycja(), tab_blok, wszystkie_ruchy[i]);
 std::clock_t koniec = std::clock();
@@ -124,6 +125,8 @@ this->czas2 += (double)(koniec-start)/CLOCKS_PER_SEC;
             delete tab_blok;
         }
     }
+std::clock_t koniec_cz = clock();
+this->czas1 += (double)(koniec_cz-start_cz)/CLOCKS_PER_SEC;
 }
 
 void plansza::mozliwe_ruchy(wspolrzedne start, blokada_szacha *tab_blok, tablica_ruchow *tab_ruch){
@@ -141,7 +144,6 @@ void plansza::mozliwe_ruchy(wspolrzedne start, blokada_szacha *tab_blok, tablica
         tab_ruch->oproznij();
         return;
     }
-std::clock_t start_cz = clock();
     figura *fig = (*this)(start);
     // przechowuje wektory w jakich moze sie poruszac figura
     mozliwosc *wektory_ruchu = fig->zasady_ruchu();
@@ -157,8 +159,6 @@ std::clock_t start_cz = clock();
             rozmiar_listy = 1;
         }
     }
-std::clock_t koniec_cz = clock();
-this->czas1 += (double)(koniec_cz-start_cz)/CLOCKS_PER_SEC;
 
     for(int i=0;i<rozmiar_listy;i++){
         // dodaje do listy ruchy ktore mozna wykonac po danym wektorze
