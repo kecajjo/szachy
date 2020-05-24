@@ -21,7 +21,7 @@ szachy(){this->licznik = 0;}
     // zapamietuje pierwszy ruch
     // za pomoca alfa_beta_wewn sprawdza, ktory pierwszy ruch jest najlepszy
     ruch alfa_beta_zewn(int glebokosc);
-    float alfa_beta_wewn(int glebokosc, float alfa, float beta, kolor kol); // algorytm alfa beta zwraca najlepszy wynik
+    float alfa_beta_wewn(int glebokosc, float alfa, float beta, kolor kol, tablica_ruchow ***wszystkie_ruchy); // algorytm alfa beta zwraca najlepszy wynik
     void usun_tab_wsz_ruch(tablica_ruchow **usun);
 
     public:

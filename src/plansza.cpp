@@ -91,10 +91,10 @@ void plansza::ruchy_druzyny(kolor kol, tablica_ruchow **wszystkie_ruchy){
         // bo moze sie ruszac tylko krol
         blokada_szacha *tab_blok = nullptr;
         // wpisuje w dany element wszystkie mozliwe dla danej figury ruchy
-        wszystkie_ruchy[0] = this->mozliwe_ruchy(fig->aktualna_pozycja(), tab_blok);
+        this->mozliwe_ruchy(fig->aktualna_pozycja(), tab_blok, wszystkie_ruchy[0]);
         // jesli jest podwojny szach to tylko krol sie moze ruszac
         for(int i=1;i<16;i++){
-            wszystkie_ruchy[i] = nullptr;
+            wszystkie_ruchy[i]->oproznij();
         }
     } else{
         blokada_szacha *tab_blok = nullptr;
@@ -113,12 +113,11 @@ void plansza::ruchy_druzyny(kolor kol, tablica_ruchow **wszystkie_ruchy){
             if(fig->czy_aktywna() == true){
                 // wpisuje w dany element wszystkie mozliwe dla danej figury ruchy
 std::clock_t start = std::clock();
-this->ilosc_przebiegow +=1;
-                wszystkie_ruchy[i] = this->mozliwe_ruchy(fig->aktualna_pozycja(), tab_blok);
+                this->mozliwe_ruchy(fig->aktualna_pozycja(), tab_blok, wszystkie_ruchy[i]);
 std::clock_t koniec = std::clock();
 this->czas2 += (double)(koniec-start)/CLOCKS_PER_SEC;
-            } else{ // jesli figura byla zbita wpisuje do tablicy nullptr
-                wszystkie_ruchy[i] = nullptr;
+            } else{ // jesli figura byla zbita czysci wszystkie ruchy[i]
+                wszystkie_ruchy[i]->oproznij();
             }
         }
         if(tab_blok != nullptr){
@@ -127,20 +126,21 @@ this->czas2 += (double)(koniec-start)/CLOCKS_PER_SEC;
     }
 }
 
-tablica_ruchow *plansza::mozliwe_ruchy(wspolrzedne start, blokada_szacha *tab_blok){
+void plansza::mozliwe_ruchy(wspolrzedne start, blokada_szacha *tab_blok, tablica_ruchow *tab_ruch){
 
     // jesli podano pozycje startowa spoza szachownicy zwraca nullptr
     if(plansza::czy_poza_plansza(start)){
-        std::cout << "Proba ruchu z pola poza plansza" << std::endl;
-        return nullptr;
+        std::cout << "Proba ruchu z pola poza plansza: " << start.x << " " << start.y << std::endl;
+        tab_ruch->oproznij();
+        return;
     }
 
     // jesli proba ruchu nastepuje z pustego pola zwraca nullptr
     if((*this)(start) == nullptr){
-        std::cout << " Pole puste, nie mozna sie stad ruszyc" << std::endl;
-        return nullptr;
+        std::cout << " Pole puste, nie mozna sie stad ruszyc: " << start.x << " " << start.y << std::endl;
+        tab_ruch->oproznij();
+        return;
     }
-    tablica_ruchow *tab_ruch = new tablica_ruchow;
 std::clock_t start_cz = clock();
     figura *fig = (*this)(start);
     // przechowuje wektory w jakich moze sie poruszac figura
@@ -178,8 +178,6 @@ this->czas1 += (double)(koniec_cz-start_cz)/CLOCKS_PER_SEC;
             break;
         default: break;
     }
-    // zwraca wszystkie dostepne z danego pola ruchy
-    return tab_ruch;
 }
 
 void plansza::cofnij_ruch(){
@@ -278,12 +276,9 @@ void plansza::cofnij_ruch(){
 
 bool plansza::czy_mat_pat(tablica_ruchow **wszystkie_ruchy, const int &rozmiar){
     for(int i=0;i<rozmiar;i++){
-        tablica_ruchow *tab_ruch = wszystkie_ruchy[i];
-        if(tab_ruch != nullptr){
-            // jesli istnieje przynajmniej jeden ruch nie ma mata
-            if(tab_ruch->rozmiar != 0){
-                return false;
-            }
+        // jesli istnieje przynajmniej jeden ruch nie ma mata
+        if(wszystkie_ruchy[i]->rozmiar != 0){
+            return false;
         }
     }
     // jesli nie znaleziono zadnego ruchu to mat
@@ -292,6 +287,9 @@ bool plansza::czy_mat_pat(tablica_ruchow **wszystkie_ruchy, const int &rozmiar){
 
 bool plansza::czy_mat_pat(kolor kol){
     tablica_ruchow **wszystkie_ruchy = new tablica_ruchow*[16];
+    for(int i=0;i<16;i++){
+        wszystkie_ruchy[i] = new tablica_ruchow;
+    }
     this->ruchy_druzyny(kol, wszystkie_ruchy);
     bool wynik = this->czy_mat_pat(wszystkie_ruchy);
     for(int i=0;i<16;i++){
@@ -491,19 +489,19 @@ void plansza::ruch_figura(wspolrzedne start, wspolrzedne koniec){
 
     // jesli podano pozycje startowa spoza szachownicy konczy dzialanie funkcji
     if(plansza::czy_poza_plansza(start)){
-        std::cout << "Proba ruchu z pola poza plansza" << std::endl;
+        std::cout << "Proba ruchu z pola poza plansza: " << start.x << " " << start.y << std::endl;
         return;
     }
 
     // jesli podano pole docelowe spoza szachownicy konczy dzialanie funkcji
     if(plansza::czy_poza_plansza(koniec)){
-        std::cout << "Proba ruchu na pole poza plansza" << std::endl;
+        std::cout << "Proba ruchu na pole poza plansza: " << koniec.x << " " << koniec.y << std::endl;
         return;
     }
 
     // jesli proba ruchu nastepuje z pustego pola konczy dzialanie funkcji
     if((*this)(start) == nullptr){
-        std::cout << " Pole puste, nie mozna sie stad ruszyc" << std::endl;
+        std::cout << " Pole puste, nie mozna sie stad ruszyc: " << start.x << " " << start.y << std::endl;
         return;
     }
 
@@ -532,9 +530,10 @@ void plansza::ruch_figura(wspolrzedne start, wspolrzedne koniec){
         this->mozliwe_blokowanie_szacha((*gracz)[0]->aktualna_pozycja(), gracz->czy_szach()->aktualna_pozycja(), tab_blok);
     }
 
-    tablica_ruchow *mozliwe_pola_koncowe = this->mozliwe_ruchy(start, tab_blok);
+    tablica_ruchow *mozliwe_pola_koncowe = new tablica_ruchow;
+    this->mozliwe_ruchy(start, tab_blok, mozliwe_pola_koncowe);
     // jesli nie mozna sie ruszyc na zadne pole konczy dzialanie funkcji
-    if(mozliwe_pola_koncowe == nullptr){
+    if(mozliwe_pola_koncowe->rozmiar == 0){
         if(tab_blok != nullptr){
             delete tab_blok;
         }

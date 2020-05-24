@@ -46,7 +46,7 @@ private:
     // trzeba pamietac o zwolnieniu z pamieci wszystkich elementow
     void ruchy_druzyny(kolor kol, tablica_ruchow **wszystkie_ruchy);
     // zwraca strukture majaca tablice dostepnych ruchow z danego pola
-    tablica_ruchow *mozliwe_ruchy(wspolrzedne start, blokada_szacha *tab_blok);
+    void mozliwe_ruchy(wspolrzedne start, blokada_szacha *tab_blok, tablica_ruchow *tab_ruch);
     // pozwala cofnac ruch
     void cofnij_ruch();
     // sprawdza czy juz koniec gry, sprawdza czy ktorakolwiek figura moze wykonac ruch
