@@ -4,7 +4,7 @@
 #include "figura.hh"
 
 class krol: public figura{
-    mozliwosc *zas_ruch;
+    mozliwosc zas_ruch[8];
     bool pierwszy_ruch; // true jesli krol sie nie ruszyl, false jesli sie ruszyl
     public:
     krol(kolor _kol, wspolrzedne _wsp);

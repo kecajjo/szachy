@@ -11,6 +11,9 @@
 #define GLEBOKOSC_SI 4
 
 class szachy{
+    public:
+long long licznik;
+szachy(){this->licznik = 0;}
     
     plansza szachownica;
     GUI obsluga_okienka;

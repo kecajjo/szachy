@@ -6,14 +6,12 @@ wieza::wieza(kolor _kol, wspolrzedne _wsp){
     this->pozycja = _wsp;
     this->czy_aktywny=true;
     this->nazwa = 'w'; // jak w notacji szachowej
-    this->zas_ruch = new mozliwosc[4]{
-        // wszystkie mozliwosci ruchu po kolumnach
-        // dowolna ilosc powtorzen (max 7 przez wymiar planszy)
-        mozliwosc(0,1,7),
-        mozliwosc(0,-1,7),
-        mozliwosc(1,0,7),
-        mozliwosc(-1,0,7)
-    };
+    // wszystkie mozliwosci ruchu po kolumnach
+    // dowolna ilosc powtorzen (max 7 przez wymiar planszy)
+    this->zas_ruch[0] = mozliwosc(0,1,7);
+    this->zas_ruch[1] = mozliwosc(0,-1,7);
+    this->zas_ruch[2] = mozliwosc(1,0,7);
+    this->zas_ruch[3] = mozliwosc(-1,0,7);
 }
 
 mozliwosc *wieza::zasady_ruchu(){
@@ -33,5 +31,4 @@ bool wieza::czy_pierwszy(){
 }
 
 wieza::~wieza(){
-    delete [] this->zas_ruch;
 }

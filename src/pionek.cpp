@@ -7,11 +7,11 @@ pionek::pionek(kolor _kol, wspolrzedne _wsp){
     this->nie_ruszyl=true;
     this->nazwa = 'p'; //jak w notacji szachowej
     if(_kol == biali){
-        this->pierwszy_ruch = new mozliwosc[1]{mozliwosc(0,1,2)};
-        this->nastepny_ruch = new mozliwosc[1]{mozliwosc(0,1,1)};
+        this->pierwszy_ruch[0] = mozliwosc(0,1,2);
+        this->nastepny_ruch[0] = mozliwosc(0,1,1);
     } else{
-        this->pierwszy_ruch = new mozliwosc[1]{mozliwosc(0,-1,2)};
-        this->nastepny_ruch = new mozliwosc[1]{mozliwosc(0,-1,1)};
+        this->pierwszy_ruch[0] = mozliwosc(0,-1,2);
+        this->nastepny_ruch[0] = mozliwosc(0,-1,1);
     }
 }
 
@@ -47,6 +47,4 @@ void pionek::zasady_bicia(wspolrzedne *tablica_zasad) const{
 }
 
 pionek::~pionek(){
-    delete [] this->pierwszy_ruch;
-    delete [] this->nastepny_ruch;
 }

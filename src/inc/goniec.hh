@@ -5,7 +5,7 @@
 #include "wspolrzedne.hh"
 
 class goniec: public figura{
-    mozliwosc *zas_ruch;
+    mozliwosc zas_ruch[4];
     public:
     goniec(kolor _kol, wspolrzedne _wsp);
     mozliwosc *zasady_ruchu();

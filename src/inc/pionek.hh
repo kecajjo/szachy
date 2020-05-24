@@ -4,8 +4,8 @@
 #include "figura.hh"
 
 class pionek: public figura{
-    mozliwosc *pierwszy_ruch;
-    mozliwosc *nastepny_ruch;
+    mozliwosc pierwszy_ruch[1];
+    mozliwosc nastepny_ruch[1];
     bool nie_ruszyl; // true jesli pionek sie nie ruszyl, false jesli sie ruszyl
     public:
     pionek(kolor _kol, wspolrzedne _wsp);

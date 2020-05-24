@@ -10,12 +10,19 @@
 #include "lifo.hh"
 #include "ruch.hh"
 #include <iostream>
+#include <ctime>
 
 #define PAMIEC_WSTECZ 10
 
 #define ROZMIAR 8
 
 class plansza{
+
+public:
+double czas1;
+double czas2;
+long long ilosc_przebiegow;
+private:
 
     figura *pola[ROZMIAR][ROZMIAR]; // szachownica zawierajaca informacje o tym, kto zajmuje dane pole
     kolor tura; // -1 kolej bialych 1 kolej czarnych 0 jakis blad, nikt nie moze sie ruszyc
@@ -112,7 +119,7 @@ class plansza{
     void wylicz_wynik();
     // sprawdza czy ktorys krol sasiaduje z danym polem
     bool czy_obok_krola(const wspolrzedne &wsp);
-    
+
 };
 
 #endif

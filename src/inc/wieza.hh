@@ -4,7 +4,7 @@
 #include "figura.hh"
 
 class wieza: public figura{
-    mozliwosc *zas_ruch;
+    mozliwosc zas_ruch[4];
     bool pierwszy_ruch; // true jesli wieza sie nie ruszyla, false jesli sie ruszyla
     public:
     wieza(kolor _kol, wspolrzedne _wsp);

@@ -34,12 +34,15 @@ struct tablica_ruchow{
     }
 
     void dodaj_elem(wspolrzedne wsp){
-        if(rozmiar>26){
+        if(this->rozmiar>26){
             std::cout << "proba przepelnienia tablicy ruchow" << std::endl << std::endl << "x: " << wsp.x << " y: " << wsp.y << std::endl;
             return;
         }
-        this->tablica[rozmiar] = wsp;
-        ++rozmiar;
+        this->tablica[this->rozmiar] = wsp;
+        this->rozmiar += 1;
+    }
+    void oproznij(){
+        this->rozmiar = 0;
     }
 };
 

@@ -2,6 +2,10 @@
 
 plansza::plansza(){
 
+this->czas1 = 0;
+this->czas2 = 0;
+this->ilosc_przebiegow = 0;
+
     // ustawia stan poczatkowy szachownicy
     this->wynik = 0;
     this->biel = new druzyna(biali);
@@ -108,7 +112,11 @@ void plansza::ruchy_druzyny(kolor kol, tablica_ruchow **wszystkie_ruchy){
             // jesli figura zostala zbita nie jest brana pod uwage
             if(fig->czy_aktywna() == true){
                 // wpisuje w dany element wszystkie mozliwe dla danej figury ruchy
+std::clock_t start = std::clock();
+this->ilosc_przebiegow +=1;
                 wszystkie_ruchy[i] = this->mozliwe_ruchy(fig->aktualna_pozycja(), tab_blok);
+std::clock_t koniec = std::clock();
+this->czas2 += (double)(koniec-start)/CLOCKS_PER_SEC;
             } else{ // jesli figura byla zbita wpisuje do tablicy nullptr
                 wszystkie_ruchy[i] = nullptr;
             }
@@ -132,8 +140,8 @@ tablica_ruchow *plansza::mozliwe_ruchy(wspolrzedne start, blokada_szacha *tab_bl
         std::cout << " Pole puste, nie mozna sie stad ruszyc" << std::endl;
         return nullptr;
     }
-
     tablica_ruchow *tab_ruch = new tablica_ruchow;
+std::clock_t start_cz = clock();
     figura *fig = (*this)(start);
     // przechowuje wektory w jakich moze sie poruszac figura
     mozliwosc *wektory_ruchu = fig->zasady_ruchu();
@@ -149,6 +157,8 @@ tablica_ruchow *plansza::mozliwe_ruchy(wspolrzedne start, blokada_szacha *tab_bl
             rozmiar_listy = 1;
         }
     }
+std::clock_t koniec_cz = clock();
+this->czas1 += (double)(koniec_cz-start_cz)/CLOCKS_PER_SEC;
 
     for(int i=0;i<rozmiar_listy;i++){
         // dodaje do listy ruchy ktore mozna wykonac po danym wektorze

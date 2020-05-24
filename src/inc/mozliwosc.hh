@@ -5,6 +5,11 @@
 struct mozliwosc{
     wspolrzedne wektor; // wektor jakim sie poruszamy
     int zasieg; // ile pol naraz moze pokonac figura
+    mozliwosc(){
+        this->wektor.x = 0;
+        this->wektor.y = 0;
+        this->zasieg = 0;
+    }
     mozliwosc(int _x, int _y, int _zasieg){
         this->wektor.x = _x;
         this->wektor.y = _y;
