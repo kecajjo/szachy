@@ -228,9 +228,9 @@ this->licznik +=1;
     druzyna *dr = this->szachownica.zwroc_druzyne(kol);
 
     if(kol == biali){
-        najlepszy_wynik = 1000000; // liczba znacznie wieksza niz jakikolwiek mozliwy do uzyskania wynik
+        najlepszy_wynik = 10000000; // liczba znacznie wieksza niz jakikolwiek mozliwy do uzyskania wynik
     } else{
-        najlepszy_wynik = -1000000; // liczba znacznie mniejsza niz jakikolwiek mozliwy do uzyskania wynik
+        najlepszy_wynik = -10000000; // liczba znacznie mniejsza niz jakikolwiek mozliwy do uzyskania wynik
     }
 
     // bedzie preferowac figury
