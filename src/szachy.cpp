@@ -103,7 +103,7 @@ void szachy::ruch_si(){
         case 7: plik_z_ruchami << "H"; break;
         default: plik_z_ruchami << "NIEDOZWOLONA LITERKA" << ruch_komputera.zwroc_skad().x << "    ";
     }
-    plik_z_ruchami << ruch_komputera.zwroc_skad().y << " ";
+    plik_z_ruchami << ruch_komputera.zwroc_skad().y+1 << " ";
     switch(ruch_komputera.zwroc_docelowo().x){
         case 0: plik_z_ruchami << "A"; break;
         case 1: plik_z_ruchami << "B"; break;
@@ -115,7 +115,7 @@ void szachy::ruch_si(){
         case 7: plik_z_ruchami << "H"; break;
         default: plik_z_ruchami << "NIEDOZWOLONA LITERKA" << ruch_komputera.zwroc_docelowo().x << "    ";
     }
-    plik_z_ruchami << ruch_komputera.zwroc_docelowo().y << std::endl;
+    plik_z_ruchami << ruch_komputera.zwroc_docelowo().y+1 << std::endl;
     plik_z_ruchami.close();
 
     this->szachownica.ruch_figura(ruch_komputera.zwroc_skad(),ruch_komputera.zwroc_docelowo());
@@ -191,6 +191,11 @@ this->licznik +=1;
 }
 
 float szachy::alfa_beta_wewn(int glebokosc, float alfa, float beta, kolor kol){
+
+    // jesli doszlismy do konca rekurencji zwracamy wynik
+    if(glebokosc == 0){
+        return this->szachownica.zwroc_wynik();
+    }
     
     tablica_ruchow **wszystkie_ruchy = new tablica_ruchow*[16];
 this->licznik +=1;
@@ -217,13 +222,6 @@ this->licznik +=1;
             }
         }
     }
-    
-    // jesli doszlismy do konca rekurencji zwracamy wynik
-    if(glebokosc == 0){
-        this->usun_tab_wsz_ruch(wszystkie_ruchy);
-        return this->szachownica.zwroc_wynik();
-    }
-
 
     float najlepszy_wynik;
     wspolrzedne docelowo;

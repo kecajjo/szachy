@@ -1451,11 +1451,11 @@ void plansza::wylicz_wynik(){
     for(int i=0;i<16;i++){
         if((*dr)[i]->czy_aktywna() == true){
             switch((*dr)[i]->zwroc_nazwe()){
-                case 'p': _wynik -= 1*((*dr)[i]->aktualna_pozycja().y*1.4+10)*0.1; break;
-                case 'g': _wynik -= 3*((*dr)[i]->aktualna_pozycja().y*0.5+10)*0.1; break;
-                case 's': _wynik -= 3*((*dr)[i]->aktualna_pozycja().y*0.5+10)*0.1; break;
-                case 'w': _wynik -= 5*((*dr)[i]->aktualna_pozycja().y*0.3+10)*0.1; break;
-                case 'h': _wynik -= 9*((*dr)[i]->aktualna_pozycja().y*0.2+10)*0.1; break;
+                case 'p': _wynik -= 1*((*dr)[i]->aktualna_pozycja().y*0.7+10)*0.1; break;
+                case 'g': _wynik -= 3*((*dr)[i]->aktualna_pozycja().y*0.25+10)*0.1; break;
+                case 's': _wynik -= 3*((*dr)[i]->aktualna_pozycja().y*0.25+10)*0.1; break;
+                case 'w': _wynik -= 5*((*dr)[i]->aktualna_pozycja().y*0.15+10)*0.1; break;
+                case 'h': _wynik -= 9*((*dr)[i]->aktualna_pozycja().y*0.1+10)*0.1; break;
                 case 'k': _wynik -= 100; break;
                 default: std::cout << "niedozwolona nazwa w druzynie" << std::endl;
                 break;
@@ -1467,11 +1467,11 @@ void plansza::wylicz_wynik(){
     for(int i=0;i<16;i++){
         if((*dr)[i]->czy_aktywna() == true){
             switch((*dr)[i]->zwroc_nazwe()){
-                case 'p': _wynik += 1*((7-(*dr)[i]->aktualna_pozycja().y)*1.4+10)*0.1; break;
-                case 'g': _wynik += 3*((7-(*dr)[i]->aktualna_pozycja().y)*0.5+10)*0.1; break;
-                case 's': _wynik += 3*((7-(*dr)[i]->aktualna_pozycja().y)*0.5+10)*0.1; break;
-                case 'w': _wynik += 5*((7-(*dr)[i]->aktualna_pozycja().y)*0.3+10)*0.1; break;
-                case 'h': _wynik += 9*((7-(*dr)[i]->aktualna_pozycja().y)*0.2+10)*0.1; break;
+                case 'p': _wynik += 1*((7-(*dr)[i]->aktualna_pozycja().y)*0.7+10)*0.1; break;
+                case 'g': _wynik += 3*((7-(*dr)[i]->aktualna_pozycja().y)*0.25+10)*0.1; break;
+                case 's': _wynik += 3*((7-(*dr)[i]->aktualna_pozycja().y)*0.25+10)*0.1; break;
+                case 'w': _wynik += 5*((7-(*dr)[i]->aktualna_pozycja().y)*0.15+10)*0.1; break;
+                case 'h': _wynik += 9*((7-(*dr)[i]->aktualna_pozycja().y)*0.1+10)*0.1; break;
                 case 'k': _wynik += 100; break;
                 default: std::cout << "niedozwolona nazwa w druzynie" << std::endl;
                 break;
