@@ -10,7 +10,6 @@
 #include "lifo.hh"
 #include "ruch.hh"
 #include <iostream>
-#include <ctime>
 
 #define PAMIEC_WSTECZ 10
 
@@ -18,10 +17,6 @@
 
 class plansza{
 
-public:
-double czas1;
-double czas2;
-long long ilosc_przebiegow;
 private:
 
     figura *pola[ROZMIAR][ROZMIAR]; // szachownica zawierajaca informacje o tym, kto zajmuje dane pole

@@ -4,16 +4,12 @@
 #include "plansza.hh"
 #include "lifo.hh"
 #include "GUI.hh"
-#include <ctime>
 #include <fstream>
 #include <SFML/Graphics.hpp>
 
 #define GLEBOKOSC_SI 4
 
 class szachy{
-    public:
-long long licznik;
-szachy(){this->licznik = 0;}
     
     plansza szachownica;
     GUI obsluga_okienka;

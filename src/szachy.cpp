@@ -126,7 +126,6 @@ ruch szachy::alfa_beta_zewn(int glebokosc){
         return ruch();
     }
     tablica_ruchow **wszystkie_ruchy = new tablica_ruchow*[16];
-this->licznik +=1;
     this->szachownica.ruchy_druzyny(this->szachownica.czyja_tura(), wszystkie_ruchy);
     if(this->szachownica.czy_mat_pat(wszystkie_ruchy)){
         this->usun_tab_wsz_ruch(wszystkie_ruchy);
@@ -198,7 +197,6 @@ float szachy::alfa_beta_wewn(int glebokosc, float alfa, float beta, kolor kol){
     }
     
     tablica_ruchow **wszystkie_ruchy = new tablica_ruchow*[16];
-this->licznik +=1;
     this->szachownica.ruchy_druzyny(this->szachownica.czyja_tura(), wszystkie_ruchy);
     if(this->szachownica.czy_mat_pat(wszystkie_ruchy) == true){
         // nie mozna wykonac ruchu jesli jest juz mat/pat
@@ -328,20 +326,7 @@ void szachy::graj_przeciw_komputerowi(const kolor &kol_gracza){
             this->szachownica.ruch_figura(skad, dokad);
         } else{
             //logi
-this->szachownica.ilosc_przebiegow = 0;
-this->licznik = 0;
-            std::clock_t start = std::clock();
             this->ruch_si();
-            std::clock_t koniec = std::clock();
-std::cout << "ilosc przebiegow ruchy_druzyny:" << this->licznik << std::endl;
-std::cout << "ilosc przebiegow mozliwe_ruchy:" << this->szachownica.ilosc_przebiegow << std::endl;
-std::cout << "czas1: " << this->szachownica.czas1 <<std::endl;
-std::cout << "czas2: " << this->szachownica.czas2 <<std::endl;
-            double czas = (double)(koniec-start)/CLOCKS_PER_SEC;
-            std::ofstream plik_z_ruchami;
-            plik_z_ruchami.open("kolejne_ruchy.txt", std::ofstream::app);
-            plik_z_ruchami << "czas: " << czas <<std::endl;
-            plik_z_ruchami.close();
         }
         if(this->czy_koniec(biali) == true){
             std::cout << "Czarni wygrali" << std::endl;
