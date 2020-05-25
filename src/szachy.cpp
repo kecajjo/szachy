@@ -100,37 +100,37 @@ bool szachy::czy_koniec(kolor &zwyciezca){
 }
 
 void szachy::ruch_si(){
-    std::ofstream plik_z_ruchami;
-    plik_z_ruchami.open("kolejne_ruchy.txt", std::ofstream::app);
-    plik_z_ruchami << "SI: ";
+    //std::ofstream plik_z_ruchami;
+    //plik_z_ruchami.open("kolejne_ruchy.txt", std::ofstream::app);
+    //plik_z_ruchami << "SI: ";
 
     ruch ruch_komputera = this->alfa_beta_zewn(GLEBOKOSC_SI);
 
-    switch(ruch_komputera.zwroc_skad().x){
-        case 0: plik_z_ruchami << "A"; break;
-        case 1: plik_z_ruchami << "B"; break;
-        case 2: plik_z_ruchami << "C"; break;
-        case 3: plik_z_ruchami << "D"; break;
-        case 4: plik_z_ruchami << "E"; break;
-        case 5: plik_z_ruchami << "F"; break;
-        case 6: plik_z_ruchami << "G"; break;
-        case 7: plik_z_ruchami << "H"; break;
-        default: plik_z_ruchami << "NIEDOZWOLONA LITERKA" << ruch_komputera.zwroc_skad().x << "    ";
-    }
-    plik_z_ruchami << ruch_komputera.zwroc_skad().y+1 << " ";
-    switch(ruch_komputera.zwroc_docelowo().x){
-        case 0: plik_z_ruchami << "A"; break;
-        case 1: plik_z_ruchami << "B"; break;
-        case 2: plik_z_ruchami << "C"; break;
-        case 3: plik_z_ruchami << "D"; break;
-        case 4: plik_z_ruchami << "E"; break;
-        case 5: plik_z_ruchami << "F"; break;
-        case 6: plik_z_ruchami << "G"; break;
-        case 7: plik_z_ruchami << "H"; break;
-        default: plik_z_ruchami << "NIEDOZWOLONA LITERKA" << ruch_komputera.zwroc_docelowo().x << "    ";
-    }
-    plik_z_ruchami << ruch_komputera.zwroc_docelowo().y+1 << std::endl;
-    plik_z_ruchami.close();
+    //switch(ruch_komputera.zwroc_skad().x){
+    //    case 0: plik_z_ruchami << "A"; break;
+    //    case 1: plik_z_ruchami << "B"; break;
+    //    case 2: plik_z_ruchami << "C"; break;
+    //    case 3: plik_z_ruchami << "D"; break;
+    //    case 4: plik_z_ruchami << "E"; break;
+    //    case 5: plik_z_ruchami << "F"; break;
+    //    case 6: plik_z_ruchami << "G"; break;
+    //    case 7: plik_z_ruchami << "H"; break;
+    //    default: plik_z_ruchami << "NIEDOZWOLONA LITERKA" << ruch_komputera.zwroc_skad().x << "    ";
+    //}
+    //plik_z_ruchami << ruch_komputera.zwroc_skad().y+1 << " ";
+    //switch(ruch_komputera.zwroc_docelowo().x){
+    //    case 0: plik_z_ruchami << "A"; break;
+    //    case 1: plik_z_ruchami << "B"; break;
+    //    case 2: plik_z_ruchami << "C"; break;
+    //    case 3: plik_z_ruchami << "D"; break;
+    //    case 4: plik_z_ruchami << "E"; break;
+    //    case 5: plik_z_ruchami << "F"; break;
+    //    case 6: plik_z_ruchami << "G"; break;
+    //    case 7: plik_z_ruchami << "H"; break;
+    //    default: plik_z_ruchami << "NIEDOZWOLONA LITERKA" << ruch_komputera.zwroc_docelowo().x << "    ";
+    //}
+    //plik_z_ruchami << ruch_komputera.zwroc_docelowo().y+1 << std::endl;
+    //plik_z_ruchami.close();
 
     this->szachownica.ruch_figura(ruch_komputera.zwroc_skad(),ruch_komputera.zwroc_docelowo());
 }
@@ -308,10 +308,10 @@ void szachy::graj_przeciw_komputerowi(const kolor &kol_gracza){
         return;
     }
 
-    std::ofstream plik_z_ruchami;
-    plik_z_ruchami.open("kolejne_ruchy.txt", std::ofstream::app);
-    plik_z_ruchami << std::endl << std::endl << std::endl;
-    plik_z_ruchami.close();
+    //std::ofstream plik_z_ruchami;
+    //plik_z_ruchami.open("kolejne_ruchy.txt", std::ofstream::app);
+    //plik_z_ruchami << std::endl << std::endl << std::endl;
+    //plik_z_ruchami.close();
 
     sf::RenderWindow okienko(sf::VideoMode(720,720), "szachy", sf::Style::Titlebar | sf::Style::Close);
     sf::Event wydarzenie;
@@ -341,7 +341,7 @@ void szachy::graj_przeciw_komputerowi(const kolor &kol_gracza){
                 return;
             }
             // logi
-            this->logi_gracza(skad, dokad);
+            //this->logi_gracza(skad, dokad);
 
             this->szachownica.ruch_figura(skad, dokad);
         } else{

@@ -14,7 +14,6 @@ __start__: szachy
 szachy: obj obj/main.o $(OBJ)
 	ar rcs obj/libmoja_biblioteka.a $(OBJ)
 	g++ -Wall -Werror -Wextra -pedantic -std=c++17 -o szachy.exe -L ./obj -l moja_biblioteka $(SFML_BIBLIOTEKI) $(DOD_BIB)
-	./szachy.exe
 
 obj: 
 	mkdir obj
