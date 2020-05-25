@@ -210,7 +210,7 @@ kolor GUI::wybierz_kolor(){
     kolor kol;
     float szerokosc_ok = 500;
     float wysokosc_ok = 300;
-    sf::RenderWindow okienko(sf::VideoMode(szerokosc_ok, wysokosc_ok), "menu");
+    sf::RenderWindow okienko(sf::VideoMode(szerokosc_ok, wysokosc_ok), "menu", sf::Style::Titlebar | sf::Style::Close);
     sf::Texture tlo_tex;
     if(tlo_tex.loadFromFile("./obrazki/tlo.png") == false){
         std::cout << "BLAD podczas otwierania obrazka" <<std::endl;

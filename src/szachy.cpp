@@ -313,7 +313,7 @@ void szachy::graj_przeciw_komputerowi(const kolor &kol_gracza){
     plik_z_ruchami << std::endl << std::endl << std::endl;
     plik_z_ruchami.close();
 
-    sf::RenderWindow okienko(sf::VideoMode(720,720), "szachy");
+    sf::RenderWindow okienko(sf::VideoMode(720,720), "szachy", sf::Style::Titlebar | sf::Style::Close);
     sf::Event wydarzenie;
     while(okienko.isOpen() == true){
 

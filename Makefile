@@ -1,12 +1,12 @@
 CXX = g++
-CXXFLAGS = -c -Ihh -Icpp -Wall -pedantic -std=c++17 -g $(SFML_NAGLOWKI)
+CXXFLAGS = -c -Ihh -Icpp -Wall -pedantic -std=c++17 $(SFML_NAGLOWKI)
 OBJ = obj/main.o obj/wspolrzedne.o obj/figura.o obj/goniec.o\
 	obj/hetman.o obj/krol.o obj/pionek.o obj/skoczek.o obj/wieza.o\
 	obj/druzyna.o obj/plansza.o obj/szachy.o obj/ruch.o obj/GUI.o
-DOD_BIB = -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic
+DOD_BIB = -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic -mwindows
 SFML_NAGLOWKI = -DSFML_STATIC -I D:/PROGRAMY/programowanie/SFML/SFML/include
-SFML_BIBLIOTEKI = -L D:/PROGRAMY/programowanie/SFML/SFM/lib -lsfml-graphics-s-d\
-	-lsfml-window-s-d -lsfml-system-s-d -lopengl32 -lwinmm -lgdi32 -lfreetype
+SFML_BIBLIOTEKI = -L D:/PROGRAMY/programowanie/SFML/SFM/lib -lsfml-graphics-s\
+	-lsfml-window-s -lsfml-system-s -lopengl32 -lwinmm -lgdi32 -lfreetype
 
 __start__: szachy
 	
