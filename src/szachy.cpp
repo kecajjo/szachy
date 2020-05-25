@@ -78,11 +78,25 @@ void szachy::cofnij(){
     this->szachownica.cofnij_ruch();
 }
 
-bool szachy::czy_koniec(kolor kol){
-    if(this->szachownica.czy_mat_pat(kol) == true){
-        return true;
+bool szachy::czy_koniec(kolor &zwyciezca){
+    bool wynik = false;
+    if(this->szachownica.czy_mat_pat(biali) == true){
+        wynik = true;
+        if(this->szachownica.zwroc_druzyne(biali)->czy_szach() != nullptr){
+            zwyciezca = czarni; // czarni wygrali
+        } else{
+            zwyciezca = nikt; // remis
+        }
     }
-    return false;
+    if(this->szachownica.czy_mat_pat(czarni) == true){
+        wynik = true;
+        if(this->szachownica.zwroc_druzyne(czarni)->czy_szach() != nullptr){
+            zwyciezca = biali; // biali wygrali
+        } else{
+            zwyciezca = nikt; // remis
+        }
+    }
+    return wynik;
 }
 
 void szachy::ruch_si(){
@@ -288,6 +302,12 @@ void szachy::usun_tab_wsz_ruch(tablica_ruchow **usun){
 
 void szachy::graj_przeciw_komputerowi(const kolor &kol_gracza){
 
+    // blad, wybrano kolor nikt
+    if(kol_gracza == nikt){
+        std::cout << "wybrano kolor: nikt" << std::endl;
+        return;
+    }
+
     std::ofstream plik_z_ruchami;
     plik_z_ruchami.open("kolejne_ruchy.txt", std::ofstream::app);
     plik_z_ruchami << std::endl << std::endl << std::endl;
@@ -328,13 +348,26 @@ void szachy::graj_przeciw_komputerowi(const kolor &kol_gracza){
             //logi
             this->ruch_si();
         }
-        if(this->czy_koniec(biali) == true){
-            std::cout << "Czarni wygrali" << std::endl;
-            this->obsluga_okienka.koniec(this->szachownica, okienko, kol_gracza, czarni);
-        }
-        if(this->czy_koniec(czarni) == true){
-            std::cout << "biali wygrali" << std::endl;
-            this->obsluga_okienka.koniec(this->szachownica, okienko, kol_gracza, biali);
+        kolor zwyciezca = nikt;
+        bool koniec = this->czy_koniec(zwyciezca);
+        if(koniec == true){
+            switch(zwyciezca){
+                case biali:
+                    std::cout << "biali wygrali" << std::endl;
+                    this->obsluga_okienka.koniec(this->szachownica, okienko, kol_gracza, biali);
+                 break;
+                case czarni:
+                    std::cout << "Czarni wygrali" << std::endl;
+                    this->obsluga_okienka.koniec(this->szachownica, okienko, kol_gracza, czarni);
+                 break;
+                case nikt:
+                    std::cout << "remis" << std::endl;
+                    this->obsluga_okienka.koniec(this->szachownica, okienko, kol_gracza, nikt);
+                 break;
+                default:
+                    std::cout << "BLAD sprawdzanie mata" <<std::endl;
+                 break;
+            }
         }
     }
 }
@@ -368,4 +401,8 @@ void szachy::logi_gracza(const wspolrzedne &start, const wspolrzedne &koniec) co
     plik_z_ruchami.open("kolejne_ruchy.txt", std::ofstream::app);
     plik_z_ruchami << "gracz: "  << kolumna_st << start.y+1 << " " << kolumna_kon << koniec.y+1 <<std::endl;
     plik_z_ruchami.close();
+}
+
+kolor szachy::wybierz_kolor(){
+    return this->obsluga_okienka.wybierz_kolor();
 }

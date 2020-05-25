@@ -4,7 +4,8 @@
 
 int main(){
     szachy gra;
-    gra.graj_przeciw_komputerowi(biali);
+    kolor kol = gra.wybierz_kolor();
+    gra.graj_przeciw_komputerowi(kol);
     
     return 0;
 }

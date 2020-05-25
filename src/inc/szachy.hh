@@ -25,12 +25,16 @@ class szachy{
     void wyswietl_stan_gry();
     void ruch_gracza(wspolrzedne start, wspolrzedne koniec); // jesli jest to zgodne z zasadami rusza figure z pola start na pole koniec
     void cofnij(); // cofa ruch
-    bool czy_koniec(kolor kol);
+    // zwraca czy koniec gry
+    // ustawia zmiena zwyciezca na odpowiedni kolor
+    bool czy_koniec(kolor &zwyciezca);
     // sztuczna inteligencja wykarzystujaca algorytm alfa beta
     void ruch_si();
     void graj_przeciw_komputerowi(const kolor &kol_gracza);
     // zapisuje do pliku jak gracz sie probowal ruszyc
     void logi_gracza(const wspolrzedne &start, const wspolrzedne &koniec) const;
+    // pozwala wybrac kolor ktorym sie gra
+    kolor wybierz_kolor();
 
 };
 

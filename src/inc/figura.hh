@@ -6,8 +6,8 @@
 
 enum kolor{
     biali = -1,
-    czarni = 1
-    // nikt = 0
+    czarni = 1,
+    nikt = 0 // wykorzystywane tylko przy sprawdzaniu mata/pata
 };
 
 class figura{

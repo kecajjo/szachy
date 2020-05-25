@@ -29,6 +29,8 @@ class GUI{
     // kolor to kolor z ktorego perspektywy widzimy plansze
     wspolrzedne akcja_uzytkownika(const plansza &szachownica, sf::RenderWindow &okienko, const kolor &kol_gracza);
     void koniec(const plansza &szachownica, sf::RenderWindow &okienko, const kolor &kol_gracza, const kolor &zwyciezcy);
+    // wyswietla okienko i pozwala na wybor czarnych lub bialych
+    kolor wybierz_kolor();
 };
 
 #endif

@@ -154,6 +154,9 @@ void GUI::koniec(const plansza &szachownica, sf::RenderWindow &okienko, const ko
     if(kol_zwyciezcy == czarni){
         tekst.setString("CZARNI WYGRALI");
     }
+    if(kol_zwyciezcy == czarni){
+        tekst.setString("REMIS");
+    }
     tekst.setCharacterSize(90); // wielkosc w pikselach
     tekst.setFillColor(kolor_tekstu);
     tekst.setStyle(sf::Text::Bold);
@@ -200,4 +203,73 @@ void GUI::koniec(const plansza &szachownica, sf::RenderWindow &okienko, const ko
             }
         }
     }
+}
+
+kolor GUI::wybierz_kolor(){
+
+    kolor kol;
+    float szerokosc_ok = 500;
+    float wysokosc_ok = 300;
+    sf::RenderWindow okienko(sf::VideoMode(szerokosc_ok, wysokosc_ok), "menu");
+    sf::Texture tlo_tex;
+    if(tlo_tex.loadFromFile("./obrazki/tlo.png") == false){
+        std::cout << "BLAD podczas otwierania obrazka" <<std::endl;
+        return nikt; // blad, nie zaladowano obrazka
+    }
+    sf::Sprite tlo_sp;
+    tlo_sp.setTexture(tlo_tex);
+    okienko.draw(tlo_sp);
+
+    sf::Text tekst;
+    sf::Font czcionka;
+    sf::Color kolor_tekstu(sf::Color::Black);
+    czcionka.loadFromFile("./obrazki/Arialn.ttf");
+    tekst.setFont(czcionka);
+    tekst.setString("Wybierz kolor:");
+    tekst.setCharacterSize(50); // wielkosc w pikselach
+    tekst.setFillColor(kolor_tekstu);
+    tekst.setStyle(sf::Text::Bold);
+    float szerokosc = tekst.getGlobalBounds().width;
+    float wysokosc = tekst.getGlobalBounds().height;
+    tekst.setPosition(szerokosc_ok/2 - szerokosc/2, 10);
+    okienko.draw(tekst);
+
+    tekst.setString("graj bialymi - wcisnij enter");
+    tekst.setCharacterSize(40); // wielkosc w pikselach
+    szerokosc = tekst.getGlobalBounds().width;
+    wysokosc = tekst.getGlobalBounds().height;
+    tekst.setPosition(szerokosc_ok/2 - szerokosc/2, wysokosc_ok/2 - (wysokosc + 10));
+    okienko.draw(tekst);
+
+    tekst.setString("graj czarnymi - wcisnij spacje");
+    tekst.setCharacterSize(40); // wielkosc w pikselach
+    szerokosc = tekst.getGlobalBounds().width;
+    wysokosc = tekst.getGlobalBounds().height;
+    tekst.setPosition(szerokosc_ok/2 - szerokosc/2, wysokosc_ok/2 + wysokosc);
+    okienko.draw(tekst);
+    okienko.display();
+
+    sf::Event wydarzenie;
+    while(okienko.isOpen()){
+        okienko.waitEvent(wydarzenie);
+        switch(wydarzenie.type){
+            case sf::Event::Closed:
+                kol = nikt;
+                okienko.close();
+             break;
+            case sf::Event::KeyPressed:
+                if(wydarzenie.key.code == sf::Keyboard::Key::Enter){
+                    kol = biali;
+                    okienko.close();
+                } else{
+                    if(wydarzenie.key.code == sf::Keyboard::Key::Space){
+                        kol = czarni;
+                        okienko.close();
+                    }
+                }
+             break;
+            default: break;
+        }
+    }
+    return kol;
 }
