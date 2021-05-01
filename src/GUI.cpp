@@ -154,7 +154,7 @@ void GUI::koniec(const plansza &szachownica, sf::RenderWindow &okienko, const ko
     if(kol_zwyciezcy == czarni){
         tekst.setString("CZARNI WYGRALI");
     }
-    if(kol_zwyciezcy == czarni){
+    if(kol_zwyciezcy == nikt){
         tekst.setString("REMIS");
     }
     tekst.setCharacterSize(90); // wielkosc w pikselach
